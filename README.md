@@ -1,6 +1,6 @@
 # Tutorials
 
-#####Tutorial on phylogenetic and phylogenomic methods
+#####A collection of tutorials on phylogenetic and phylogenomic methods
 
 
 ## Table of contents
