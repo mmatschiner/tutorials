@@ -122,7 +122,7 @@ You'll see that each record consists of an id and a sequence, of which the id is
 
 	    java -jar PATH_TO_FILE/BMGE.jar -i 16s_aln.fasta -t DNA -of 16s_filtered.fasta -oh 16s_filtered.html
 	
-  With the above command, BMGE writes a filtered alignment in Fasta format in file `16s_filtered.fasta`, and visualizes the filtered alignment in HTML format in file `16s_filtered.html`.
+    With the above command, BMGE writes a filtered alignment in Fasta format in file `16s_filtered.fasta`, and visualizes the filtered alignment in HTML format in file `16s_filtered.html`.
 
 * Open file `16s_filtered.html` in your browser. Scroll through the alignment and note the black alignment blocks.
 
