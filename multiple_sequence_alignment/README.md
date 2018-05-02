@@ -25,6 +25,8 @@ The dataset used in this tutorial is a small subset of the data used in [Matschi
 
 The dataset used here includes sequences for two genes; the mitochondrial 16S gene coding for 16S ribosomal RNA and the nuclear rag1 gene coding for recombination activating protein 1. The sequences represent the species listed below.
 
+<center>
+
 | ID             | Species                     | Group              |
 |----------------|-----------------------------|--------------------|                     
 | Acanthapomotis | *Acantharchus pomotis*      | Non-cichlid        |
@@ -66,6 +68,7 @@ The dataset used here includes sequences for two genes; the mitochondrial 16S ge
 | Zancluscornutu | *Zanclus cornutus*          | Non-cichlid        |
 | Zeusxxxfaberxx | *Zeus faber*                | Non-cichlid        |
 
+</center>
 
 <a name="requirements"></a>
 ## Requirements
