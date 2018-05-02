@@ -120,8 +120,9 @@ You'll see that each record consists of an id and a sequence, of which the id is
 
 * If the above worked, type:
 
-		java -jar PATH_TO_FILE/BMGE.jar -i 16s_aln.fasta -t DNA -of 16s_filtered.fasta -oh 16s_filtered.html
-With the above command, BMGE writes a filtered alignment in Fasta format in file `16s_filtered.fasta`, and visualizes the filtered alignment in HTML format in file `16s_filtered.html`.
+				java -jar PATH_TO_FILE/BMGE.jar -i 16s_aln.fasta -t DNA -of 16s_filtered.fasta -oh 16s_filtered.html
+	
+	With the above command, BMGE writes a filtered alignment in Fasta format in file `16s_filtered.fasta`, and visualizes the filtered alignment in HTML format in file `16s_filtered.html`.
 
 * Open file `16s_filtered.html` in your browser. Scroll through the alignment and note the black alignment blocks.
 
@@ -138,3 +139,9 @@ With the above command, BMGE writes a filtered alignment in Fasta format in file
 * Open the file `16s_filtered.fasta` in AliView. Note that it is now shorter and appears much more compressed than the previous alignment. Save the file in Phylip format as `16s_filtered.phy`, using the "Save as Phylip (full names & padded)" option in AliView’s "File" menu. Also save the file in Nexus format as "16s_filtered.nex" with the "Save as Nexus" option.
 
 * Open the Phylip and Nexus files in a text editor to see the differences between the file formats.
+
+
+*  **Unzip the alignment file** by double-clicking, or by typing
+
+		unzip LG05.fasta.zip
+in a console window (after navigating to the directory in which you saved it).
