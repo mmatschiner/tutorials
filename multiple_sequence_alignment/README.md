@@ -145,8 +145,3 @@ The 16S gene contains a mix of highly variable as well as conserved regions. Thu
 
 * Open the Phylip and Nexus files in a text editor to see the differences between the file formats.
 
-
-*  **Unzip the alignment file** by double-clicking, or by typing
-
-		unzip LG05.fasta.zip
-in a console window (after navigating to the directory in which you saved it).
