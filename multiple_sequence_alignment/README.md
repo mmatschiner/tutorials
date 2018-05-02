@@ -116,7 +116,8 @@ You'll see that each record consists of an id and a sequence, of which the id is
 * To exclude unreliably aligned regions from the 16s alignment, use the software BMGE. To check if the program works on your computer, and to see the available options, open a command-line window (e.g. the Terminal application on Mac OSX) and type:
 
 		java -jar PATH_TO_FILE/BMGE.jar -?
-(replace `PATH_TO_FILE` with the actual path to the file on your computer).
+
+	(replace `PATH_TO_FILE` with the actual path to the file on your computer).
 
 * If the above worked, type:
 
