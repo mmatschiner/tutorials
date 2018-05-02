@@ -87,7 +87,8 @@ The 16S gene contains a mix of highly variable as well as conserved regions. Thu
 * Download the file [`16s.fasta`](data/16s.fasta) containing 16S sequences to your computer. Have a look at the file in a text editor, or on the command line using the `less` command:
 
 		less 16s.fasta
-You'll see that each record consists of an id and a sequence, of which the id is always on a single line that starts with a ‘>’ symbol, followed by lines containing the sequence. I strongly recommend the consistent use of simple species identifiers in phylogenetic analyses, since many programs or scripts may not work if you use actual latin or common species names that contain spaces or hyphens.
+
+	You'll see that each record consists of an id and a sequence, of which the id is always on a single line that starts with a ‘>’ symbol, followed by lines containing the sequence. I strongly recommend the consistent use of simple species identifiers in phylogenetic analyses, since many programs or scripts may not work if you use actual latin or common species names that contain spaces or hyphens.
 
 * Open the website [https://mafft.cbrc.jp/alignment/server/](https://mafft.cbrc.jp/alignment/server/). This site provides a web interface to the MAFFT alignment program ([Katoh et al. 2017](https://academic.oup.com/bib/advance-article/doi/10.1093/bib/bbx108/4106928)). Instead of using the website, you may also use MAFFT your computer locally if you succeeded in installing it.
 
