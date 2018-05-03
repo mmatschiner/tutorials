@@ -11,62 +11,69 @@ All phylogeny-inference methods require sets of homologous characters as input. 
 * [Objective](#objective)
 * [Dataset](#dataset)
 * [Requirements](#requirements)
+* [Alignment and visualization with MAFFT and AliView](#mafft_aliview)
+* [Automated alignment filtering with BMGE](#bmge)
+* [Identification of homologous sequences](#genbank)
+
 
 
 <a name="objective"></a>
 ## Objective
 
-In this tutorial, I will present the use of one of the fastest and most popular tools for multiple sequence alignment, the program [MAFFT](https://mafft.cbrc.jp/alignment/software/) ([Katoh and Standley 2013](https://academic.oup.com/mbe/article/30/4/772/1073398)). I will further demonstrate how to identify additional homologous sequences in a public sequence database, [NCBI's GenBank](https://www.ncbi.nlm.nih.gov/genbank/), and how to use these sequences to complement existing datasets.
+In this tutorial, I will present the use of one of the fastest and most popular tools for multiple sequence alignment, the program [MAFFT](https://mafft.cbrc.jp/alignment/software/) ([Katoh and Standley 2013](https://academic.oup.com/mbe/article/30/4/772/1073398)). I will further demonstrate how to detect and exclude alignment regions within which nucleotide homology may be questionable, how to identify additional homologous sequences using a public sequence database, [NCBI's GenBank](https://www.ncbi.nlm.nih.gov/genbank/), and how to use these sequences to complement existing datasets.
 
 <a name="dataset"></a>
 ## Dataset
 
 The dataset used in this tutorial is a small subset of the data used in [Matschiner et al. (2017)](https://academic.oup.com/sysbio/article/66/1/3/2418030) to estimate divergence times of African and Neotropical cichlid fishes in relation to the break-up of the Gondwanan continents India, Madagascar, Africa, and South America. Based on the full dataset as well as 149 fossils used for time calibration, we concluded in that study that cichlids, even though they are with few exceptions strictly freshwater fishes, must have traversed the Atlantic Ocean at a time when it was already hundreds of kilometers wide to reach South America, and that they most likely also crossed the Indian Ocean as well as the Mozambique Channel between Africa and Madagascar.
 
-The dataset used here includes sequences for two genes; the mitochondrial 16S gene coding for 16S ribosomal RNA and the nuclear rag1 gene coding for recombination activating protein 1. The sequences represent the species listed below.
+The dataset used here includes sequences for two genes; the mitochondrial 16S gene coding for [16S ribosomal RNA](https://en.wikipedia.org/wiki/16S_ribosomal_RNA) and the nuclear rag1 gene coding for [recombination activating protein 1](https://en.wikipedia.org/wiki/RAG1). The sequences represent the species listed in the table below.
 
 <center>
 
-| ID             | Species                     | Group              |
-|----------------|-----------------------------|--------------------|                     
-| Acanthapomotis | *Acantharchus pomotis*      | Non-cichlid        |
-| Acropomjaponic | *Acropoma japonicum*        | Non-cichlid        |
-| Aeoliscstrigat | *Aeoliscus strigatus*       | Non-cichlid        |
-| Ambassispcxxxx | *Ambassis* sp.              | Non-cichlid        |
-| Aplochepanchax | *Aplocheilus panchax*       | Non-cichlid        |
-| Ateleopjaponic | *Ateleopus japonicus*       | Non-cichlid        |
-| Beryxxxsplende | *Beryx splendens*           | Non-cichlid        |
-| Chloropagassiz | *Chlorophthalmus agassizi*  | Non-cichlid        |
-| Danioxxrerioxx | *Danio rerio*               | Non-cichlid        |
-| Ectodusdescamp | *Ectodus descampsii*        | Non-cichlid        |
-| Etroplumaculat | *Etroplus maculatus*        | Indian cichlids    |
-| Gasteroaculeat | *Gasterosteus aculeatus*    | Non-cichlid        |
-| Kurtusxgullive | *Kurtus gulliveri*          | Non-cichlid        |
-| Latesxxcalcari | *Lates calcarifer*          | Non-cichlid        |
-| Maylandzebraxx | *Maylandia zebra*           | African cichlids   |
-| Monocirpolyaca | *Monocirrhus polyacanthus*  | Non-cichlid        |
-| Mugilxxcephalu | *Mugil cephalus*            | Non-cichlid        |
-| Muraenomarmora | *Muraenolepis marmorata*    | Non-cichlid        |
-| Neolampbrichar | *Neolamprologus brichardi*  | African cichlids   |
-| Niphonxspinosu | *Niphon spinosus*           | Non-cichlid        |
-| Oncorhyketaxxx | *Oncorhynchus keta*         | Non-cichlid        |
-| Opistogaurifro | *Opistognathus aurifrons*   | Non-cichlid        |
-| Oreochrnilotic | *Oreochromis niloticus*     | African cichlids   |
-| Oryziaslatipes | *Oryzias latipes*           | Non-cichlid        |
-| Paratilpolleni | *Paratilapia polleni*       | Malagasy cichlids  |
-| Paretromaculat | *Paretroplus maculatus*     | Malagasy cichlids  |
-| Percalanovemac | *Percalates novemaculeata*  | Non-cichlid        |
-| Percichtruchax | *Percichthys trucha*        | Non-cichlid        |
-| Percopstransmo | *Percopsis transmontana*    | Non-cichlid        |
-| Polymixjaponic | *Polymixia japonica*        | Non-cichlid        |
-| Ptychocgrandid | *Ptychochromis grandidieri* | Malagasy cichlids  |
-| Pundaminyerere | *Pundamilia nyererei*       | African cichlids   |
-| Synbranmarmora | *Synbranchus marmoratus*    | Non-cichlid        |
-| Tautogoadspers | *Tautogolabrus adspersus*   | Non-cichlid        |
-| Triacananomalu | *Triacanthodes anomalus*    | Non-cichlid        |
-| Tylochrpolylep | *Tylochromis polylepis*     | African cichlids   |
-| Zancluscornutu | *Zanclus cornutus*          | Non-cichlid        |
-| Zeusxxxfaberxx | *Zeus faber*                | Non-cichlid        |
+| ID             | Species                     | Group                |
+|----------------|-----------------------------|----------------------|                     
+| Acanthapomotis | *Acantharchus pomotis*      | Non-cichlid          |
+| Acropomjaponic | *Acropoma japonicum*        | Non-cichlid          |
+| Aeoliscstrigat | *Aeoliscus strigatus*       | Non-cichlid          |
+| Ambassispcxxxx | *Ambassis* sp.              | Non-cichlid          |
+| Aplochepanchax | *Aplocheilus panchax*       | Non-cichlid          |
+| Ateleopjaponic | *Ateleopus japonicus*       | Non-cichlid          |
+| Beryxxxsplende | *Beryx splendens*           | Non-cichlid          |
+| Cichlaxtemensi | *Cichla temensis*           | Neotropical cichlids |
+| Chloropagassiz | *Chlorophthalmus agassizi*  | Non-cichlid          |
+| Danioxxrerioxx | *Danio rerio*               | Non-cichlid          |
+| Ectodusdescamp | *Ectodus descampsii*        | Non-cichlid          |
+| Etroplumaculat | *Etroplus maculatus*        | Indian cichlids      |
+| Gasteroaculeat | *Gasterosteus aculeatus*    | Non-cichlid          |
+| Geophagbrasili | *Geophagus brasiliensis*    | Neotropical cichlids |
+| Herichtcyanogu | *Herichthys cyanoguttatus*  | Neotropical cichlids |
+| Kurtusxgullive | *Kurtus gulliveri*          | Non-cichlid          |
+| Latesxxcalcari | *Lates calcarifer*          | Non-cichlid          |
+| Maylandzebraxx | *Maylandia zebra*           | African cichlids     |
+| Monocirpolyaca | *Monocirrhus polyacanthus*  | Non-cichlid          |
+| Mugilxxcephalu | *Mugil cephalus*            | Non-cichlid          |
+| Muraenomarmora | *Muraenolepis marmorata*    | Non-cichlid          |
+| Neolampbrichar | *Neolamprologus brichardi*  | African cichlids     |
+| Niphonxspinosu | *Niphon spinosus*           | Non-cichlid          |
+| Oncorhyketaxxx | *Oncorhynchus keta*         | Non-cichlid          |
+| Opistogaurifro | *Opistognathus aurifrons*   | Non-cichlid          |
+| Oreochrnilotic | *Oreochromis niloticus*     | African cichlids     |
+| Oryziaslatipes | *Oryzias latipes*           | Non-cichlid          |
+| Paratilpolleni | *Paratilapia polleni*       | Malagasy cichlids    |
+| Paretromaculat | *Paretroplus maculatus*     | Malagasy cichlids    |
+| Percalanovemac | *Percalates novemaculeata*  | Non-cichlid          |
+| Percichtruchax | *Percichthys trucha*        | Non-cichlid          |
+| Percopstransmo | *Percopsis transmontana*    | Non-cichlid          |
+| Polymixjaponic | *Polymixia japonica*        | Non-cichlid          |
+| Ptychocgrandid | *Ptychochromis grandidieri* | Malagasy cichlids    |
+| Pundaminyerere | *Pundamilia nyererei*       | African cichlids     |
+| Synbranmarmora | *Synbranchus marmoratus*    | Non-cichlid          |
+| Tautogoadspers | *Tautogolabrus adspersus*   | Non-cichlid          |
+| Triacananomalu | *Triacanthodes anomalus*    | Non-cichlid          |
+| Tylochrpolylep | *Tylochromis polylepis*     | African cichlids     |
+| Zancluscornutu | *Zanclus cornutus*          | Non-cichlid          |
+| Zeusxxxfaberxx | *Zeus faber*                | Non-cichlid          |
 
 </center>
 
@@ -75,7 +82,7 @@ The dataset used here includes sequences for two genes; the mitochondrial 16S ge
 
 * **MAFFT:** Precompiled versions of [MAFFT](https://mafft.cbrc.jp/alignment/software/), for Mac OS X, Linux, and Windows, are available on [https://mafft.cbrc.jp/alignment/software/](https://mafft.cbrc.jp/alignment/software/). As all steps of this tutorial can also be conducted using the online version of MAFFT, installation of MAFFT is optional.
 
-* **AliView:** To visualize sequence alignments, the software AliView is recommended. The installation of AliView is described at [http://www.ormbunkar.se/aliview/](http://www.ormbunkar.se/aliview/) and should be possible on all operating systems.
+* **AliView:** To visualize sequence alignments, the software [AliView](http://www.ormbunkar.se/aliview/) ([Larsson 2014](https://academic.oup.com/bioinformatics/article/30/22/3276/2391211)) is recommended. The installation of AliView is described at [http://www.ormbunkar.se/aliview/](http://www.ormbunkar.se/aliview/) and should be possible on all operating systems.
 
 * **BMGE:** The program [BMGE](https://research.pasteur.fr/en/software/bmge-block-mapping-and-gathering-with-entropy/) (Block Mapping and Gathering with Entropy) ([Criscuolo and Gribaldo 2010](https://bmcevolbiol.biomedcentral.com/articles/10.1186/1471-2148-10-210)) is highy useful to identify and remove poorly aligned regions of sequence alignments. The latest version of BMGE is provided as a Java jar file at [ftp://ftp.pasteur.fr/pub/gensoft/projects/BMGE/](ftp://ftp.pasteur.fr/pub/gensoft/projects/BMGE/) (choose login as guest to access the ftp server). Place this file in a convenient location on your own computer.
 
@@ -85,13 +92,13 @@ The dataset used here includes sequences for two genes; the mitochondrial 16S ge
 <a name="mafft_aliview"></a>
 ## Alignment and visualization with MAFFT and AliView
 
-The 16S gene contains a mix of highly variable as well as conserved regions. Thus, the homology of nucleotides is rather obvious in some parts of the gene but can be ambiguous in other parts. To avoid issues resulting from alignment errors in the downstream phylogenetic analyses, we will identify poorly aligned regions based on the proportion of gaps and the genetic variation found within these regions, and we will exclude them from the alignment.
+We'll start by aligning sequences of the mitochondrial 16S gene with the program MAFFT and we will visualize the alignment using the software AliView.
 
 * Download the file [`16s.fasta`](data/16s.fasta) containing 16S sequences to your computer. Have a look at the file in a text editor, or on the command line using the `less` command:
 
 		less 16s.fasta
 
-	You'll see that each record consists of an id and a sequence, of which the id is always on a single line that starts with a ‘>’ symbol, followed by lines containing the sequence. I strongly recommend the consistent use of simple species identifiers in phylogenetic analyses, since many programs or scripts may not work if you use actual latin or common species names that contain spaces or hyphens.
+	You'll see that each record consists of an ID and a sequence, of which the ID is always on a single line that starts with a ‘>’ symbol, followed by lines containing the sequence. The sequences are not aligned yet; this is the reason why they contain no gaps and differ in length. Instead of the 14-character IDs used in this file, other naming schemes could be applied; however, I strongly recommend the use of short and simple IDs because in phylogenetic analyses, many programs or scripts may not work if you use actual latin or common species names that contain spaces or hyphens.
 
 * Open the website [https://mafft.cbrc.jp/alignment/server/](https://mafft.cbrc.jp/alignment/server/). This site provides a web interface to the MAFFT alignment program ([Katoh et al. 2017](https://academic.oup.com/bib/advance-article/doi/10.1093/bib/bbx108/4106928)). Instead of using the website, you may also use MAFFT your computer locally if you succeeded in installing it.
 
@@ -116,6 +123,11 @@ The 16S gene contains a mix of highly variable as well as conserved regions. Thu
 * Close the window for file `16s_op2_aln.fasta`.
 
 * In the window for `16s_aln.fasta`, identify a poorly aligned region (e.g. around positions 1020 to 1040) and try to realign it. To do so, select the region by clicking in the ruler at the top of the alignment. Once you have selected this region, click on "Realign selected block" in AliView's "Align" menu. Does the alignment in this region look better now?
+
+<a name="bmge"></a>
+## Automated alignment filtering with BMGE
+
+As you can see, the alignment of 16S sequences contains a mix of highly variable as well as conserved regions. Thus, the homology of nucleotides is rather obvious in some parts of the gene but can be ambiguous in other parts. To avoid issues resulting from alignment errors in the downstream phylogenetic analyses, we will identify poorly aligned regions based on the proportion of gaps and the genetic variation found within these regions, and we will exclude them from the alignment.
 
 * To exclude unreliably aligned regions from the 16s alignment, use the software BMGE. To check if the program works on your computer, and to see the available options, open a command-line window (e.g. the Terminal application on Mac OSX) and type:
 
@@ -145,3 +157,25 @@ The 16S gene contains a mix of highly variable as well as conserved regions. Thu
 
 * Open the Phylip and Nexus files in a text editor to see the differences between the file formats.
 
+<a name="genbank"></a>
+## Identification of homologous sequences
+
+As mentioned above, the sequence data used in this tutorial are part of the dataset of [Matschiner et al. (2017)](https://academic.oup.com/sysbio/article/66/1/3/2418030). While some of the sequence data used in that study were generated by us, most sequences were taken from publicly available databases such as [GenBank](https://www.ncbi.nlm.nih.gov/genbank/) and [BOLD](http://www.boldsystems.org/index.php) (Barcode of Life Data System, which in some cases holds sequences of the mitochondrial COI gene that are not available on Genbank). The second set of sequences used in this tutorial, which you will find in file [rag1.fasta](data/rag1.fasta) consists of sequences for the nuclear rag1 gene; however, compared to the set of 16S sequences, the three species listed below are not yet represented.
+
+<center>
+
+| ID             | Species                     | Group                |
+|----------------|-----------------------------|----------------------|                     
+| Cichlaxtemensi | *Cichla temensis*           | Neotropical cichlids |
+| Geophagbrasili | *Geophagus brasiliensis*    | Neotropical cichlids |
+| Herichtcyanogu | *Herichthys cyanoguttatus*  | Neotropical cichlids |
+
+</center>
+
+* To fill in these missing sequence data you can retrieve homologous rag1 sequences for Neotropical cichlids from [GenBank](https://www.ncbi.nlm.nih.gov/genbank/), using the sequence of an African cichlid species as a query in a BLAST search for the most closely matching sequence in the database. I suggest to use the 16S sequence of *Oreochromis niloticus* (ID "Oreochrnilotic") from file [rag1.fasta](data/rag1.fasta) as the query. On the [BLAST webpage](https://blast.ncbi.nlm.nih.gov/Blast.cgi? PROGRAM=blastn), you can use the "Organism" field to limit the search only to sequences of a particular species. Retrieve the longest sequences for each of the three Neotropical cichlid species listed above.
+
+* Add the three retrieved sequences to file `rag1.fasta`, and rename the sequences, giving them the IDs "Cichlaxtemensi", "Geophagbrasili", and "Herichtcyanogu".
+
+* If anything should go wrong in this part of the tutorial, you can find a complete version of the 16S data that already includes the sequences of the three Neotropical cichlid species in file [`rag1_combined.fasta`](data/rag1_combined.fasta).
+
+## 
