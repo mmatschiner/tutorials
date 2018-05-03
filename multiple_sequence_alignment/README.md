@@ -172,7 +172,7 @@ As mentioned above, the sequence data used in this tutorial are part of the data
 
 </center>
 
-* To fill in these missing sequence data you can retrieve homologous rag1 sequences for Neotropical cichlids from [GenBank](https://www.ncbi.nlm.nih.gov/genbank/), using the sequence of an African cichlid species as a query in a BLAST search for the most closely matching sequence in the database. I suggest to use the 16S sequence of *Oreochromis niloticus* (ID "Oreochrnilotic") from file [rag1.fasta](data/rag1.fasta) as the query. On the [BLAST webpage](https://blast.ncbi.nlm.nih.gov/Blast.cgi? PROGRAM=blastn), you can use the "Organism" field to limit the search only to sequences of a particular species. Retrieve the longest sequences for each of the three Neotropical cichlid species listed above.
+* To fill in these missing sequence data you can retrieve homologous rag1 sequences for Neotropical cichlids from [GenBank](https://www.ncbi.nlm.nih.gov/genbank/), using the sequence of an African cichlid species as a query in a BLAST search for the most closely matching sequence in the database. I suggest to use the 16S sequence of *Oreochromis niloticus* (ID "Oreochrnilotic") from file [rag1.fasta](data/rag1.fasta) as the query. On the [BLAST webpage](https://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn), you can use the "Organism" field to limit the search only to sequences of a particular species. Retrieve the longest sequences for each of the three Neotropical cichlid species listed above.
 
 * Add the three retrieved sequences to file `rag1.fasta`, and rename the sequences, giving them the IDs "Cichlaxtemensi", "Geophagbrasili", and "Herichtcyanogu".
 
