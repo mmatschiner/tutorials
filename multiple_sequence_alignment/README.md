@@ -155,7 +155,7 @@ As you can see, the alignment of 16S sequences contains a mix of highly variable
 
 * In addition to file `16s_filtered.html`, also open file `16s_g03_filtered.html` in a separate browser window. Scroll through the alignment. You'll note that many more regions are now marked in black due to the increase in the allowed proportion of gaps per site.
 
-* Open the file `16s_filtered.fasta` in AliView. Note that it is now shorter and appears much more compressed than the previous alignment. Save the file in Phylip format as `16s_filtered.phy`, using the "Save as Phylip (full names & padded)" option in AliView's "File" menu. Also save the file in Nexus format as "16s_filtered.nex" with the "Save as Nexus" option.
+* Open the file `16s_filtered.fasta` in AliView. Note that it is now shorter and appears much more compressed than the previous alignment. Save the file in Phylip format as `16s_filtered.phy`, using the "Save as Phylip (full names & padded)" option in AliView's "File" menu. Also save the file in Nexus format as `16s_filtered.nex` with the "Save as Nexus" option.
 
 * Open the Phylip and Nexus files in a text editor to see the differences between the file formats.
 
