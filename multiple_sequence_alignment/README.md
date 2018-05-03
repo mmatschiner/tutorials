@@ -14,7 +14,7 @@ All phylogeny-inference methods require sets of homologous characters as input. 
 * [Alignment and visualization with MAFFT and AliView](#mafft_aliview)
 * [Automated alignment filtering with BMGE](#bmge)
 * [Identification of homologous sequences](#genbank)
-
+* [Codon-based manual alignment curation](#codonbased) 
 
 
 <a name="objective"></a>
@@ -129,7 +129,7 @@ We'll start by aligning sequences of the mitochondrial 16S gene with the program
 
 As you can see, the alignment of 16S sequences contains a mix of highly variable as well as conserved regions. Thus, the homology of nucleotides is rather obvious in some parts of the gene but can be ambiguous in other parts. To avoid issues resulting from alignment errors in the downstream phylogenetic analyses, we will identify poorly aligned regions based on the proportion of gaps and the genetic variation found within these regions, and we will exclude them from the alignment.
 
-* To exclude unreliably aligned regions from the 16s alignment, use the software BMGE. To check if the program works on your computer, and to see the available options, open a command-line window (e.g. the Terminal application on Mac OSX) and type:
+* To exclude unreliably aligned regions from the 16S alignment, use the software BMGE. To check if the program works on your computer, and to see the available options, open a command-line window (e.g. the Terminal application on Mac OSX) and type:
 
 		java -jar PATH_TO_FILE/BMGE.jar -?
 
@@ -178,4 +178,33 @@ As mentioned above, the sequence data used in this tutorial are part of the data
 
 * If anything should go wrong in this part of the tutorial, you can find a complete version of the 16S data that already includes the sequences of the three Neotropical cichlid species in file [`rag1_combined.fasta`](data/rag1_combined.fasta).
 
-## 
+<a name="codonbased"></a>
+## Codon-based manual alignment curation
+
+For protein-coding sequences, it can often be useful to identify the reading frame (i.e. which positions of the alignment correspond to first, second, and third codon positions) and the translation of the nucleotide code into amino-acid sequences. As insertions or deletions ("indels") with lengths that are not multiples of three would disrupt the reading frame and thus cause large changes to the protein structure, these are usually strongly selected against and rarely found in alignments of protein-coding sequences. Similarly, indels observed in protein-coding sequences often begin with a first codon position and end with a third codon position. Thus, in cases where the placement of indels is ambiguous, information about the reading frame can be used to optimize the positioning of these indels.
+
+* Go back to the MAFFT website [https://mafft.cbrc.jp/alignment/server/](https://mafft.cbrc.jp/alignment/server/).
+
+* Upload the file [`rag1.fasta`](data/rag1.fasta), including the three sequences that you added in the previous part of this tutorial, to the MAFFT server. Keep all default options and click the "Submit" button.
+
+* When the alignment is ready, find out which of MAFFT’s algorithms was used this time.
+
+* Download the alignment in Fasta format to your computer. Name the file `rag1_aln.fasta`.
+
+* Open file `rag1_aln.fasta` in AliView.
+
+* Click the fourth icon from the left in the tool bar to translate nucleotide sequence to amino acids (or the Command-T key combination on a Mac).
+
+* Click the sigma-sign icon in the center of the tool bar to count stop codons. How many stop codons does AliView count?
+
+* Change the reading frame using the box to the right of the sigma-sign icon and also count stop codons for the second and the third reading frame. Note how the overall color pattern of the alignment changes when you select different reading frames. Does one reading frame appear more conserved than the other two? Which reading frame has the lowest number of stop codons? Use this reading frame from now on.
+
+* Notice how the reading frame is interrupted between positions 1980 and 2000 by two insertions in the sequence of *Muraenolepis marmorata*. This means that both insertions would have had to evolve at the same time, otherwise the change of the reading frame would have affected the entire rest of the protein in *Muraenolepis marmorata*, for the time between the first and the second insertion event. A more likely explanation may be that only a single insertion occurred and that the other is an artifact resulting from misalignment.
+
+* Select the region from position 1981 to 1998, again by clicking in the ruler above the alignment. Click on "Realign selected block" in AliView's "Align" menu. This should result in an alternative alignment of the region, with only a single insertion from position 1989 to position 1991.
+
+* The precise location of the insertion may still be a bit ambiguous. Therefore, cut out the six base pairs from position 1987 to position 1992. To do so, select these six base pairs by clicking in the ruler above the alignment, and choose "Delete selected" from AliView's "Edit" menu.
+
+* Also remove the regions with many gaps at the end and the beginning of the alignment. Obviously, these gaps result not from insertions or deletions, but from missing data. At the end of the alignment, trim all positions after (and including) position 2998. At the beginning of the alignment, trim all positions before (and including) position 1629. The alignment should then start with a codon that is “GGT” or “GGC” for most species, and it should end with a codon that is "AAA" or "AAG" for most species. It should also include not a single stop codon anymore. Verify if this is the case by again clicking on the sigma-sign icon at the center of the tool bar.
+
+* Save the alignment in Fasta, Phylip, and Nexus format. Use the names `rag1_filtered.fasta`, `rag1_filtered.phy`, and `rag1_filtered.nex`.
