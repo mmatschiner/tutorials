@@ -12,7 +12,7 @@ Before running a maximum-likelihood phylogenetic analysis, the user needs to dec
 * [Dataset](#dataset)
 * [Requirements](#requirements)
 * [Model selection and basic phylogeny inference in PAUP\*](#paup)
-* [Model selection with partitioned sequences](#partitions)
+* [Model selection with partitioned alignments](#partitions)
 
 
 <a name="objective"></a>
@@ -67,7 +67,7 @@ Set the tick next to "AIC" but remove the ticks next to "AICc", "BIC", and "DT".
 * Repeat the comparison of substitution models with the alignment of rag1 sequences ([rag1_filtered.nex](data/rag1_filtered.nex)). **Question 6:** Which model is the best-fitting model for this alignment, according to AIC? [(see answer)](#q6)
 
 <a name="partitions"></a>
-## Model selection with partitioned sequences
+## Model selection with partitioned alignments
 
 In the selection of a substitution model for the 16S and rag1 sequences we have so far assumed that the model is applicable equally to all sites of the alignment. This may be justified with a comparatively short alignment but may not be appropriate for longer alignments if you have reasons to assume that some sites either evolve at different speeds or that they differ in the stationary nucleotide frequencies or the relative substitution rates applying to them. This is the case for the protein-coding rag1 alignment because third-codon positions are known to usually evolve at higher rates than first or second codon positions. We will therefore test in this part of the tutorial if independent substitution models should be applied to the different codon positions.
 
