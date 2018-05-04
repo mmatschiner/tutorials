@@ -80,7 +80,7 @@ We will first generate a simple maximum-likelihood phylogeny only for the filter
 * Scroll back up to the beginning of the RAxML help text. Close to the top, you'll see that raxml could be started as easily as
 
 		raxmlHPC -s sequenceFileName -n outputFileName -m substitutionModel 
-where "sequenceFileName" and "outputFileName" would have to be replaced with the actual sequence and output file names, and a substitution model would have to be chosen to replace "substitutionModel". Note that in our case, we would also start the program with "raxml", not "raxmlHPC", only because we named it that way.
+	where "sequenceFileName" and "outputFileName" would have to be replaced with the actual sequence and output file names, and a substitution model would have to be chosen to replace "substitutionModel". Note that in our case, we would also start the program with "raxml", not "raxmlHPC", only because we named it that way.
 
 * So, let's try to run a maximum-likelihood search, first for the 16S sequence data, using the alignment file in Phylip format [`16s_filtered.phy`](data/16s_filtered.phy). We'll start with as little command-line options as possible, and learn along the way which other options we need. I suggest doing so only for the reason that I find this easier than remembering all necessary options before the run. We'll use the GTRGAMMA model (the GTR model with gamma-distributed rate variation, as suggested for the 16S alignment by the model selection done in tutorial [`substitution_model_selection`](../substitution_model_selection/README.md)), and we choose `16s_filtered.out` as part of all result file names:
 
