@@ -213,24 +213,30 @@ For protein-coding sequences, it can often be useful to identify the reading fra
 
 * Save the alignment in Fasta, Phylip, and Nexus format. Use the names `rag1_filtered.fasta`, `rag1_filtered.phy`, and `rag1_filtered.nex`.
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 ## Answers
 
 <a name="q1"></a>
+
 * **Question 1:** As specified directly above the first gray box and also near the end of the page, the accurate but comparatively slow "L-INS-i" algorithm for local alignment with the Smith-Waterman algorithm was used.
 
 <a name="q2"></a>
+
 * **Question 2:** The alignment in file `16s_aln.fasta` should be 1,839 bp long while that in file `16s_op2_aln.fasta` should be slightly shorter with 1,832 bp. This is to be expected when the penalty for gap openings is increased.
 
 <a name="q3"></a>
+
 * **Question 3:** More indels were inferred in file `16s_aln.fasta` compared to file `16s_op2_aln.fasta`. In both versions, this part of the alignment appears to be unreliable.
 
 <a name="q4"></a>
+
 * **Question 4:** Even after realigning, I would consider the region between positions 1,020 and 1,040 unreliably aligned, but I tend to say that it looks better afterwards.
 
 <a name="q5"></a>
+
 * **Question 5:** There should be one single stop codon when the first reading frame is used.
 
 <a name="q6"></a>
+
 * **Question 6:** Yes while only a single stop codon is found with the first reading frame, 892 and 1,214 stop codons should be detected with the second and third reading frames, respectively.
