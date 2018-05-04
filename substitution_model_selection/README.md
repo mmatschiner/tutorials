@@ -4,26 +4,26 @@ A tutorial on the selection of a substitution model for phylogenetic analysis
 
 ## Summary
 
-Before running a maximum-likelihood phylogenetic analysis, the user needs to decide which free parameters should be included in the model: should a single rate be assumed for all substitutions (as in the Jukes-Cantor model of sequence evolution; [Jukes and Cantor 1969](https://www.sciencedirect.com/science/article/pii/B9781483232119500097)) or should different rates be allowed for transitions and transversions (as in the HKY model; [Hasegawa et al. 1985](https://link.springer.com/article/10.1007/BF02101694)). Or should different rates even be used for all substitutions (as in the GTR model; [Taveré 1986](http://www.damtp.cam.ac.uk/user/st321/CV_&_Publications_files/STpapers-pdf/T86.pdf))? And should the frequencies of the four nucleotides (the "state frequencies") be estimated or assumed to be all equal? The optimal number of free model parameters depends on the data available and can be chosen according to criteria such as the Akaike Information Criterion (AIC; [Akaike 1974](https://ieeexplore.ieee.org/document/1100705/)) that aim to strike a balance between improvements in model fit and the number of additional parameters required for it.
+Before running a likelihood-based phylogenetic analysis, the user needs to decide which free parameters should be included in the model: should a single rate be assumed for all substitutions (as in the Jukes-Cantor model of sequence evolution; [Jukes and Cantor 1969](https://www.sciencedirect.com/science/article/pii/B9781483232119500097)) or should different rates be allowed for transitions and transversions (as in the HKY model; [Hasegawa et al. 1985](https://link.springer.com/article/10.1007/BF02101694)). Or should different rates even be used for all substitutions (as in the GTR model; [Taveré 1986](http://www.damtp.cam.ac.uk/user/st321/CV_&_Publications_files/STpapers-pdf/T86.pdf))? And should the frequencies of the four nucleotides (the "state frequencies") be estimated or assumed to be all equal? The optimal number of free model parameters depends on the data available and can be chosen according to criteria such as the Akaike Information Criterion (AIC; [Akaike 1974](https://ieeexplore.ieee.org/document/1100705/)) that aim to strike a balance between improvements in model fit and the number of additional parameters required for it.
 
 ## Table of contents
 
-* [Objective](#objective)
+* [Outline](#outline)
 * [Dataset](#dataset)
 * [Requirements](#requirements)
 * [Model selection and basic phylogeny inference in PAUP\*](#paup)
 * [Model selection with partitioned alignments](#partitions)
 
 
-<a name="objective"></a>
-## Objective
+<a name="outline"></a>
+## Outline
 
 In this tutorial, I will present how to select a substitution model for phylogenetic analysis with the software [PAUP* (Swofford 2003)](http://paup.phylosolutions.com), a popular multi-utility tool for various types of phylogenetic analyses.
 
 <a name="dataset"></a>
 ## Dataset
 
-The data used in this tutorial are filtered versions of the alignments generated for 16s and rag1 sequences in tutorial [Multiple Sequence Alignment](../multiple_sequence_alignment/README.md). More information on the origin of the dataset can be found in that tutorial. As PAUP* requires alignments in Nexus format as input, use the files [`16s_filtered.nex`](data/16s_filtered.nex) and [`rag1_filtered.nex`](rag1_filtered.nex).
+The data used in this tutorial are the filtered versions of the alignments generated for 16s and rag1 sequences in tutorial [Multiple Sequence Alignment](../multiple_sequence_alignment/README.md). More information on the origin of the dataset can be found in that tutorial. As PAUP* requires alignments in Nexus format as input, use the files [`16s_filtered.nex`](data/16s_filtered.nex) and [`rag1_filtered.nex`](rag1_filtered.nex).
 
 <a name="requirements"></a>
 ## Requirements

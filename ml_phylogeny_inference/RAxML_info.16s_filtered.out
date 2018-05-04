@@ -1,0 +1,72 @@
+
+
+Using BFGS method to optimize GTR rate parameters, to disable this specify "--no-bfgs" 
+
+
+
+This is RAxML version 8.2.11 released by Alexandros Stamatakis on June 2017.
+
+With greatly appreciated code contributions by:
+Andre Aberer      (HITS)
+Simon Berger      (HITS)
+Alexey Kozlov     (HITS)
+Kassian Kobert    (HITS)
+David Dao         (KIT and HITS)
+Sarah Lutteropp   (KIT and HITS)
+Nick Pattengale   (Sandia)
+Wayne Pfeiffer    (SDSC)
+Akifumi S. Tanabe (NRIFS)
+Charlie Taylor    (UF)
+
+
+Alignment has 220 distinct alignment patterns
+
+Proportion of gaps and completely undetermined characters in this alignment: 1.61%
+
+RAxML rapid hill-climbing mode
+
+Using 1 distinct models/data partitions with joint branch length optimization
+
+
+Executing 1 inferences on the original alignment using 1 distinct randomized MP trees
+
+All free model parameters will be estimated by RAxML
+GAMMA model of rate heterogeneity, ML estimate of alpha-parameter
+
+GAMMA Model parameters will be estimated up to an accuracy of 0.1000000000 Log Likelihood units
+
+Partition: 0
+Alignment Patterns: 220
+Name: No Name Provided
+DataType: DNA
+Substitution Matrix: GTR
+
+
+
+
+RAxML was called as follows:
+
+raxml -s 16s_filtered.phy -n 16s_filtered.out -m GTRGAMMA -p 123 
+
+
+Partition: 0 with name: No Name Provided
+Base frequencies: 0.275 0.252 0.244 0.230 
+
+Inference[0]: Time 2.792179 GAMMA-based likelihood -4571.512880, best rearrangement setting 15
+alpha[0]: 0.232429 rates[0] ac ag at cg ct gt: 19.832755 46.954424 21.122478 0.370076 91.709381 1.000000 
+
+
+Conducting final model optimizations on all 1 trees under GAMMA-based models ....
+
+Inference[0] final GAMMA-based Likelihood: -4571.512088 tree written to file /Users/m_matschiner/Documents/Professional/Positions/2017_2018_Basel/workshops/physalia/tutorials/ml_phylogeny_inference/RAxML_result.16s_filtered.out
+
+
+Starting final GAMMA-based thorough Optimization on tree 0 likelihood -4571.512088 .... 
+
+Final GAMMA-based Score of best tree -4571.512088
+
+Program execution info written to /Users/m_matschiner/Documents/Professional/Positions/2017_2018_Basel/workshops/physalia/tutorials/ml_phylogeny_inference/RAxML_info.16s_filtered.out
+Best-scoring ML tree written to: /Users/m_matschiner/Documents/Professional/Positions/2017_2018_Basel/workshops/physalia/tutorials/ml_phylogeny_inference/RAxML_bestTree.16s_filtered.out
+
+Overall execution time: 3.616311 secs or 0.001005 hours or 0.000042 days
+

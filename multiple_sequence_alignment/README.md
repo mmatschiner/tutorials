@@ -8,7 +8,7 @@ All phylogeny-inference methods require sets of homologous characters as input. 
 
 ## Table of contents
 
-* [Objective](#objective)
+* [Outline](#outline)
 * [Dataset](#dataset)
 * [Requirements](#requirements)
 * [Alignment and visualization with MAFFT and AliView](#mafft_aliview)
@@ -17,8 +17,8 @@ All phylogeny-inference methods require sets of homologous characters as input. 
 * [Codon-based manual alignment curation](#codonbased) 
 
 
-<a name="objective"></a>
-## Objective
+<a name="outline"></a>
+## Outline
 
 In this tutorial, I will present the use of one of the fastest and most popular tools for multiple sequence alignment, the program [MAFFT](https://mafft.cbrc.jp/alignment/software/) ([Katoh and Standley 2013](https://academic.oup.com/mbe/article/30/4/772/1073398)). I will further demonstrate how to detect and exclude alignment regions within which nucleotide homology may be questionable, how to identify additional homologous sequences using a public sequence database, [NCBI's GenBank](https://www.ncbi.nlm.nih.gov/genbank/), and how to use these sequences to complement existing datasets.
 
