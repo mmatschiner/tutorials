@@ -137,9 +137,7 @@ In this part of the tutorial, we will explore how phylogenetic trees are encoded
 * Then, with that branch being selected, click on the "Reroot" icon with the yellow arrow in the menu bar. The phylogeny should then look as shown in the next screenshot.
 <p align="center"><img src="img/figtree6.png" alt="FigTree" width="600"></p>
 
-* As a final change, we could sort the taxa according to node order. To do so, click "Decreasing node order" in FigTree's "Tree" menu. This should move "Danioxxrerioxx" to the top of the plot:
-<p align="center"><img src="img/figtree7.png" alt="FigTree" width="600"></p>
-It is almost surprising how well this phylogeny resolves the correct relationships among the 41 taxa (which are known rather well from more extensive studies based on large molecular datasets as well as morphology). **Question 2:** Do cichlids appear monophyletic in this phylogeny (to answer this, you may need to look up the [table in the Multiple Sequence Alignment](../multiple_sequence_alignment/README.md) tutorial)? [(see answer)](#q2) **Question 3:** And are Neotropical cichlids (*Cichla temensis*, *Geophagus brasiliensis*, *Herichthys cyanoguttatus*) monophyletic? [(see answer)](#q3)
+* As a final change, we could sort the taxa according to node order. To do so, click "Decreasing node order" in FigTree's "Tree" menu. This should move "Danioxxrerioxx" to the top of the plot:<p align="center"><img src="img/figtree7.png" alt="FigTree" width="600"></p>It is almost surprising how well this phylogeny resolves the correct relationships among the 41 taxa (which are known rather well from more extensive studies based on large molecular datasets as well as morphology). **Question 2:** Do cichlids appear monophyletic in this phylogeny (to answer this, you may need to look up the [table in the Multiple Sequence Alignment](../multiple_sequence_alignment/README.md) tutorial)? [(see answer)](#q2) **Question 3:** And are Neotropical cichlids (*Cichla temensis*, *Geophagus brasiliensis*, *Herichthys cyanoguttatus*) monophyletic? [(see answer)](#q3)
 
 <a name="bootstrap"></a>
 ## Assessing node support with bootstrapping
@@ -150,9 +148,7 @@ As we've seen, the RAxML phylogeny of 16S sequences does not perfectly agree wit
 
 		raxml -h
 
-* Scroll towards the top of the help text, there you should find the details for the "-f" option with which the RAxML algorithm is selected:
-<p align="center"><img src="img/raxml2.png" alt="RAxML" width="600"></p>
-From the help text you'll see that if "-f" is not used as a command-line argument, the default algorithm is used, which is "-f d", the "new rapid hill-climbing" algorithm. To run a bootstrap analysis, another algorithm is required. A particularly convenient option for this is "-f a" which triggers a "rapid Bootstrap analysis and search for the best-scoring ML tree in one program run". It would also be possible to run only bootstrapping; however, then the original alignment would not be used at all for inference, only bootstrapped alignments would be used.
+* Scroll towards the top of the help text, there you should find the details for the "-f" option with which the RAxML algorithm is selected:<p align="center"><img src="img/raxml2.png" alt="RAxML" width="600"></p>From the help text you'll see that if "-f" is not used as a command-line argument, the default algorithm is used, which is "-f d", the "new rapid hill-climbing" algorithm. To run a bootstrap analysis, another algorithm is required. A particularly convenient option for this is "-f a" which triggers a "rapid Bootstrap analysis and search for the best-scoring ML tree in one program run". It would also be possible to run only bootstrapping; however, then the original alignment would not be used at all for inference, only bootstrapped alignments would be used.
 
 * Thus, try to run RAxML with option "-f a" to use the original alignment for the inference of the maximum-likelihood tree, and bootstrapped alignments to assess node support on this tree. To avoid conflict with previously generated files, use e.g. `16s_filtered_bs.out` as part of all output file names:
 
@@ -162,9 +158,7 @@ From the help text you'll see that if "-f" is not used as a command-line argumen
 
 		raxml -s 16s_filtered.phy -n 16s_filtered_bs.out -m GTRGAMMA -p 123 -f a -x 456
 		
-* However, RAxML still needs more information for the bootstrapping: The number of bootstrap replicates should be specified with the option "-#" or "-N" (those two are synonymous, and we'll use "-N" here). As the RAxML help text explains, one can either specify a fixed number of replicates, such as "-N 100", or one could let RAxML decide itself how many bootstrap replicates should be run, by using one of the automatic "bootstopping criteria" autoMR, autoMRE, autoMRE\_IGN, or autoFC.
-<p align="center"><img src="img/raxml3.png" alt="RAxML" width="600"></p>
-According to the RAxML authors ([Pattengale et al. 2010](https://www.liebertpub.com/doi/abs/10.1089/cmb.2009.0179)), autoMRE performs best and is fast enough for up to a few thousand taxa, so I suggest using this option:
+* However, RAxML still needs more information for the bootstrapping: The number of bootstrap replicates should be specified with the option "-#" or "-N" (those two are synonymous, and we'll use "-N" here). As the RAxML help text explains, one can either specify a fixed number of replicates, such as "-N 100", or one could let RAxML decide itself how many bootstrap replicates should be run, by using one of the automatic "bootstopping criteria" autoMR, autoMRE, autoMRE\_IGN, or autoFC.<p align="center"><img src="img/raxml3.png" alt="RAxML" width="600"></p>According to the RAxML authors ([Pattengale et al. 2010](https://www.liebertpub.com/doi/abs/10.1089/cmb.2009.0179)), autoMRE performs best and is fast enough for up to a few thousand taxa, so I suggest using this option:
 
 		raxml -s 16s_filtered.phy -n 16s_filtered_bs.out -m GTRGAMMA -p 123 -f a -x 456 -N autoMRE
 
