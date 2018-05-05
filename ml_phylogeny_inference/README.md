@@ -16,6 +16,7 @@ As the name indicates, maximum-likelihood phylogeny inference aims to find the p
 * [Assessing node support with bootstrapping](#bootstrap)
 * [Partitioned maximum-likelihood inference](#partition)
 * [Comparing the reliability of different phylogenies](#comparison)
+* [Maximum-likelihood inference of concatenated alignments](#concatenation)
 
 
 <a name="outline"></a>
@@ -26,7 +27,7 @@ In this tutorial, I will present maximum-likelihood inference with one of the fa
 <a name="dataset"></a>
 ## Dataset
 
-The data used in this tutorial are the filtered versions of the alignments generated for 16s and rag1 sequences in tutorial [Multiple Sequence Alignment](../multiple_sequence_alignment/README.md). More information on the origin of the dataset can be found in that tutorial. RAxML requires input files in Phylip format, thus we will use the files [`16s_filtered.phy`](data/16s_filtered.phy) and [`rag1_filtered.phy`](data/rag1_filtered.phy).
+The data used in this tutorial are the filtered versions of the alignments generated for 16s and rag1 sequences in tutorial [Multiple Sequence Alignment](../multiple_sequence_alignment/README.md). These alignments contain sequence data for 41 teleost fish species and are 486 and 1,368 bp long, respectively. More information on the origin of the dataset can be found in the [Multiple Sequence Alignment](../multiple_sequence_alignment/README.md) tutorial. RAxML requires input files in Phylip format, thus we will use the files [`16s_filtered.phy`](data/16s_filtered.phy) and [`rag1_filtered.phy`](data/rag1_filtered.phy) for RAxML analyses, but one of the scripts used in this tutorial requires Nexus format, thus we will then also use files [`16s_filtered.nex`](data/16s_filtered.nex) and [`rag1_filtered.nex`](data/rag1_filtered.nex).
 
 <a name="requirements"></a>
 ## Requirements
@@ -202,7 +203,7 @@ Given that node support in the phylogeny for 16s sequences turned out to be poor
 
 We have now used bootstrapping to assess node support in two different phylogenies, the phylogeny for the 16s alignment and that of the rag1 alignment. We have visually inspected the two phylogenies, but we have not yet quantified the difference between them or the overall support that each of them has.
 
-* As a measure of the distance between two trees, the [Robinson-Foulds distance](https://en.wikipedia.org/wiki/Robinson–Foulds_metric) ([Robinson and Foulds 1981](https://www.sciencedirect.com/science/article/pii/0025556481900432?via%3Dihub)) is commonly used. This measure is defined as the number of topological rearrangements that are required to convert one of the trees into the other. It can be calculated with the R script [`get_rf_distance.r`](src/get_rf_distance.r) if the R packages [ape](https://cran.r-project.org/web/packages/ape/) and [phangorn](https://cran.r-project.org/web/packages/phangorn/) are installed:
+* As a measure of the distance between two trees, the [Robinson-Foulds distance](https://en.wikipedia.org/wiki/Robinson–Foulds_metric) ([Robinson and Foulds 1981](https://www.sciencedirect.com/science/article/pii/0025556481900432?via%3Dihub)) is commonly used. This measure is defined as the number of topological rearrangements that are required to convert one of the trees into the other. It can be calculated with the R script [`get_rf_distance.r`](src/get_rf_distance.r) if the R packages [ape](https://cran.r-project.org/web/packages/ape/) and [phangorn](https://cran.r-project.org/web/packages/phangorn/) are installed on your machine:
 
 		Rscript get_rf_distance.r RAxML_bipartitions.16s_filtered_bs.out RAxML_bipartitions.rag1_filtered_bs.out
 		
@@ -214,6 +215,45 @@ We have now used bootstrapping to assess node support in two different phylogeni
 		python3 get_mean_node_support.py RAxML_bipartitions.rag1_filtered_bs.out
 
 	You'll see that the rag1 phylogeny has a much higher mean node support (64.9) than the 16s phylogeny (18.8).
+
+
+<a name="concatenation"></a>
+## Phylogeny inference with concatenated alignments
+
+The comparison of phylogenies based on the short 16s alignment and the longer rag1 alignment showed that the overall node support can substantially be improved with increased size of the dataset. It is thus usually beneficial to use the information from several alignments jointly in one and the same phylogenetic analysis. This can be done in various ways, the simplest of which (and the only one possible in RAxML) is concatenation of the alignments, meaning that sequences of the different genes are, for each taxon, pasted together as if they come from just one single gene. While concatenation generally increases the support values of phylogenies, it should be noted that this practice implicitly assumes that all genes share the same evolutionary history, and that bias may result if this assumption is violated (which is common, particularly if closely related species are investigated). This effect has been demonstrated in several studies (e.g. [Kubatko and Degnan 2007](https://academic.oup.com/sysbio/article/56/1/17/1658327); [Ogilvie et al. 2017](https://academic.oup.com/mbe/article/34/8/2101/3738283)). However, given that the dataset used here, with sequences from 41 teleost species, includes few taxa that are very closely related to each other, the assumption that the 16s and rag1 gene share the same evolutionary history (at least the same true topology) may be justified in this case.
+
+* To concatenate the two alignments, you can use the Ruby script [`concatenate.rb`](src/concatenate.rb). First, have a look at the help text of this script:
+
+		ruby concatenate.rb -h
+		
+	You'll see that multiple input files can be specified with the option "-i", and that one output file should be specified with option "-o". In addition, you can select one out of three output file formats. Because we plan to use the concatenated alignment with RAxML, choose to write the output in Phylip format:
+
+		ruby concatenate.rb -i 16s_filtered.nex rag1_filtered.nex -o concatenated.phy -f phylip
+
+* Open the file `concatenated.phy` in AliView and note the length of the concatenated alignment. You should be able to see the position where the two original alignments have been stitched together at position 1368/1369, as shown in the next screenshot.
+<p align="center"><img src="img/aliview1.png" alt="RAxML" width="600"></p>
+
+* To analyse the concatenated alignment again with RAxML, we'll have to adjust the partitions file by adding the 16s part of the alignment as a fourth partition. To do this, open the file `partitions.txt` again in a text editor and add a fourth line at the bottom, so that the file then contains the following lines:
+
+		DNA, codon1 = 1-1368\3
+		DNA, codon2 = 2-1368\3
+		DNA, codon3 = 3-1368\3
+		DNA, 16s = 1369-1854 
+	Note that we don't add the "\3" to the end of the last line because all positions, not only every third position, between sites 1369 and 1845 are part of the 16s partition.
+
+* Run RAxML for the concatenated alignment as before, using the GTR model with gamma-distributed rate variation for each of the four partitions. Again, feel free to pick other random number seeds than the ones used here, "-p 123" and "-x 567":
+
+		raxml -s concatenated.phy -n concatenated_bs.out -m GTRGAMMA -p 123 -f a -x 456 -N autoMRE -q partitions.txt
+
+	This analysis might again take around an hour or longer, so you may not want to wait until it is complete. If so, you can find the resulting phylogeny in file [`RAxML_bipartitions.concatenated_bs.out`](res/RAxML_bipartitions. concatenated_bs.out).
+	
+* Open file `RAxML_bipartitions.concatenated_bs.out` again in FigTree and find out if the support values now appear better than they did in the phylogeny based only on the rag1 gene.<p align="center"><img src="img/figtree11.png" alt="RAxML" width="600"></p>
+
+* Also quantify again the overall node support using the Python script [`get_mean_node_support.py`](src/get_mean_node_support.py):
+
+		python3 get_mean_node_support.py RAxML_bipartitions.concatenated_bs.out 
+	**Question 10:** How good is the overall support for this phylogeny compared to that of the phylogeny based only on the rag1 gene? [(see answer)](#q10) 
+
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
@@ -254,3 +294,7 @@ We have now used bootstrapping to assess node support in two different phylogeni
 <a name="q9"></a>
 
 * **Question 9:** 66 topological rearrangements are required to convert one of the two trees into the other.
+
+<a name="q10"></a>
+
+* **Question 10:** Against our expectation, the overall node support is slightly lower for the phylogeny based on the concatenated alignment compared to that based on the rag1 alignment only (62.9 compared to 64.9). This could be due to stochastic effects or it could indicate conflict between the two alignments, which could arise if the evolutionary histories of the two genes would in fact differ even though few species in these phylogenies are very closely related to each other.
