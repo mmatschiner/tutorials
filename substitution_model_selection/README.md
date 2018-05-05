@@ -11,7 +11,7 @@ Before running a likelihood-based phylogenetic analysis, the user needs to decid
 * [Outline](#outline)
 * [Dataset](#dataset)
 * [Requirements](#requirements)
-* [Model selection and basic phylogeny inference in PAUP\*](#paup)
+* [Model selection and basic phylogenetic inference in PAUP\*](#paup)
 * [Model selection with partitioned alignments](#partitions)
 
 
@@ -33,7 +33,7 @@ While the descriptions in this tutorial assume that you have installed the GUI v
 <p align="center"><img src="img/paup1.png" alt="Command-line version of PAUP*" width="600"></p>
 
 <a name="paup"></a>
-## Model selection and basic phylogeny inference in PAUP*
+## Model selection and basic phylogenetic inference in PAUP*
 
 Comparisons of substitution models based on their fit to sequence data has been implemented in several tools, and has most often been performed using the program [jModelTest](https://github.com/ddarriba/jmodeltest2) ([Darriba et al. 2012](https://www.nature.com/articles/nmeth.2109)). But since automatic selection of substitution models has recently also been implemented in the PAUP\* and the installation of PAUP\* will anyway be required for other tutorials in this repository, I here present model selection with PAUP\* instead of jModelTest. In practice, the model selection is very similar between the two programs.
 

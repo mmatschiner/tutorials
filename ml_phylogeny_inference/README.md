@@ -1,17 +1,17 @@
-# Maximum-Likelihood Phylogeny Inference
+# Maximum-Likelihood Phylogenetic Inference
 
-A tutorial on phylogeny inference with maximum likelihood.
+A tutorial on phylogenetic inference with maximum likelihood.
 
 ## Summary
 
-As the name indicates, maximum-likelihood phylogeny inference aims to find the parameters of an evolutionary model that maximize the likelihood of observing the dataset at hand. The model parameters include the tree topology and its branch lengths but also all parameter of the substitution model (such as HKY or GTR) assumed in the inference. As the search space for these parameters is enormous when the dataset contains more than just a handful of taxa, all modern programs for maximum-likelihood phylogenetic inference apply heuristics to reach the maximum-likelihood parameter combination.
+As the name indicates, maximum-likelihood phylogenetic inference aims to find the parameters of an evolutionary model that maximize the likelihood of observing the dataset at hand. The model parameters include the tree topology and its branch lengths but also all parameter of the substitution model (such as HKY or GTR) assumed in the inference. As the search space for these parameters is enormous when the dataset contains more than just a handful of taxa, all modern programs for maximum-likelihood phylogenetic inference apply heuristics to reach the maximum-likelihood parameter combination.
 
 ## Table of contents
 
 * [Outline](#outline)
 * [Dataset](#dataset)
 * [Requirements](#requirements)
-* [Maximum-likelihood phylogeny inference with RAxML](#raxml)
+* [Maximum-likelihood phylogenetic inference with RAxML](#raxml)
 * [Reading and visualizing tree files](#figtree)
 * [Assessing node support with bootstrapping](#bootstrap)
 * [Partitioned maximum-likelihood inference](#partition)
@@ -77,7 +77,7 @@ For installation on Linux, instructions are provided in the `README` file that y
  
 	
 <a name="raxml"></a>
-## Maximum-likelihood phylogeny inference with RAxML
+## Maximum-likelihood phylogenetic inference with RAxML
 
 We will first generate a simple maximum-likelihood phylogeny only for the filtered 16s sequence alignment.
 
@@ -210,7 +210,7 @@ We have now used bootstrapping to assess node support in two different phylogeni
 
 
 <a name="concatenation"></a>
-## Phylogeny inference with concatenated alignments
+## Phylogenetic inference with concatenated alignments
 
 The comparison of phylogenies based on the short 16s alignment and the longer rag1 alignment showed that the overall node support can substantially be improved with increased size of the dataset. It is thus usually beneficial to use the information from several alignments jointly in one and the same phylogenetic analysis. This can be done in various ways, the simplest of which (and the only one possible in RAxML) is concatenation of the alignments, meaning that sequences of the different genes are, for each taxon, pasted together as if they come from just one single gene. While concatenation generally increases the support values of phylogenies, it should be noted that this practice implicitly assumes that all genes share the same evolutionary history, and that bias may result if this assumption is violated (which is common, particularly if closely related species are investigated). This effect has been demonstrated in several studies (e.g. [Kubatko and Degnan 2007](https://academic.oup.com/sysbio/article/56/1/17/1658327); [Ogilvie et al. 2017](https://academic.oup.com/mbe/article/34/8/2101/3738283)). However, given that the dataset used here, with sequences from 41 teleost species, includes few taxa that are very closely related to each other, the assumption that the 16s and rag1 gene share the same evolutionary history (at least the same true topology) may be justified in this case.
 

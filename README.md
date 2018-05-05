@@ -9,4 +9,6 @@ A collection of tutorials on phylogenetic and phylogenomic methods
 
 * [Substitution model selection](substitution_model_selection)
 
-* [Maximum-likelihood phylogeny inference](ml_phylogeny_inference)
+* [Maximum-likelihood phylogenetic inference](ml_phylogeny_inference)
+
+* [Bayesian phylogenetic inference](bayesian_phylogeny_inference)
