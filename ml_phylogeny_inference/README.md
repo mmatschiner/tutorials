@@ -182,7 +182,7 @@ Given that node support in the phylogeny for 16s sequences turned out to be poor
 	```
 	DNA, codon1 = 1-1368\3
 	DNA, codon2 = 2-1368\3
-	DNA, codon3 = 3-1368\3 
+	DNA, codon3 = 3-1368\3 	```
 
 	Save this file as `parts.txt`
 	
