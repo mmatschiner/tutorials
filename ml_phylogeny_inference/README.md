@@ -170,12 +170,9 @@ According to the RAxML authors ([Pattengale et al. 2010](https://www.liebertpub.
 * Open file `RAxML_bipartitions.16s_filtered_bs.out` again in FigTree. After once again increasing the font size for tip labels, removing the scale bar, rooting with zebrafish (*Danio rerio*; "Danioxxrerioxx"), and sorting of taxa according to node order, the phylogeny should look as shown in the below screenshot (note that this is identical to the phylogeny generated before without bootstraps, except that some nodes are rotated differently).
 <p align="center"><img src="img/figtree8.png" alt="RAxML" width="600"></p>
 
-* To see node-support values based on bootstrapping, set a tick in the checkbox for "Node Labels", and select "label" from the "Display" drop-down menu, as shown in the below screenshot. **Question 6:** Can this phylogeny be considered reliable? [(see answer)](#q6)
-<p align="center"><img src="img/figtree9.png" alt="RAxML" width="600"></p> 
-
+* To see node-support values based on bootstrapping, set a tick in the checkbox for "Node Labels", and select "label" from the "Display" drop-down menu, as shown in the below screenshot. **Question 6:** Can this phylogeny be considered reliable? [(see answer)](#q6)<p align="center"><img src="img/figtree9.png" alt="RAxML" width="600"></p>
 
 <a name="partition"></a>
-
 ##Partitioned maximum-likelihood inference
 
 Given that node support in the phylogeny for 16s sequences turned out to be poor, we'll try now if the rag1 alignment supports a better-supported phylogeny. Because the model selection carried out for the rag1 alignment in tutorial [Substitution Model Selection](../substitution_model_selection/README.md) showed support for the use of separate substitution models for each codon position, we will partition the alignment accordingly.
