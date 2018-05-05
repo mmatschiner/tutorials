@@ -175,6 +175,7 @@ According to the RAxML authors ([Pattengale et al. 2010](https://www.liebertpub.
 
 
 <a name="partition"></a>
+
 ##Partitioned maximum-likelihood inference
 
 Given that node support in the phylogeny for 16s sequences turned out to be poor, we'll try now if the rag1 alignment supports a better-supported phylogeny. Because the model selection carried out for the rag1 alignment in tutorial [Substitution Model Selection](../substitution_model_selection/README.md) showed support for the use of separate substitution models for each codon position, we will partition the alignment accordingly.
