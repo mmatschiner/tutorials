@@ -218,6 +218,8 @@ For protein-coding sequences, it can often be useful to identify the reading fra
 
 * Save the alignment in Fasta, Phylip, and Nexus format. Use the names `rag1_filtered.fasta`, `rag1_filtered.phy`, and `rag1_filtered.nex`.
 
+<br><hr>
+
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 ## Answers

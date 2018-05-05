@@ -95,6 +95,8 @@ In the selection of a substitution model for the 16S and rag1 sequences we have 
 * Repeat the analysis with a smaller alignment to see if less complex models will be selected then. To produce a smaller alignment, open file `rag1_filtered.nex` in AliView, remove all positions after position 600 and the positions 1-300. The alignment should then contain exactly 300 bp. Save the alignment again in Nexus format using the "Save as Nexus" command in AliView's "File" menu. Name this file `rag1_filtered_short.nex`. Open the file again in a text editor and, as before, remove the line that contains only "N:," in the codons block at the end of the file. Then use this file again for automated model selection in PAUP\*. **Question 12:** Which partitioning scheme, and which substitution models are now selected? [(see answer)](#q12)
 
 
+<br><hr>
+
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 ## Answers
