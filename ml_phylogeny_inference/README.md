@@ -246,6 +246,7 @@ The comparison of phylogenies based on the short 16s alignment and the longer ra
 		python3 get_mean_node_support.py RAxML_bipartitions.concatenated_bs.out 
 	**Question 10:** How good is the overall support for this phylogeny compared to that of the phylogeny based only on the rag1 gene? [(see answer)](#q10) 
 
+<br><hr>
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
