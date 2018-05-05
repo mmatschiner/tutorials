@@ -173,13 +173,16 @@ According to the RAxML authors ([Pattengale et al. 2010](https://www.liebertpub.
 * To see node-support values based on bootstrapping, set a tick in the checkbox for "Node Labels", and select "label" from the "Display" drop-down menu, as shown in the below screenshot. **Question 6:** Can this phylogeny be considered reliable? [(see answer)](#q6)<p align="center"><img src="img/figtree9.png" alt="RAxML" width="600"></p>
 
 <a name="partition"></a>
-##Partitioned maximum-likelihood inference
+## Partitioned maximum-likelihood inference
 
 Given that node support in the phylogeny for 16s sequences turned out to be poor, we'll try now if the rag1 alignment supports a better-supported phylogeny. Because the model selection carried out for the rag1 alignment in tutorial [Substitution Model Selection](../substitution_model_selection/README.md) showed support for the use of separate substitution models for each codon position, we will partition the alignment accordingly.
 
 * Recall that for the automated model selection with PAUP\* in tutorial [Substitution Model Selection](../substitution_model_selection/README.md), we had used a Nexus file in which the codon positions were specified in a block near the end of the file. As RAxML uses Phylip files as input which do not allow the specification of such data, RAxML requires a separate file in which information about partitions is provided. The structure of this file, however, is very simple and similar to the block in the Nexus file. To write such a file and implement a partitioning scheme according to codon position, open a new file in a text editor. Then type the following text to define partitions according to codon position:
 
-	
+	```
+	DNA, codon1 = 1-1368\3
+	DNA, codon2 = 2-1368\3
+	DNA, codon3 = 3-1368\3 	
 * xxx 
 
 
