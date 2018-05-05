@@ -15,6 +15,7 @@ As the name indicates, maximum-likelihood phylogeny inference aims to find the p
 * [Reading and visualizing tree files](#figtree)
 * [Assessing node support with bootstrapping](#bootstrap)
 * [Partitioned maximum-likelihood inference](#partition)
+* [Comparing the reliability of different phylogenies](#comparison)
 
 
 <a name="outline"></a>
@@ -70,6 +71,9 @@ For installation on Linux, instructions are provided in the `README` file that y
 	and you should see the version number as well as a list of contributing developers. If you do, you're ready to start the tutorial.
 	
 * **FigTree:** The program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) by Andrew Rambaut is a very intuitive and useful tool for the visualization and (to a limited extent) manipulation of phylogenies encoded in [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) format. Executables for Mac OS X, Linux, and Windows are provided on [http://tree.bio.ed.ac.uk/software/figtree/](http://tree.bio.ed.ac.uk/software/figtree/).
+
+* **R libraries:** The two R libraries [ape](https://cran.r-project.org/web/packages/ape/) and [phangorn](https://cran.r-project.org/web/packages/phangorn/) are required for the calculation of the Robinson-Foulds distance between phylogenies.
+ 
 	
 <a name="raxml"></a>
 ## Maximum-likelihood phylogeny inference with RAxML
@@ -182,13 +186,32 @@ Given that node support in the phylogeny for 16s sequences turned out to be poor
 		DNA, codon1 = 1-1368\3
 		DNA, codon2 = 2-1368\3
 		DNA, codon3 = 3-1368\3 
-	Save this file as `parts.txt`
+	As is probably self-explanatory, "DNA" tells RAxML that these partitions refer to DNA data (rather than amino acid sequences or morphological characters), "codon1", "codon2", and "codon3" are names for the individual partitions (you're free to choose these as you like), and "2-1368\3" for example specifies that each third site, counting from position 2 (thus sites 2, 5, 8,...) should be considered part of this partition. Save the file and name it `partitions.txt`.
 	
-* xxx 
+* Run RAxML for the rag1 alignment as before, and specify the name of the file with the partition information with the option "-q". We will once again specify "-m GTRGAMMA" to use the GTR model with gamma-distributed rate variation for each partition, as selected by PAUP\*'s automated model selection in tutorial [Substitution Model Selection](../substitution_model_selection/README.md). Feel free to pick other random number seeds than the ones used here, "-p 123" and "-x 456": 
+		raxml -s rag1_filtered.phy -n rag1_filtered_bs.out -m GTRGAMMA -p 123 -f a -x 456 -N autoMRE -q partitions.txt
+ * Have a look at the reported proportion of gaps and completely undetermined characters and note that RAxML recognized that we specified three partitions. **Question 7:** How long does RAxML need now for each bootstrap? [(see answer)](#q7) This analysis might take up to an hour, so feel free to cancel it if you don't want to wait that long. You'll find the tree file resulting from this analysis here: [`RAxML_bipartitions.rag1_filtered_bs.out`](res/RAxML_bipartitions.rag1_filtered_bs.out).
+
+* Open the file `RAxML_bipartitions.rag1_filtered_bs.out` in FigTree. After once again rooting and sorting the phylogeny, the phylogeny should look as shown in the below screenshot. **Question 8:** Does the rag1 phylogeny look more reliable than the 16S phylogeny? [(see answer)](#q8) <p align="center"><img src="img/figtree10.png" alt="RAxML" width="600"></p>
 
 
+<a name="comparison"></a>
+## Comparing the reliability of different phylogenies
 
+We have now used bootstrapping to assess node support in two different phylogenies, the phylogeny for the 16s alignment and that of the rag1 alignment. We have visually inspected the two phylogenies, but we have not yet quantified the difference between them or the overall support that each of them has.
 
+* As a measure of the distance between two trees, the [Robinson-Foulds distance](https://en.wikipedia.org/wiki/Robinson–Foulds_metric) ([Robinson and Foulds 1981](https://www.sciencedirect.com/science/article/pii/0025556481900432?via%3Dihub)) is commonly used. This measure is defined as the number of topological rearrangements that are required to convert one of the trees into the other. It can be calculated with the R script [`get_rf_distance.r`](src/get_rf_distance.r) if the R packages [ape](https://cran.r-project.org/web/packages/ape/) and [phangorn](https://cran.r-project.org/web/packages/phangorn/) are installed:
+
+		Rscript get_rf_distance.r RAxML_bipartitions.16s_filtered_bs.out RAxML_bipartitions.rag1_filtered_bs.out
+		
+	**Question 9:** How many topological rearrangements separate the 16s and rag1 trees? [(see answer)](#q9)
+
+* To compare the overall support of the two trees, we can use the Python script [`get_mean_node_support.py`](src/get_mean_node_support.py) to calculate the mean bootstrap support for both trees:
+
+		python3 get_mean_node_support.py RAxML_bipartitions.16s_filtered_bs.out
+		python3 get_mean_node_support.py RAxML_bipartitions.rag1_filtered_bs.out
+
+	You'll see that the rag1 phylogeny has a much higher mean node support (64.9) than the 16s phylogeny (18.8).
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
@@ -217,3 +240,15 @@ Given that node support in the phylogeny for 16s sequences turned out to be poor
 <a name="q6"></a>
 
 * **Question 6:** The bootstrap support values indicate that most nodes of the phylogeny are not reliable at all. Only few nodes are supported with even moderate support values, such as a support value of 71 for the monophyly of the three Neotropical cichlid fishes. Some node values are even as low as 0, meaning that none of the phylogenies built from bootstrapped alignments recovered this clade found in the phylogeny based on the original alignment. However, the low support for this phylogeny is not surprising given that it was built from a short alignment of a single marker.
+
+<a name="q7"></a>
+
+* **Question 7:** Each bootstrap replicate now takes about 0.7 seconds on my MacBook Pro.
+
+<a name="q8"></a>
+
+* **Question 8:** The rag1 phylogeny indeed seems to be more reliable than the 16s phylogeny, which would not be surprising given the longer length of the rag1 alignment. Some nodes are even supported with the maximum bootstrap support of 100, such as the monophyly of the six representatives of African cichlid fishes (*Tylochromis polylepis*, *Oreochromis niloticus*, *Ectodus descampsii*, *Neolamprologus brichardi*, *Maylandia zebra*, and *Pundamilia nyererei*).
+
+<a name="q9"></a>
+
+* **Question 9:** 66 topological rearrangements are required to convert one of the two trees into the other.

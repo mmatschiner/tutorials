@@ -43,7 +43,7 @@ The dataset used here includes sequences for two genes; the mitochondrial 16S ge
 | Cichlaxtemensi | *Cichla temensis*           | Neotropical cichlids |
 | Chloropagassiz | *Chlorophthalmus agassizi*  | Non-cichlid          |
 | Danioxxrerioxx | *Danio rerio*               | Non-cichlid          |
-| Ectodusdescamp | *Ectodus descampsii*        | Non-cichlid          |
+| Ectodusdescamp | *Ectodus descampsii*        | African cichlids     |
 | Etroplumaculat | *Etroplus maculatus*        | Indian cichlids      |
 | Gasteroaculeat | *Gasterosteus aculeatus*    | Non-cichlid          |
 | Geophagbrasili | *Geophagus brasiliensis*    | Neotropical cichlids |
