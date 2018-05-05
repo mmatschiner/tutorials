@@ -13,13 +13,14 @@ As the name indicates, maximum-likelihood phylogeny inference aims to find the p
 * [Requirements](#requirements)
 * [Maximum-likelihood phylogeny inference with RAxML](#raxml)
 * [Reading and visualizing tree files](#figtree)
-* [Assessing node support with bootstrapping](bootstrap)
+* [Assessing node support with bootstrapping](#bootstrap)
+* [Partitioned maximum-likelihood inference](#partition)
 
 
 <a name="outline"></a>
 ## Outline
 
-In this tutorial, I will present maximum-likelihood inference with one of the fastest programs developed for this type of analysis, the program [RAxML](https://sco.h-its.org/exelixis/web/software/raxml/index.html) ([Stamatakis 2014](https://academic.oup.com/bioinformatics/article/30/9/1312/238053)). I will demonstrate how the reliability of nodes in the phylogeny can be assessed with bootstrapping ([Felsenstein 1985](https://www.jstor.org/stable/2408678)), how different substitution models can be applied to separate partitions, and how alignments of multiple genes can be concatenated to be jointly used in the same phylogenetic analysis.
+In this tutorial, I will present maximum-likelihood inference with one of the fastest programs developed for this type of analysis, the program [RAxML](https://sco.h-its.org/exelixis/web/software/raxml/index.html) ([Stamatakis 2014](https://academic.oup.com/bioinformatics/article/30/9/1312/238053)). I will demonstrate how the reliability of nodes in the phylogeny can be assessed with bootstrapping ([Felsenstein 1985](https://www.jstor.org/stable/2408678)), how unlinked substitution models can be applied to separate partitions, and how alignments of multiple genes can be concatenated to be jointly used in the same phylogenetic analysis.
 
 <a name="dataset"></a>
 ## Dataset
@@ -140,7 +141,52 @@ It is almost surprising how well this phylogeny resolves the correct relationshi
 <a name="bootstrap"></a>
 ## Assessing node support with bootstrapping
 
-XXX
+As we've seen, the RAxML phylogeny of 16S sequences does not perfectly agree with relationships inferred in other studies (e.g. [Matschiner et al. 2017](https://academic.oup.com/sysbio/article/66/1/3/2418030); [Betancur-R. et al. 2017](https://bmcevolbiol.biomedcentral.com/articles/10.1186/s12862-017-0958-3)) or with the taxonomy of teleost fishes. However, so far we have no indication of the reliability of the individual nodes in the phylogeny, therefore we can not assess how strong the evidence of this phylogeny weighs against other findings. To identify which nodes in the phylogeny are more or less trustworthy, we will now perform a bootstrap analysis, again with RAxML.
+
+* Have a look once more at the long help text of RAxML to see the available options for bootstrapping:
+
+		raxml -h
+
+* Scroll towards the top of the help text, there you should find the details for the "-f" option with which the RAxML algorithm is selected:
+<p align="center"><img src="img/raxml2.png" alt="RAxML" width="600"></p>
+From the help text you'll see that if "-f" is not used as a command-line argument, the default algorithm is used, which is "-f d", the "new rapid hill-climbing" algorithm. To run a bootstrap analysis, another algorithm is required. A particularly convenient option for this is "-f a" which triggers a "rapid Bootstrap analysis and search for the best-scoring ML tree in one program run". It would also be possible to run only bootstrapping; however, then the original alignment would not be used at all for inference, only bootstrapped alignments would be used.
+
+* Thus, try to run RAxML with option "-f a" to use the original alignment for the inference of the maximum-likelihood tree, and bootstrapped alignments to assess node support on this tree. To avoid conflict with previously generated files, use e.g. `16s_filtered_bs.out` as part of all output file names:
+
+		raxml -s 16s_filtered.phy -n 16s_filtered_bs.out -m GTRGAMMA -p 123 -f a
+
+* As you'll see, RAxML now also requires specification of a random number seed for the bootstrapping with option "-x". Try again:
+
+		raxml -s 16s_filtered.phy -n 16s_filtered_bs.out -m GTRGAMMA -p 123 -f a -x 456
+		
+* However, RAxML still needs more information for the bootstrapping: The number of bootstrap replicates should be specified with the option "-#" or "-N" (those two are synonymous, and we'll use "-N" here). As the RAxML help text explains, one can either specify a fixed number of replicates, such as "-N 100", or one could let RAxML decide itself how many bootstrap replicates should be run, by using one of the automatic "bootstopping criteria" autoMR, autoMRE, autoMRE\_IGN, or autoFC.
+<p align="center"><img src="img/raxml3.png" alt="RAxML" width="600"></p>
+According to the RAxML authors ([Pattengale et al. 2010](https://www.liebertpub.com/doi/abs/10.1089/cmb.2009.0179)), autoMRE performs best and is fast enough for up to a few thousand taxa, so I suggest using this option:
+
+		raxml -s 16s_filtered.phy -n 16s_filtered_bs.out -m GTRGAMMA -p 123 -f a -x 456 -N autoMRE
+
+* RAxML should now be running. Have a look at the RAxML output on the screen. **Question 4:** What is the proportion of gaps and undetermined characters in the alignment? [(see answer)](#q4) **Question 5:** How long does RAxML take per bootstrap replicate? [(see answer)](#q5) The analysis might take 10-20 minutes, depending on the speed of your computer. RAxML will then write the phylogenetic tree to file `RAxML_bipartitions.16s_filtered_bs.out`. If you don't want to wait for the analysis to finish, you will find this file here: [`RAxML_bipartitions.16s_filtered_bs.out`](res/RAxML_bipartitions.16s_filtered_bs.out).
+
+* Open file `RAxML_bipartitions.16s_filtered_bs.out` again in FigTree. After once again increasing the font size for tip labels, removing the scale bar, rooting with zebrafish (*Danio rerio*; "Danioxxrerioxx"), and sorting of taxa according to node order, the phylogeny should look as shown in the below screenshot (note that this is identical to the phylogeny generated before without bootstraps, except that some nodes are rotated differently).
+<p align="center"><img src="img/figtree8.png" alt="RAxML" width="600"></p>
+
+* To see node-support values based on bootstrapping, set a tick in the checkbox for "Node Labels", and select "label" from the "Display" drop-down menu, as shown in the below screenshot. **Question 6:** Can this phylogeny be considered reliable? [(see answer)](#q6)
+<p align="center"><img src="img/figtree9.png" alt="RAxML" width="600"></p> 
+
+
+<a name="partition"></a>
+##Partitioned maximum-likelihood inference
+
+Given that node support in the phylogeny for 16s sequences turned out to be poor, we'll try now if the rag1 alignment supports a better-supported phylogeny. Because the model selection carried out for the rag1 alignment in tutorial [Substitution Model Selection](../substitution_model_selection/README.md) showed support for the use of separate substitution models for each codon position, we will partition the alignment accordingly.
+
+* Recall that for the automated model selection with PAUP\* in tutorial [Substitution Model Selection](../substitution_model_selection/README.md), we had used a Nexus file in which the codon positions were specified in a block near the end of the file. As RAxML uses Phylip files as input which do not allow the specification of such data, RAxML requires a separate file in which information about partitions is provided. The structure of this file, however, is very simple and similar to the block in the Nexus file. To write such a file and implement a partitioning scheme according to codon position, open a new file in a text editor. Then type the following text to define partitions according to codon position:
+
+	```
+	DNA, codon1 = 1-1368\3
+	DNA, codon2 = 2-1368\3
+	DNA, codon3 = 3-1368\3 	```
+	
+* xxx 
 
 
 
@@ -161,3 +207,15 @@ XXX
 <a name="q3"></a>
 
 * **Question 3:** Yes, the three representatives of Neotropical cichlids form one monophyletic clade in this phylogeny.
+
+<a name="q4"></a>
+
+* **Question 4:** RAxML reports that 1.61% of the characters in the 16s alignment are undetermined.
+
+<a name="q5"></a>
+
+* **Question 5:** On my MacBook Pro, about 0.2 seconds are required per bootstrap replicate. This may differ on other machines, and it may depend on whether you compiled the AVX, SSE3, or standard version of RAxML.
+
+<a name="q6"></a>
+
+* **Question 6:** The bootstrap support values indicate that most nodes of the phylogeny are not reliable at all. Only few nodes are supported with even moderate support values, such as a support value of 71 for the monophyly of the three Neotropical cichlid fishes. Some node values are even as low as 0, meaning that none of the phylogenies built from bootstrapped alignments recovered this clade found in the phylogeny based on the original alignment. However, the low support for this phylogeny is not surprising given that it was built from a short alignment of a single marker.
