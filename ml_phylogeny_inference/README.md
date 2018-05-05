@@ -179,11 +179,9 @@ Given that node support in the phylogeny for 16s sequences turned out to be poor
 
 * Recall that for the automated model selection with PAUP\* in tutorial [Substitution Model Selection](../substitution_model_selection/README.md), we had used a Nexus file in which the codon positions were specified in a block near the end of the file. As RAxML uses Phylip files as input which do not allow the specification of such data, RAxML requires a separate file in which information about partitions is provided. The structure of this file, however, is very simple and similar to the block in the Nexus file. To write such a file and implement a partitioning scheme according to codon position, open a text editor, then type the following lines:
 
-	```
-	DNA, codon1 = 1-1368\3
-	DNA, codon2 = 2-1368\3
-	DNA, codon3 = 3-1368\3 	```
-
+		DNA, codon1 = 1-1368\3
+		DNA, codon2 = 2-1368\3
+		DNA, codon3 = 3-1368\3 
 	Save this file as `parts.txt`
 	
 * xxx 
