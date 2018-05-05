@@ -182,7 +182,7 @@ As mentioned above, the sequence data used in this tutorial are part of the data
 
 * Add the three retrieved sequences to file `rag1.fasta`, and rename the sequences, giving them the IDs "Cichlaxtemensi", "Geophagbrasili", and "Herichtcyanogu".
 
-* If anything should go wrong in this part of the tutorial, you can find a complete version of the 16S data that already includes the sequences of the three Neotropical cichlid species in file [`rag1_combined.fasta`](data/rag1_combined.fasta).
+* If anything should go wrong in this part of the tutorial, you can find a complete version of the 16S data that already includes the sequences of the three Neotropical cichlid species in file [`rag1_combined.fasta`](res/rag1_combined.fasta).
 
 <a name="codonbased"></a>
 ## Codon-based manual alignment curation
