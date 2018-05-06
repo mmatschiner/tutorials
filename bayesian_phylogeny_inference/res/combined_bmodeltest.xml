@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood" required="BEAST v2.5.0" version="2.5">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood" required="BEAST v2.5.0:bModelTest v1.1.0:BEASTLabs v1.8.0" version="2.5">
 
 
     <data id="16s_filtered" name="alignment">
@@ -115,43 +115,47 @@
                 <alignment idref="16s_filtered"/>
             </taxonset>
         </tree>
-        <parameter id="mutationRate.s:16s_filtered" name="stateNode">1.0</parameter>
-        <parameter id="gammaShape.s:16s_filtered" name="stateNode">1.0</parameter>
-        <parameter id="freqParameter.s:16s_filtered" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
-        <parameter id="rateAC.s:16s_filtered" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateAG.s:16s_filtered" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateAT.s:16s_filtered" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateCG.s:16s_filtered" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateGT.s:16s_filtered" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateAT.s:rag1_filtered_1" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateAC.s:rag1_filtered_1" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateCG.s:rag1_filtered_1" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateAG.s:rag1_filtered_1" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateGT.s:rag1_filtered_1" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="gammaShape.s:rag1_filtered_1" name="stateNode">1.0</parameter>
-        <parameter id="mutationRate.s:rag1_filtered_1" name="stateNode">1.0</parameter>
-        <parameter id="freqParameter.s:rag1_filtered_1" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
-        <parameter id="rateAT.s:rag1_filtered_2" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateAC.s:rag1_filtered_2" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateCG.s:rag1_filtered_2" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateAG.s:rag1_filtered_2" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateGT.s:rag1_filtered_2" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="gammaShape.s:rag1_filtered_2" name="stateNode">1.0</parameter>
-        <parameter id="mutationRate.s:rag1_filtered_2" name="stateNode">1.0</parameter>
-        <parameter id="freqParameter.s:rag1_filtered_2" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
-        <parameter id="rateAT.s:rag1_filtered_3" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateAC.s:rag1_filtered_3" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateCG.s:rag1_filtered_3" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateAG.s:rag1_filtered_3" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="rateGT.s:rag1_filtered_3" lower="0.0" name="stateNode">1.0</parameter>
-        <parameter id="gammaShape.s:rag1_filtered_3" name="stateNode">1.0</parameter>
-        <parameter id="mutationRate.s:rag1_filtered_3" name="stateNode">1.0</parameter>
-        <parameter id="freqParameter.s:rag1_filtered_3" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
         <parameter id="ucldStdev.c:16s_filtered" lower="0.0" name="stateNode">0.1</parameter>
         <stateNode id="rateCategories.c:16s_filtered" spec="parameter.IntegerParameter" dimension="80">1</stateNode>
         <parameter id="BDBirthRate.t:16s_filtered" lower="0.0" name="stateNode" upper="10000.0">1.0</parameter>
         <parameter id="BDDeathRate.t:16s_filtered" lower="0.0" name="stateNode" upper="1.0">0.5</parameter>
         <parameter id="ucldMean.c:16s_filtered" name="stateNode">1.0</parameter>
+        <stateNode id="BMT_ModelIndicator.s:16s_filtered" spec="parameter.IntegerParameter" lower="0" upper="5">5</stateNode>
+        <parameter id="BMT_Rates.s:16s_filtered" dimension="6" lower="0.01" name="stateNode" upper="100.0">1.0</parameter>
+        <parameter id="BMT_gammaShape.s:16s_filtered" name="stateNode">1.0</parameter>
+        <parameter id="BMT_ProportionInvariable.s:16s_filtered" lower="0.0" name="stateNode" upper="1.0">0.1</parameter>
+        <stateNode id="hasInvariableSites.s:16s_filtered" spec="parameter.IntegerParameter">1</stateNode>
+        <stateNode id="hasGammaRates.s:16s_filtered" spec="parameter.IntegerParameter">1</stateNode>
+        <stateNode id="hasEqualFreqs.s:16s_filtered" spec="parameter.BooleanParameter">false</stateNode>
+        <parameter id="BMT_frequencies.s:16s_filtered" dimension="4" name="stateNode">0.25 0.25 0.25 0.25</parameter>
+        <parameter id="BMT_mutationRate.s:16s_filtered" name="stateNode">1.0</parameter>
+        <stateNode id="BMT_ModelIndicator.s:rag1_filtered_1" spec="parameter.IntegerParameter" lower="0" upper="5">5</stateNode>
+        <parameter id="BMT_Rates.s:rag1_filtered_1" dimension="6" lower="0.01" name="stateNode" upper="100.0">1.0</parameter>
+        <parameter id="BMT_gammaShape.s:rag1_filtered_1" name="stateNode">1.0</parameter>
+        <parameter id="BMT_ProportionInvariable.s:rag1_filtered_1" lower="0.0" name="stateNode" upper="1.0">0.1</parameter>
+        <stateNode id="hasInvariableSites.s:rag1_filtered_1" spec="parameter.IntegerParameter">1</stateNode>
+        <stateNode id="hasGammaRates.s:rag1_filtered_1" spec="parameter.IntegerParameter">1</stateNode>
+        <stateNode id="hasEqualFreqs.s:rag1_filtered_1" spec="parameter.BooleanParameter">false</stateNode>
+        <parameter id="BMT_frequencies.s:rag1_filtered_1" dimension="4" name="stateNode">0.25 0.25 0.25 0.25</parameter>
+        <parameter id="BMT_mutationRate.s:rag1_filtered_1" name="stateNode">1.0</parameter>
+        <stateNode id="BMT_ModelIndicator.s:rag1_filtered_2" spec="parameter.IntegerParameter" lower="0" upper="5">5</stateNode>
+        <parameter id="BMT_Rates.s:rag1_filtered_2" dimension="6" lower="0.01" name="stateNode" upper="100.0">1.0</parameter>
+        <parameter id="BMT_gammaShape.s:rag1_filtered_2" name="stateNode">1.0</parameter>
+        <parameter id="BMT_ProportionInvariable.s:rag1_filtered_2" lower="0.0" name="stateNode" upper="1.0">0.1</parameter>
+        <stateNode id="hasInvariableSites.s:rag1_filtered_2" spec="parameter.IntegerParameter">1</stateNode>
+        <stateNode id="hasGammaRates.s:rag1_filtered_2" spec="parameter.IntegerParameter">1</stateNode>
+        <stateNode id="hasEqualFreqs.s:rag1_filtered_2" spec="parameter.BooleanParameter">false</stateNode>
+        <parameter id="BMT_frequencies.s:rag1_filtered_2" dimension="4" name="stateNode">0.25 0.25 0.25 0.25</parameter>
+        <parameter id="BMT_mutationRate.s:rag1_filtered_2" name="stateNode">1.0</parameter>
+        <stateNode id="BMT_ModelIndicator.s:rag1_filtered_3" spec="parameter.IntegerParameter" lower="0" upper="5">5</stateNode>
+        <parameter id="BMT_Rates.s:rag1_filtered_3" dimension="6" lower="0.01" name="stateNode" upper="100.0">1.0</parameter>
+        <parameter id="BMT_gammaShape.s:rag1_filtered_3" name="stateNode">1.0</parameter>
+        <parameter id="BMT_ProportionInvariable.s:rag1_filtered_3" lower="0.0" name="stateNode" upper="1.0">0.1</parameter>
+        <stateNode id="hasInvariableSites.s:rag1_filtered_3" spec="parameter.IntegerParameter">1</stateNode>
+        <stateNode id="hasGammaRates.s:rag1_filtered_3" spec="parameter.IntegerParameter">1</stateNode>
+        <stateNode id="hasEqualFreqs.s:rag1_filtered_3" spec="parameter.BooleanParameter">false</stateNode>
+        <parameter id="BMT_frequencies.s:rag1_filtered_3" dimension="4" name="stateNode">0.25 0.25 0.25 0.25</parameter>
+        <parameter id="BMT_mutationRate.s:rag1_filtered_3" name="stateNode">1.0</parameter>
     </state>
 
     <init id="RandomTree.t:16s_filtered" spec="beast.evolution.tree.RandomTree" estimate="false" initial="@Tree.t:16s_filtered" taxa="@16s_filtered">
@@ -169,146 +173,91 @@
             <prior id="DeathRatePrior.t:16s_filtered" name="distribution" x="@BDDeathRate.t:16s_filtered">
                 <Uniform id="Uniform.17" name="distr"/>
             </prior>
-            <prior id="GammaShapePrior.s:16s_filtered" name="distribution" x="@gammaShape.s:16s_filtered">
+            <distribution id="BMT_PropInvariablePrior.s:16s_filtered" spec="beast.math.distributions.BMTPrior" count="@hasInvariableSites.s:16s_filtered" x="@BMT_ProportionInvariable.s:16s_filtered">
+                <Beta id="Beta.0" name="distr">
+                    <parameter id="RealParameter.1" lower="0.0" name="alpha" upper="0.0">1.0</parameter>
+                    <parameter id="RealParameter.2" lower="0.0" name="beta" upper="0.0">4.0</parameter>
+                </Beta>
+            </distribution>
+            <distribution id="BMT_PropInvariablePrior.s:rag1_filtered_1" spec="beast.math.distributions.BMTPrior" count="@hasInvariableSites.s:rag1_filtered_1" x="@BMT_ProportionInvariable.s:rag1_filtered_1">
+                <Beta id="Beta.0.rag1_filtered_1" name="distr">
+                    <parameter id="RealParameter.1.rag1_filtered_1" lower="0.0" name="alpha" upper="0.0">1.0</parameter>
+                    <parameter id="RealParameter.2.rag1_filtered_1" lower="0.0" name="beta" upper="0.0">4.0</parameter>
+                </Beta>
+            </distribution>
+            <distribution id="BMT_PropInvariablePrior.s:rag1_filtered_2" spec="beast.math.distributions.BMTPrior" count="@hasInvariableSites.s:rag1_filtered_2" x="@BMT_ProportionInvariable.s:rag1_filtered_2">
+                <Beta id="Beta.0.rag1_filtered_2" name="distr">
+                    <parameter id="RealParameter.1.rag1_filtered_2" lower="0.0" name="alpha" upper="0.0">1.0</parameter>
+                    <parameter id="RealParameter.2.rag1_filtered_2" lower="0.0" name="beta" upper="0.0">4.0</parameter>
+                </Beta>
+            </distribution>
+            <distribution id="BMT_PropInvariablePrior.s:rag1_filtered_3" spec="beast.math.distributions.BMTPrior" count="@hasInvariableSites.s:rag1_filtered_3" x="@BMT_ProportionInvariable.s:rag1_filtered_3">
+                <Beta id="Beta.0.rag1_filtered_3" name="distr">
+                    <parameter id="RealParameter.1.rag1_filtered_3" lower="0.0" name="alpha" upper="0.0">1.0</parameter>
+                    <parameter id="RealParameter.2.rag1_filtered_3" lower="0.0" name="beta" upper="0.0">4.0</parameter>
+                </Beta>
+            </distribution>
+            <distribution id="BMT_RatesPrior.s:16s_filtered" spec="beast.math.distributions.NucleotideRevJumpSubstModelRatePrior" modelIndicator="@BMT_ModelIndicator.s:16s_filtered" x="@BMT_Rates.s:16s_filtered">
+                <substModel id="RevJump.s:16s_filtered" spec="NucleotideRevJumpSubstModel" modelIndicator="@BMT_ModelIndicator.s:16s_filtered" modelSet="namedExtended" rates="@BMT_Rates.s:16s_filtered">
+                    <frequencies id="BMTfreqs.s:16s_filtered" spec="ModelFrequencies" empirical="false" frequencies="@BMT_frequencies.s:16s_filtered" hasEqualFreqs="@hasEqualFreqs.s:16s_filtered"/>
+                </substModel>
+                <Exponential id="BMT_RatesPrior.s:16s_filteredx" name="distr"/>
+            </distribution>
+            <distribution id="BMT_RatesPrior.s:rag1_filtered_1" spec="beast.math.distributions.NucleotideRevJumpSubstModelRatePrior" distr="@BMT_RatesPrior.s:16s_filteredx" modelIndicator="@BMT_ModelIndicator.s:rag1_filtered_1" x="@BMT_Rates.s:rag1_filtered_1">
+                <substModel id="RevJump.s:rag1_filtered_1" spec="NucleotideRevJumpSubstModel" modelIndicator="@BMT_ModelIndicator.s:rag1_filtered_1" modelSet="namedExtended" rates="@BMT_Rates.s:rag1_filtered_1">
+                    <frequencies id="BMTfreqs.s:rag1_filtered_1" spec="ModelFrequencies" empirical="false" frequencies="@BMT_frequencies.s:rag1_filtered_1" hasEqualFreqs="@hasEqualFreqs.s:rag1_filtered_1"/>
+                </substModel>
+            </distribution>
+            <distribution id="BMT_RatesPrior.s:rag1_filtered_2" spec="beast.math.distributions.NucleotideRevJumpSubstModelRatePrior" distr="@BMT_RatesPrior.s:16s_filteredx" modelIndicator="@BMT_ModelIndicator.s:rag1_filtered_2" x="@BMT_Rates.s:rag1_filtered_2">
+                <substModel id="RevJump.s:rag1_filtered_2" spec="NucleotideRevJumpSubstModel" modelIndicator="@BMT_ModelIndicator.s:rag1_filtered_2" modelSet="namedExtended" rates="@BMT_Rates.s:rag1_filtered_2">
+                    <frequencies id="BMTfreqs.s:rag1_filtered_2" spec="ModelFrequencies" empirical="false" frequencies="@BMT_frequencies.s:rag1_filtered_2" hasEqualFreqs="@hasEqualFreqs.s:rag1_filtered_2"/>
+                </substModel>
+            </distribution>
+            <distribution id="BMT_RatesPrior.s:rag1_filtered_3" spec="beast.math.distributions.NucleotideRevJumpSubstModelRatePrior" distr="@BMT_RatesPrior.s:16s_filteredx" modelIndicator="@BMT_ModelIndicator.s:rag1_filtered_3" x="@BMT_Rates.s:rag1_filtered_3">
+                <substModel id="RevJump.s:rag1_filtered_3" spec="NucleotideRevJumpSubstModel" modelIndicator="@BMT_ModelIndicator.s:rag1_filtered_3" modelSet="namedExtended" rates="@BMT_Rates.s:rag1_filtered_3">
+                    <frequencies id="BMTfreqs.s:rag1_filtered_3" spec="ModelFrequencies" empirical="false" frequencies="@BMT_frequencies.s:rag1_filtered_3" hasEqualFreqs="@hasEqualFreqs.s:rag1_filtered_3"/>
+                </substModel>
+            </distribution>
+            <prior id="BMT_freqsPrior.s:16s_filtered" name="distribution" x="@BMT_frequencies.s:16s_filtered">
+                <distr id="Dirichlet.0" spec="beast.math.distributions.Dirichlet">
+                    <parameter id="RealParameter.3" dimension="4" lower="0.0" name="alpha" upper="0.0">1.0 1.0 1.0 1.0</parameter>
+                </distr>
+            </prior>
+            <prior id="BMT_freqsPrior.s:rag1_filtered_1" name="distribution" x="@BMT_frequencies.s:rag1_filtered_1">
+                <distr id="Dirichlet.0.rag1_filtered_1" spec="beast.math.distributions.Dirichlet">
+                    <parameter id="RealParameter.3.rag1_filtered_1" dimension="4" lower="0.0" name="alpha" upper="0.0">1.0 1.0 1.0 1.0</parameter>
+                </distr>
+            </prior>
+            <prior id="BMT_freqsPrior.s:rag1_filtered_2" name="distribution" x="@BMT_frequencies.s:rag1_filtered_2">
+                <distr id="Dirichlet.0.rag1_filtered_2" spec="beast.math.distributions.Dirichlet">
+                    <parameter id="RealParameter.3.rag1_filtered_2" dimension="4" lower="0.0" name="alpha" upper="0.0">1.0 1.0 1.0 1.0</parameter>
+                </distr>
+            </prior>
+            <prior id="BMT_freqsPrior.s:rag1_filtered_3" name="distribution" x="@BMT_frequencies.s:rag1_filtered_3">
+                <distr id="Dirichlet.0.rag1_filtered_3" spec="beast.math.distributions.Dirichlet">
+                    <parameter id="RealParameter.3.rag1_filtered_3" dimension="4" lower="0.0" name="alpha" upper="0.0">1.0 1.0 1.0 1.0</parameter>
+                </distr>
+            </prior>
+            <distribution id="BMT_GammaShapePrior.s:16s_filtered" spec="beast.math.distributions.BMTPrior" count="@hasGammaRates.s:16s_filtered" x="@BMT_gammaShape.s:16s_filtered">
                 <Exponential id="Exponential.0" name="distr">
                     <parameter id="RealParameter.0" estimate="false" name="mean">1.0</parameter>
                 </Exponential>
-            </prior>
-            <prior id="GammaShapePrior.s:rag1_filtered_1" name="distribution" x="@gammaShape.s:rag1_filtered_1">
+            </distribution>
+            <distribution id="BMT_GammaShapePrior.s:rag1_filtered_1" spec="beast.math.distributions.BMTPrior" count="@hasGammaRates.s:rag1_filtered_1" x="@BMT_gammaShape.s:rag1_filtered_1">
                 <Exponential id="Exponential.0.rag1_filtered_1" name="distr">
                     <parameter id="RealParameter.0.rag1_filtered_1" estimate="false" name="mean">1.0</parameter>
                 </Exponential>
-            </prior>
-            <prior id="GammaShapePrior.s:rag1_filtered_2" name="distribution" x="@gammaShape.s:rag1_filtered_2">
+            </distribution>
+            <distribution id="BMT_GammaShapePrior.s:rag1_filtered_2" spec="beast.math.distributions.BMTPrior" count="@hasGammaRates.s:rag1_filtered_2" x="@BMT_gammaShape.s:rag1_filtered_2">
                 <Exponential id="Exponential.0.rag1_filtered_2" name="distr">
                     <parameter id="RealParameter.0.rag1_filtered_2" estimate="false" name="mean">1.0</parameter>
                 </Exponential>
-            </prior>
-            <prior id="GammaShapePrior.s:rag1_filtered_3" name="distribution" x="@gammaShape.s:rag1_filtered_3">
+            </distribution>
+            <distribution id="BMT_GammaShapePrior.s:rag1_filtered_3" spec="beast.math.distributions.BMTPrior" count="@hasGammaRates.s:rag1_filtered_3" x="@BMT_gammaShape.s:rag1_filtered_3">
                 <Exponential id="Exponential.0.rag1_filtered_3" name="distr">
                     <parameter id="RealParameter.0.rag1_filtered_3" estimate="false" name="mean">1.0</parameter>
                 </Exponential>
-            </prior>
-            <prior id="RateACPrior.s:16s_filtered" name="distribution" x="@rateAC.s:16s_filtered">
-                <Gamma id="Gamma.0" name="distr">
-                    <parameter id="RealParameter.5" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.6" estimate="false" name="beta">10.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateACPrior.s:rag1_filtered_1" name="distribution" x="@rateAC.s:rag1_filtered_1">
-                <Gamma id="Gamma.0.rag1_filtered_1" name="distr">
-                    <parameter id="RealParameter.5.rag1_filtered_1" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.6.rag1_filtered_1" estimate="false" name="beta">10.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateACPrior.s:rag1_filtered_2" name="distribution" x="@rateAC.s:rag1_filtered_2">
-                <Gamma id="Gamma.0.rag1_filtered_2" name="distr">
-                    <parameter id="RealParameter.5.rag1_filtered_2" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.6.rag1_filtered_2" estimate="false" name="beta">10.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateACPrior.s:rag1_filtered_3" name="distribution" x="@rateAC.s:rag1_filtered_3">
-                <Gamma id="Gamma.0.rag1_filtered_3" name="distr">
-                    <parameter id="RealParameter.5.rag1_filtered_3" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.6.rag1_filtered_3" estimate="false" name="beta">10.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateAGPrior.s:16s_filtered" name="distribution" x="@rateAG.s:16s_filtered">
-                <Gamma id="Gamma.1" name="distr">
-                    <parameter id="RealParameter.7" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.8" estimate="false" name="beta">20.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateAGPrior.s:rag1_filtered_1" name="distribution" x="@rateAG.s:rag1_filtered_1">
-                <Gamma id="Gamma.1.rag1_filtered_1" name="distr">
-                    <parameter id="RealParameter.7.rag1_filtered_1" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.8.rag1_filtered_1" estimate="false" name="beta">20.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateAGPrior.s:rag1_filtered_2" name="distribution" x="@rateAG.s:rag1_filtered_2">
-                <Gamma id="Gamma.1.rag1_filtered_2" name="distr">
-                    <parameter id="RealParameter.7.rag1_filtered_2" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.8.rag1_filtered_2" estimate="false" name="beta">20.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateAGPrior.s:rag1_filtered_3" name="distribution" x="@rateAG.s:rag1_filtered_3">
-                <Gamma id="Gamma.1.rag1_filtered_3" name="distr">
-                    <parameter id="RealParameter.7.rag1_filtered_3" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.8.rag1_filtered_3" estimate="false" name="beta">20.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateATPrior.s:16s_filtered" name="distribution" x="@rateAT.s:16s_filtered">
-                <Gamma id="Gamma.2" name="distr">
-                    <parameter id="RealParameter.9" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.10" estimate="false" name="beta">10.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateATPrior.s:rag1_filtered_1" name="distribution" x="@rateAT.s:rag1_filtered_1">
-                <Gamma id="Gamma.2.rag1_filtered_1" name="distr">
-                    <parameter id="RealParameter.9.rag1_filtered_1" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.10.rag1_filtered_1" estimate="false" name="beta">10.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateATPrior.s:rag1_filtered_2" name="distribution" x="@rateAT.s:rag1_filtered_2">
-                <Gamma id="Gamma.2.rag1_filtered_2" name="distr">
-                    <parameter id="RealParameter.9.rag1_filtered_2" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.10.rag1_filtered_2" estimate="false" name="beta">10.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateATPrior.s:rag1_filtered_3" name="distribution" x="@rateAT.s:rag1_filtered_3">
-                <Gamma id="Gamma.2.rag1_filtered_3" name="distr">
-                    <parameter id="RealParameter.9.rag1_filtered_3" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.10.rag1_filtered_3" estimate="false" name="beta">10.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateCGPrior.s:16s_filtered" name="distribution" x="@rateCG.s:16s_filtered">
-                <Gamma id="Gamma.3" name="distr">
-                    <parameter id="RealParameter.11" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.12" estimate="false" name="beta">10.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateCGPrior.s:rag1_filtered_1" name="distribution" x="@rateCG.s:rag1_filtered_1">
-                <Gamma id="Gamma.3.rag1_filtered_1" name="distr">
-                    <parameter id="RealParameter.11.rag1_filtered_1" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.12.rag1_filtered_1" estimate="false" name="beta">10.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateCGPrior.s:rag1_filtered_2" name="distribution" x="@rateCG.s:rag1_filtered_2">
-                <Gamma id="Gamma.3.rag1_filtered_2" name="distr">
-                    <parameter id="RealParameter.11.rag1_filtered_2" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.12.rag1_filtered_2" estimate="false" name="beta">10.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateCGPrior.s:rag1_filtered_3" name="distribution" x="@rateCG.s:rag1_filtered_3">
-                <Gamma id="Gamma.3.rag1_filtered_3" name="distr">
-                    <parameter id="RealParameter.11.rag1_filtered_3" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.12.rag1_filtered_3" estimate="false" name="beta">10.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateGTPrior.s:16s_filtered" name="distribution" x="@rateGT.s:16s_filtered">
-                <Gamma id="Gamma.5" name="distr">
-                    <parameter id="RealParameter.15" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.16" estimate="false" name="beta">10.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateGTPrior.s:rag1_filtered_1" name="distribution" x="@rateGT.s:rag1_filtered_1">
-                <Gamma id="Gamma.5.rag1_filtered_1" name="distr">
-                    <parameter id="RealParameter.15.rag1_filtered_1" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.16.rag1_filtered_1" estimate="false" name="beta">10.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateGTPrior.s:rag1_filtered_2" name="distribution" x="@rateGT.s:rag1_filtered_2">
-                <Gamma id="Gamma.5.rag1_filtered_2" name="distr">
-                    <parameter id="RealParameter.15.rag1_filtered_2" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.16.rag1_filtered_2" estimate="false" name="beta">10.0</parameter>
-                </Gamma>
-            </prior>
-            <prior id="RateGTPrior.s:rag1_filtered_3" name="distribution" x="@rateGT.s:rag1_filtered_3">
-                <Gamma id="Gamma.5.rag1_filtered_3" name="distr">
-                    <parameter id="RealParameter.15.rag1_filtered_3" estimate="false" name="alpha">0.05</parameter>
-                    <parameter id="RealParameter.16.rag1_filtered_3" estimate="false" name="beta">10.0</parameter>
-                </Gamma>
-            </prior>
+            </distribution>
             <prior id="MeanRatePrior.c:16s_filtered" name="distribution" x="@ucldMean.c:16s_filtered">
                 <Uniform id="Uniform.15" name="distr" upper="Infinity"/>
             </prior>
@@ -550,13 +499,7 @@
         </distribution>
         <distribution id="likelihood" spec="util.CompoundDistribution" useThreads="true">
             <distribution id="treeLikelihood.16s_filtered" spec="ThreadedTreeLikelihood" data="@16s_filtered" tree="@Tree.t:16s_filtered">
-                <siteModel id="SiteModel.s:16s_filtered" spec="SiteModel" gammaCategoryCount="4" mutationRate="@mutationRate.s:16s_filtered" shape="@gammaShape.s:16s_filtered">
-                    <parameter id="proportionInvariant.s:16s_filtered" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
-                    <substModel id="gtr.s:16s_filtered" spec="GTR" rateAC="@rateAC.s:16s_filtered" rateAG="@rateAG.s:16s_filtered" rateAT="@rateAT.s:16s_filtered" rateCG="@rateCG.s:16s_filtered" rateGT="@rateGT.s:16s_filtered">
-                        <parameter id="rateCT.s:16s_filtered" estimate="false" lower="0.0" name="rateCT">1.0</parameter>
-                        <frequencies id="estimatedFreqs.s:16s_filtered" spec="Frequencies" frequencies="@freqParameter.s:16s_filtered"/>
-                    </substModel>
-                </siteModel>
+                <siteModel id="BEASTModelTest.s:16s_filtered" spec="BEASTModelTestSiteModel" gammaCategoryCount="4" hasGammaRates="@hasGammaRates.s:16s_filtered" hasInvariantSites="@hasInvariableSites.s:16s_filtered" mutationRate="@BMT_mutationRate.s:16s_filtered" proportionInvariant="@BMT_ProportionInvariable.s:16s_filtered" shape="@BMT_gammaShape.s:16s_filtered" substModel="@RevJump.s:16s_filtered"/>
                 <branchRateModel id="RelaxedClock.c:16s_filtered" spec="beast.evolution.branchratemodel.UCRelaxedClockModel" clock.rate="@ucldMean.c:16s_filtered" rateCategories="@rateCategories.c:16s_filtered" tree="@Tree.t:16s_filtered">
                     <LogNormal id="LogNormalDistributionModel.c:16s_filtered" S="@ucldStdev.c:16s_filtered" meanInRealSpace="true" name="distr">
                         <parameter id="RealParameter.17" estimate="false" lower="0.0" name="M" upper="1.0">1.0</parameter>
@@ -567,108 +510,26 @@
                 <data id="rag1_filtered_1" spec="FilteredAlignment" filter="1::3">
                     <data idref="rag1_filtered"/>
                 </data>
-                <siteModel id="SiteModel.s:rag1_filtered_1" spec="SiteModel" gammaCategoryCount="4" mutationRate="@mutationRate.s:rag1_filtered_1" shape="@gammaShape.s:rag1_filtered_1">
-                    <parameter id="proportionInvariant.s:rag1_filtered_1" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
-                    <substModel id="gtr.s:rag1_filtered_1" spec="GTR" rateAC="@rateAC.s:rag1_filtered_1" rateAG="@rateAG.s:rag1_filtered_1" rateAT="@rateAT.s:rag1_filtered_1" rateCG="@rateCG.s:rag1_filtered_1" rateGT="@rateGT.s:rag1_filtered_1">
-                        <parameter id="rateCT.s:rag1_filtered_1" estimate="false" lower="0.0" name="rateCT">1.0</parameter>
-                        <frequencies id="estimatedFreqs.s:rag1_filtered_1" spec="Frequencies" frequencies="@freqParameter.s:rag1_filtered_1"/>
-                    </substModel>
-                </siteModel>
+                <siteModel id="BEASTModelTest.s:rag1_filtered_1" spec="BEASTModelTestSiteModel" gammaCategoryCount="4" hasGammaRates="@hasGammaRates.s:rag1_filtered_1" hasInvariantSites="@hasInvariableSites.s:rag1_filtered_1" mutationRate="@BMT_mutationRate.s:rag1_filtered_1" proportionInvariant="@BMT_ProportionInvariable.s:rag1_filtered_1" shape="@BMT_gammaShape.s:rag1_filtered_1" substModel="@RevJump.s:rag1_filtered_1"/>
             </distribution>
             <distribution id="treeLikelihood.rag1_filtered_2" spec="ThreadedTreeLikelihood" branchRateModel="@RelaxedClock.c:16s_filtered" tree="@Tree.t:16s_filtered">
                 <data id="rag1_filtered_2" spec="FilteredAlignment" data="@rag1_filtered" filter="2::3"/>
-                <siteModel id="SiteModel.s:rag1_filtered_2" spec="SiteModel" gammaCategoryCount="4" mutationRate="@mutationRate.s:rag1_filtered_2" shape="@gammaShape.s:rag1_filtered_2">
-                    <parameter id="proportionInvariant.s:rag1_filtered_2" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
-                    <substModel id="gtr.s:rag1_filtered_2" spec="GTR" rateAC="@rateAC.s:rag1_filtered_2" rateAG="@rateAG.s:rag1_filtered_2" rateAT="@rateAT.s:rag1_filtered_2" rateCG="@rateCG.s:rag1_filtered_2" rateGT="@rateGT.s:rag1_filtered_2">
-                        <parameter id="rateCT.s:rag1_filtered_2" estimate="false" lower="0.0" name="rateCT">1.0</parameter>
-                        <frequencies id="estimatedFreqs.s:rag1_filtered_2" spec="Frequencies" frequencies="@freqParameter.s:rag1_filtered_2"/>
-                    </substModel>
-                </siteModel>
+                <siteModel id="BEASTModelTest.s:rag1_filtered_2" spec="BEASTModelTestSiteModel" gammaCategoryCount="4" hasGammaRates="@hasGammaRates.s:rag1_filtered_2" hasInvariantSites="@hasInvariableSites.s:rag1_filtered_2" mutationRate="@BMT_mutationRate.s:rag1_filtered_2" proportionInvariant="@BMT_ProportionInvariable.s:rag1_filtered_2" shape="@BMT_gammaShape.s:rag1_filtered_2" substModel="@RevJump.s:rag1_filtered_2"/>
             </distribution>
             <distribution id="treeLikelihood.rag1_filtered_3" spec="ThreadedTreeLikelihood" branchRateModel="@RelaxedClock.c:16s_filtered" tree="@Tree.t:16s_filtered">
                 <data id="rag1_filtered_3" spec="FilteredAlignment" data="@rag1_filtered" filter="3::3"/>
-                <siteModel id="SiteModel.s:rag1_filtered_3" spec="SiteModel" gammaCategoryCount="4" mutationRate="@mutationRate.s:rag1_filtered_3" shape="@gammaShape.s:rag1_filtered_3">
-                    <parameter id="proportionInvariant.s:rag1_filtered_3" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
-                    <substModel id="gtr.s:rag1_filtered_3" spec="GTR" rateAC="@rateAC.s:rag1_filtered_3" rateAG="@rateAG.s:rag1_filtered_3" rateAT="@rateAT.s:rag1_filtered_3" rateCG="@rateCG.s:rag1_filtered_3" rateGT="@rateGT.s:rag1_filtered_3">
-                        <parameter id="rateCT.s:rag1_filtered_3" estimate="false" lower="0.0" name="rateCT">1.0</parameter>
-                        <frequencies id="estimatedFreqs.s:rag1_filtered_3" spec="Frequencies" frequencies="@freqParameter.s:rag1_filtered_3"/>
-                    </substModel>
-                </siteModel>
+                <siteModel id="BEASTModelTest.s:rag1_filtered_3" spec="BEASTModelTestSiteModel" gammaCategoryCount="4" hasGammaRates="@hasGammaRates.s:rag1_filtered_3" hasInvariantSites="@hasInvariableSites.s:rag1_filtered_3" mutationRate="@BMT_mutationRate.s:rag1_filtered_3" proportionInvariant="@BMT_ProportionInvariable.s:rag1_filtered_3" shape="@BMT_gammaShape.s:rag1_filtered_3" substModel="@RevJump.s:rag1_filtered_3"/>
             </distribution>
         </distribution>
     </distribution>
 
-    <operator id="gammaShapeScaler.s:16s_filtered" spec="ScaleOperator" parameter="@gammaShape.s:16s_filtered" scaleFactor="0.5" weight="0.1"/>
-
     <operator id="FixMeanMutationRatesOperator" spec="DeltaExchangeOperator" delta="0.75" weight="2.0">
-        <parameter idref="mutationRate.s:16s_filtered"/>
-        <parameter idref="mutationRate.s:rag1_filtered_1"/>
-        <parameter idref="mutationRate.s:rag1_filtered_2"/>
-        <parameter idref="mutationRate.s:rag1_filtered_3"/>
+        <parameter idref="BMT_mutationRate.s:16s_filtered"/>
+        <parameter idref="BMT_mutationRate.s:rag1_filtered_1"/>
+        <parameter idref="BMT_mutationRate.s:rag1_filtered_2"/>
+        <parameter idref="BMT_mutationRate.s:rag1_filtered_3"/>
         <weightvector id="weightparameter" spec="parameter.IntegerParameter" dimension="4" estimate="false" lower="0" upper="0">486 456 456 456</weightvector>
     </operator>
-
-    <operator id="FrequenciesExchanger.s:16s_filtered" spec="DeltaExchangeOperator" delta="0.01" weight="0.1">
-        <parameter idref="freqParameter.s:16s_filtered"/>
-    </operator>
-
-    <operator id="RateACScaler.s:16s_filtered" spec="ScaleOperator" parameter="@rateAC.s:16s_filtered" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="RateAGScaler.s:16s_filtered" spec="ScaleOperator" parameter="@rateAG.s:16s_filtered" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="RateATScaler.s:16s_filtered" spec="ScaleOperator" parameter="@rateAT.s:16s_filtered" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="RateCGScaler.s:16s_filtered" spec="ScaleOperator" parameter="@rateCG.s:16s_filtered" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="RateGTScaler.s:16s_filtered" spec="ScaleOperator" parameter="@rateGT.s:16s_filtered" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="RateACScaler.s:rag1_filtered_1" spec="ScaleOperator" parameter="@rateAC.s:rag1_filtered_1" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="RateGTScaler.s:rag1_filtered_1" spec="ScaleOperator" parameter="@rateGT.s:rag1_filtered_1" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="FrequenciesExchanger.s:rag1_filtered_1" spec="DeltaExchangeOperator" delta="0.01" weight="0.1">
-        <parameter idref="freqParameter.s:rag1_filtered_1"/>
-    </operator>
-
-    <operator id="RateATScaler.s:rag1_filtered_1" spec="ScaleOperator" parameter="@rateAT.s:rag1_filtered_1" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="gammaShapeScaler.s:rag1_filtered_1" spec="ScaleOperator" parameter="@gammaShape.s:rag1_filtered_1" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="RateAGScaler.s:rag1_filtered_1" spec="ScaleOperator" parameter="@rateAG.s:rag1_filtered_1" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="RateCGScaler.s:rag1_filtered_1" spec="ScaleOperator" parameter="@rateCG.s:rag1_filtered_1" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="RateACScaler.s:rag1_filtered_2" spec="ScaleOperator" parameter="@rateAC.s:rag1_filtered_2" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="RateGTScaler.s:rag1_filtered_2" spec="ScaleOperator" parameter="@rateGT.s:rag1_filtered_2" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="FrequenciesExchanger.s:rag1_filtered_2" spec="DeltaExchangeOperator" delta="0.01" weight="0.1">
-        <parameter idref="freqParameter.s:rag1_filtered_2"/>
-    </operator>
-
-    <operator id="RateATScaler.s:rag1_filtered_2" spec="ScaleOperator" parameter="@rateAT.s:rag1_filtered_2" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="gammaShapeScaler.s:rag1_filtered_2" spec="ScaleOperator" parameter="@gammaShape.s:rag1_filtered_2" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="RateAGScaler.s:rag1_filtered_2" spec="ScaleOperator" parameter="@rateAG.s:rag1_filtered_2" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="RateCGScaler.s:rag1_filtered_2" spec="ScaleOperator" parameter="@rateCG.s:rag1_filtered_2" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="RateACScaler.s:rag1_filtered_3" spec="ScaleOperator" parameter="@rateAC.s:rag1_filtered_3" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="RateGTScaler.s:rag1_filtered_3" spec="ScaleOperator" parameter="@rateGT.s:rag1_filtered_3" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="FrequenciesExchanger.s:rag1_filtered_3" spec="DeltaExchangeOperator" delta="0.01" weight="0.1">
-        <parameter idref="freqParameter.s:rag1_filtered_3"/>
-    </operator>
-
-    <operator id="RateATScaler.s:rag1_filtered_3" spec="ScaleOperator" parameter="@rateAT.s:rag1_filtered_3" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="gammaShapeScaler.s:rag1_filtered_3" spec="ScaleOperator" parameter="@gammaShape.s:rag1_filtered_3" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="RateAGScaler.s:rag1_filtered_3" spec="ScaleOperator" parameter="@rateAG.s:rag1_filtered_3" scaleFactor="0.5" weight="0.1"/>
-
-    <operator id="RateCGScaler.s:rag1_filtered_3" spec="ScaleOperator" parameter="@rateCG.s:rag1_filtered_3" scaleFactor="0.5" weight="0.1"/>
 
     <operator id="ucldStdevScaler.c:16s_filtered" spec="ScaleOperator" parameter="@ucldStdev.c:16s_filtered" scaleFactor="0.5" weight="3.0"/>
 
@@ -703,7 +564,79 @@
         <down idref="Tree.t:16s_filtered"/>
     </operator>
 
-    <logger id="tracelog" fileName="combined.log" logEvery="10000" model="@posterior" sanitiseHeaders="true" sort="smart">
+    <operator id="BMT_ModelTestOperator.s:16s_filtered" spec="BMTMergeSplitOperator" modelIndicator="@BMT_ModelIndicator.s:16s_filtered" rates="@BMT_Rates.s:16s_filtered" substModel="@RevJump.s:16s_filtered" weight="1.0"/>
+
+    <operator id="BMT_Ratescaler.s:16s_filtered" spec="BMTExchangeOperator" delta="0.15" modelIndicator="@BMT_ModelIndicator.s:16s_filtered" rates="@BMT_Rates.s:16s_filtered" substModel="@RevJump.s:16s_filtered" weight="1.0"/>
+
+    <operator id="BMT_gammaShapeScaler.s:16s_filtered" spec="BMTScaleOperator" count="@hasGammaRates.s:16s_filtered" parameter="@BMT_gammaShape.s:16s_filtered" scaleFactor="0.5" weight="0.5"/>
+
+    <operator id="BMT_ProportionInvariableScaler.s:16s_filtered" spec="BMTScaleOperator" count="@hasInvariableSites.s:16s_filtered" parameter="@BMT_ProportionInvariable.s:16s_filtered" scaleFactor="0.5" weight="0.5"/>
+
+    <operator id="BMT_hasGammaRatesFlipper.s:16s_filtered" spec="BMTBirthDeathOperator" count="@hasGammaRates.s:16s_filtered" rates="@BMT_gammaShape.s:16s_filtered" weight="0.1"/>
+
+    <operator id="BMT_hasInvariableSitesFlipper.s:16s_filtered" spec="BMTBirthDeathOperator" count="@hasInvariableSites.s:16s_filtered" rates="@BMT_ProportionInvariable.s:16s_filtered" weight="0.1"/>
+
+    <operator id="BMT_FreqsFlipOperator.s:16s_filtered" spec="BitFlipOperator" parameter="@hasEqualFreqs.s:16s_filtered" weight="0.1"/>
+
+    <operator id="BMT_FrequenciesExchanger.s:16s_filtered" spec="DeltaExchangeOperator" delta="0.01" weight="0.1">
+        <parameter idref="BMT_frequencies.s:16s_filtered"/>
+    </operator>
+
+    <operator id="BMT_ModelTestOperator.s:rag1_filtered_1" spec="BMTMergeSplitOperator" modelIndicator="@BMT_ModelIndicator.s:rag1_filtered_1" rates="@BMT_Rates.s:rag1_filtered_1" substModel="@RevJump.s:rag1_filtered_1" weight="1.0"/>
+
+    <operator id="BMT_Ratescaler.s:rag1_filtered_1" spec="BMTExchangeOperator" delta="0.15" modelIndicator="@BMT_ModelIndicator.s:rag1_filtered_1" rates="@BMT_Rates.s:rag1_filtered_1" substModel="@RevJump.s:rag1_filtered_1" weight="1.0"/>
+
+    <operator id="BMT_gammaShapeScaler.s:rag1_filtered_1" spec="BMTScaleOperator" count="@hasGammaRates.s:rag1_filtered_1" parameter="@BMT_gammaShape.s:rag1_filtered_1" scaleFactor="0.5" weight="0.5"/>
+
+    <operator id="BMT_ProportionInvariableScaler.s:rag1_filtered_1" spec="BMTScaleOperator" count="@hasInvariableSites.s:rag1_filtered_1" parameter="@BMT_ProportionInvariable.s:rag1_filtered_1" scaleFactor="0.5" weight="0.5"/>
+
+    <operator id="BMT_hasGammaRatesFlipper.s:rag1_filtered_1" spec="BMTBirthDeathOperator" count="@hasGammaRates.s:rag1_filtered_1" rates="@BMT_gammaShape.s:rag1_filtered_1" weight="0.1"/>
+
+    <operator id="BMT_hasInvariableSitesFlipper.s:rag1_filtered_1" spec="BMTBirthDeathOperator" count="@hasInvariableSites.s:rag1_filtered_1" rates="@BMT_ProportionInvariable.s:rag1_filtered_1" weight="0.1"/>
+
+    <operator id="BMT_FreqsFlipOperator.s:rag1_filtered_1" spec="BitFlipOperator" parameter="@hasEqualFreqs.s:rag1_filtered_1" weight="0.1"/>
+
+    <operator id="BMT_FrequenciesExchanger.s:rag1_filtered_1" spec="DeltaExchangeOperator" delta="0.01" weight="0.1">
+        <parameter idref="BMT_frequencies.s:rag1_filtered_1"/>
+    </operator>
+
+    <operator id="BMT_ModelTestOperator.s:rag1_filtered_2" spec="BMTMergeSplitOperator" modelIndicator="@BMT_ModelIndicator.s:rag1_filtered_2" rates="@BMT_Rates.s:rag1_filtered_2" substModel="@RevJump.s:rag1_filtered_2" weight="1.0"/>
+
+    <operator id="BMT_Ratescaler.s:rag1_filtered_2" spec="BMTExchangeOperator" delta="0.15" modelIndicator="@BMT_ModelIndicator.s:rag1_filtered_2" rates="@BMT_Rates.s:rag1_filtered_2" substModel="@RevJump.s:rag1_filtered_2" weight="1.0"/>
+
+    <operator id="BMT_gammaShapeScaler.s:rag1_filtered_2" spec="BMTScaleOperator" count="@hasGammaRates.s:rag1_filtered_2" parameter="@BMT_gammaShape.s:rag1_filtered_2" scaleFactor="0.5" weight="0.5"/>
+
+    <operator id="BMT_ProportionInvariableScaler.s:rag1_filtered_2" spec="BMTScaleOperator" count="@hasInvariableSites.s:rag1_filtered_2" parameter="@BMT_ProportionInvariable.s:rag1_filtered_2" scaleFactor="0.5" weight="0.5"/>
+
+    <operator id="BMT_hasGammaRatesFlipper.s:rag1_filtered_2" spec="BMTBirthDeathOperator" count="@hasGammaRates.s:rag1_filtered_2" rates="@BMT_gammaShape.s:rag1_filtered_2" weight="0.1"/>
+
+    <operator id="BMT_hasInvariableSitesFlipper.s:rag1_filtered_2" spec="BMTBirthDeathOperator" count="@hasInvariableSites.s:rag1_filtered_2" rates="@BMT_ProportionInvariable.s:rag1_filtered_2" weight="0.1"/>
+
+    <operator id="BMT_FreqsFlipOperator.s:rag1_filtered_2" spec="BitFlipOperator" parameter="@hasEqualFreqs.s:rag1_filtered_2" weight="0.1"/>
+
+    <operator id="BMT_FrequenciesExchanger.s:rag1_filtered_2" spec="DeltaExchangeOperator" delta="0.01" weight="0.1">
+        <parameter idref="BMT_frequencies.s:rag1_filtered_2"/>
+    </operator>
+
+    <operator id="BMT_ModelTestOperator.s:rag1_filtered_3" spec="BMTMergeSplitOperator" modelIndicator="@BMT_ModelIndicator.s:rag1_filtered_3" rates="@BMT_Rates.s:rag1_filtered_3" substModel="@RevJump.s:rag1_filtered_3" weight="1.0"/>
+
+    <operator id="BMT_Ratescaler.s:rag1_filtered_3" spec="BMTExchangeOperator" delta="0.15" modelIndicator="@BMT_ModelIndicator.s:rag1_filtered_3" rates="@BMT_Rates.s:rag1_filtered_3" substModel="@RevJump.s:rag1_filtered_3" weight="1.0"/>
+
+    <operator id="BMT_gammaShapeScaler.s:rag1_filtered_3" spec="BMTScaleOperator" count="@hasGammaRates.s:rag1_filtered_3" parameter="@BMT_gammaShape.s:rag1_filtered_3" scaleFactor="0.5" weight="0.5"/>
+
+    <operator id="BMT_ProportionInvariableScaler.s:rag1_filtered_3" spec="BMTScaleOperator" count="@hasInvariableSites.s:rag1_filtered_3" parameter="@BMT_ProportionInvariable.s:rag1_filtered_3" scaleFactor="0.5" weight="0.5"/>
+
+    <operator id="BMT_hasGammaRatesFlipper.s:rag1_filtered_3" spec="BMTBirthDeathOperator" count="@hasGammaRates.s:rag1_filtered_3" rates="@BMT_gammaShape.s:rag1_filtered_3" weight="0.1"/>
+
+    <operator id="BMT_hasInvariableSitesFlipper.s:rag1_filtered_3" spec="BMTBirthDeathOperator" count="@hasInvariableSites.s:rag1_filtered_3" rates="@BMT_ProportionInvariable.s:rag1_filtered_3" weight="0.1"/>
+
+    <operator id="BMT_FreqsFlipOperator.s:rag1_filtered_3" spec="BitFlipOperator" parameter="@hasEqualFreqs.s:rag1_filtered_3" weight="0.1"/>
+
+    <operator id="BMT_FrequenciesExchanger.s:rag1_filtered_3" spec="DeltaExchangeOperator" delta="0.01" weight="0.1">
+        <parameter idref="BMT_frequencies.s:rag1_filtered_3"/>
+    </operator>
+
+    <logger id="tracelog" fileName="combined_bmodeltest.log" logEvery="10000" model="@posterior" sanitiseHeaders="true" sort="smart">
         <log idref="posterior"/>
         <log idref="likelihood"/>
         <log idref="prior"/>
@@ -712,38 +645,6 @@
         <log idref="treeLikelihood.rag1_filtered_2"/>
         <log idref="treeLikelihood.rag1_filtered_3"/>
         <log idref="treeLikelihood.rag1_filtered_1"/>
-        <log idref="mutationRate.s:16s_filtered"/>
-        <log idref="gammaShape.s:16s_filtered"/>
-        <log idref="freqParameter.s:16s_filtered"/>
-        <log idref="rateAC.s:16s_filtered"/>
-        <log idref="rateAG.s:16s_filtered"/>
-        <log idref="rateAT.s:16s_filtered"/>
-        <log idref="rateCG.s:16s_filtered"/>
-        <log idref="rateGT.s:16s_filtered"/>
-        <log idref="rateAT.s:rag1_filtered_1"/>
-        <log idref="rateAC.s:rag1_filtered_1"/>
-        <log idref="rateCG.s:rag1_filtered_1"/>
-        <log idref="rateAG.s:rag1_filtered_1"/>
-        <log idref="rateGT.s:rag1_filtered_1"/>
-        <log idref="gammaShape.s:rag1_filtered_1"/>
-        <log idref="mutationRate.s:rag1_filtered_1"/>
-        <log idref="freqParameter.s:rag1_filtered_1"/>
-        <log idref="rateAT.s:rag1_filtered_2"/>
-        <log idref="rateAC.s:rag1_filtered_2"/>
-        <log idref="rateCG.s:rag1_filtered_2"/>
-        <log idref="rateAG.s:rag1_filtered_2"/>
-        <log idref="rateGT.s:rag1_filtered_2"/>
-        <log idref="gammaShape.s:rag1_filtered_2"/>
-        <log idref="mutationRate.s:rag1_filtered_2"/>
-        <log idref="freqParameter.s:rag1_filtered_2"/>
-        <log idref="rateAT.s:rag1_filtered_3"/>
-        <log idref="rateAC.s:rag1_filtered_3"/>
-        <log idref="rateCG.s:rag1_filtered_3"/>
-        <log idref="rateAG.s:rag1_filtered_3"/>
-        <log idref="rateGT.s:rag1_filtered_3"/>
-        <log idref="gammaShape.s:rag1_filtered_3"/>
-        <log idref="mutationRate.s:rag1_filtered_3"/>
-        <log idref="freqParameter.s:rag1_filtered_3"/>
         <log idref="ucldStdev.c:16s_filtered"/>
         <log id="rate.c:16s_filtered" spec="beast.evolution.branchratemodel.RateStatistic" branchratemodel="@RelaxedClock.c:16s_filtered" tree="@Tree.t:16s_filtered"/>
         <log idref="BirthDeath.t:16s_filtered"/>
@@ -762,6 +663,78 @@
         <log idref="Cichlinae.prior"/>
         <log idref="Pseudocrenilabrinae.prior"/>
         <log idref="Pseudocrenilabrinae+Cichlinae.prior"/>
+        <log idref="RevJump.s:16s_filtered"/>
+        <log idref="BMT_ModelIndicator.s:16s_filtered"/>
+        <log idref="BMT_Rates.s:16s_filtered"/>
+        <log idref="BMT_gammaShape.s:16s_filtered"/>
+        <log idref="BMT_ProportionInvariable.s:16s_filtered"/>
+        <log idref="hasGammaRates.s:16s_filtered"/>
+        <log idref="hasInvariableSites.s:16s_filtered"/>
+        <log id="ActivePropInvariable.s:16s_filtered" spec="beast.util.Script" argnames="BMT_ProportionInvariable hasInvariableSites" expression="BMT_ProportionInvariable * hasInvariableSites">
+            <x idref="BMT_ProportionInvariable.s:16s_filtered"/>
+            <x idref="hasInvariableSites.s:16s_filtered"/>
+        </log>
+        <log id="ActiveGammaShape.s:16s_filtered" spec="beast.util.Script" argnames="BMT_gammaShape hasGammaRates" expression="BMT_gammaShape * hasGammaRates">
+            <x idref="BMT_gammaShape.s:16s_filtered"/>
+            <x idref="hasGammaRates.s:16s_filtered"/>
+        </log>
+        <log idref="hasEqualFreqs.s:16s_filtered"/>
+        <log idref="BMT_frequencies.s:16s_filtered"/>
+        <log idref="BMT_mutationRate.s:16s_filtered"/>
+        <log idref="BMT_mutationRate.s:rag1_filtered_1"/>
+        <log idref="RevJump.s:rag1_filtered_1"/>
+        <log idref="BMT_ModelIndicator.s:rag1_filtered_1"/>
+        <log idref="BMT_Rates.s:rag1_filtered_1"/>
+        <log idref="BMT_gammaShape.s:rag1_filtered_1"/>
+        <log idref="BMT_ProportionInvariable.s:rag1_filtered_1"/>
+        <log idref="hasGammaRates.s:rag1_filtered_1"/>
+        <log idref="hasInvariableSites.s:rag1_filtered_1"/>
+        <log id="ActivePropInvariable.s:rag1_filtered_1" spec="beast.util.Script" argnames="BMT_ProportionInvariable hasInvariableSites" expression="BMT_ProportionInvariable * hasInvariableSites">
+            <x idref="BMT_ProportionInvariable.s:rag1_filtered_1"/>
+            <x idref="hasInvariableSites.s:rag1_filtered_1"/>
+        </log>
+        <log id="ActiveGammaShape.s:rag1_filtered_1" spec="beast.util.Script" argnames="BMT_gammaShape hasGammaRates" expression="BMT_gammaShape * hasGammaRates">
+            <x idref="BMT_gammaShape.s:rag1_filtered_1"/>
+            <x idref="hasGammaRates.s:rag1_filtered_1"/>
+        </log>
+        <log idref="hasEqualFreqs.s:rag1_filtered_1"/>
+        <log idref="BMT_frequencies.s:rag1_filtered_1"/>
+        <log idref="BMT_mutationRate.s:rag1_filtered_2"/>
+        <log idref="RevJump.s:rag1_filtered_2"/>
+        <log idref="BMT_ModelIndicator.s:rag1_filtered_2"/>
+        <log idref="BMT_Rates.s:rag1_filtered_2"/>
+        <log idref="BMT_gammaShape.s:rag1_filtered_2"/>
+        <log idref="BMT_ProportionInvariable.s:rag1_filtered_2"/>
+        <log idref="hasGammaRates.s:rag1_filtered_2"/>
+        <log idref="hasInvariableSites.s:rag1_filtered_2"/>
+        <log id="ActivePropInvariable.s:rag1_filtered_2" spec="beast.util.Script" argnames="BMT_ProportionInvariable hasInvariableSites" expression="BMT_ProportionInvariable * hasInvariableSites">
+            <x idref="BMT_ProportionInvariable.s:rag1_filtered_2"/>
+            <x idref="hasInvariableSites.s:rag1_filtered_2"/>
+        </log>
+        <log id="ActiveGammaShape.s:rag1_filtered_2" spec="beast.util.Script" argnames="BMT_gammaShape hasGammaRates" expression="BMT_gammaShape * hasGammaRates">
+            <x idref="BMT_gammaShape.s:rag1_filtered_2"/>
+            <x idref="hasGammaRates.s:rag1_filtered_2"/>
+        </log>
+        <log idref="hasEqualFreqs.s:rag1_filtered_2"/>
+        <log idref="BMT_frequencies.s:rag1_filtered_2"/>
+        <log idref="BMT_mutationRate.s:rag1_filtered_3"/>
+        <log idref="RevJump.s:rag1_filtered_3"/>
+        <log idref="BMT_ModelIndicator.s:rag1_filtered_3"/>
+        <log idref="BMT_Rates.s:rag1_filtered_3"/>
+        <log idref="BMT_gammaShape.s:rag1_filtered_3"/>
+        <log idref="BMT_ProportionInvariable.s:rag1_filtered_3"/>
+        <log idref="hasGammaRates.s:rag1_filtered_3"/>
+        <log idref="hasInvariableSites.s:rag1_filtered_3"/>
+        <log id="ActivePropInvariable.s:rag1_filtered_3" spec="beast.util.Script" argnames="BMT_ProportionInvariable hasInvariableSites" expression="BMT_ProportionInvariable * hasInvariableSites">
+            <x idref="BMT_ProportionInvariable.s:rag1_filtered_3"/>
+            <x idref="hasInvariableSites.s:rag1_filtered_3"/>
+        </log>
+        <log id="ActiveGammaShape.s:rag1_filtered_3" spec="beast.util.Script" argnames="BMT_gammaShape hasGammaRates" expression="BMT_gammaShape * hasGammaRates">
+            <x idref="BMT_gammaShape.s:rag1_filtered_3"/>
+            <x idref="hasGammaRates.s:rag1_filtered_3"/>
+        </log>
+        <log idref="hasEqualFreqs.s:rag1_filtered_3"/>
+        <log idref="BMT_frequencies.s:rag1_filtered_3"/>
     </logger>
 
     <logger id="screenlog" logEvery="1000">
@@ -771,7 +744,7 @@
         <log idref="prior"/>
     </logger>
 
-    <logger id="treelog.t:16s_filtered" fileName="combined.trees" logEvery="10000" mode="tree">
+    <logger id="treelog.t:16s_filtered" fileName="combined_bmodeltest.trees" logEvery="10000" mode="tree">
         <log id="TreeWithMetaDataLogger.t:16s_filtered" spec="beast.evolution.tree.TreeWithMetaDataLogger" branchratemodel="@RelaxedClock.c:16s_filtered" tree="@Tree.t:16s_filtered"/>
     </logger>
 
