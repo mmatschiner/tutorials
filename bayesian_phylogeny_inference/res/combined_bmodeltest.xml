@@ -108,7 +108,7 @@
 <map name="OneOnX" >beast.math.distributions.OneOnX</map>
 
 
-<run id="mcmc" spec="MCMC" chainLength="10000000">
+<run id="mcmc" spec="MCMC" chainLength="25000000">
     <state id="state" storeEvery="5000">
         <tree id="Tree.t:16s_filtered" name="stateNode">
             <taxonset id="TaxonSet.16s_filtered" spec="TaxonSet">

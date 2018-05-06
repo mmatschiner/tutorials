@@ -33,7 +33,7 @@ The data used in this tutorial are the filtered versions of the alignments gener
 
 * **BEAST2:** The BEAST2 package, including BEAUti, BEAST2 itself, TreeAnnotator, and other tools can be downloaded from the BEAST2 website [https://www.beast2.org](https://www.beast2.org). As all these programs are written in Java, compilation is not required, and all programs should work on Mac OS X, Linux, and Windows. I recommend downloading the program versions that include the Java Runtime Environment, which may prevent conflicts with Java versions that may already be installed on your machine.<br>
 
-* **Tracer:** Just like BEAST2, Tracer is written in Java and should work on your system without problems. The program can be downloaded for Mac OS X, Linux, or Windows from [http://tree.bio.ed.ac.uk/software/tracer](http://tree.bio.ed.ac.uk/software/tracer).
+* **Tracer:** Just like BEAST2, Tracer is written in Java and should work on your system without problems. The latest version of the program can be downloaded for Mac OS X, Linux, or Windows from [http://tree.bio.ed.ac.uk/software/tracer/](http://tree.bio.ed.ac.uk/software/tracer/). The file with the extension `.dmg` is for Mac OS X, the one with the extension `.tgz` is for Linux, and the Windows version is the file ending in `.zip`.
 
 <a name="beast2"></a>
 ## Bayesian phylogenetic inference with BEAST2
@@ -82,20 +82,9 @@ In this part of the tutorial, we will run a basic Bayesian phylogenetic analysis
 		
 	Specify that all of these clades should be monophyletic, using the checkbox at the right of the row corresponding to each clade. The bottom part of the list in the "Prior" tab should then look as in the below screenshot.<p align="center"><img src="img/beauti13.png" alt="BEAUti" width="700"></p>
 		
-* Continue to the "MCMC" tab, where you can specify the run length. This analysis will require a few hundred million iterations before the MCMC chain reaches full stationarity. However, for the purpose of this tutorial, this will not be required. You could either use a chain length of 10,000,000, then the analysis should take about half an hour to an hour, or you could specify a chain length of 100,000,000 if you can run the analysis overnight. In any case, change the names of the output files: Click on the triangle to the left of "tracelog" and specify "combined.log" as the name of the log file. In the next field for "Log Every", set the number to "10000" (instead of the default 1,000) so that only every 10,000th MCMC state is written to the log file. Click on the triangle again, then click on the black triangle to the left of "treelog". Specify "combined.trees" as the name of the tree file and again use "10000" as the number in the field for "Log Every". When the window looks as in the below screenshot, click on "Save" in BEAUti's "File" menu, and name the resulting file in XML format `combined.xml`.<p align="center"><img src="img/beauti14.png" alt="BEAUti" width="700"></p>
+* Continue to the "MCMC" tab, where you can specify the run length. This analysis will require a few hundred million iterations before the MCMC chain reaches full stationarity. However, for the purpose of this tutorial, this will not be required. Instead, I recommend to use a chain length of 25 million states, thus specify "25000000" in the field for "Chain Length". This analysis should then take about 2 hours to complete (while BEAST2 is running you can continue with the remaining steps of this tutorial). Also change the names of the output files: Click on the triangle to the left of "tracelog" and specify "combined.log" as the name of the log file. In the next field for "Log Every", set the number to "10000" (instead of the default 1,000) so that only every 10,000th MCMC state is written to the log file. Click on the triangle again, then click on the black triangle to the left of "treelog". Specify "combined.trees" as the name of the tree file and again use "10000" as the number in the field for "Log Every". When the window looks as in the below screenshot, click on "Save" in BEAUti's "File" menu, and name the resulting file in XML format `combined.xml`.<p align="center"><img src="img/beauti14.png" alt="BEAUti" width="700"></p>
 
-* Now, open the program BEAST2 and select the file [`combined.xml`](res/combined.xml) as input file, as shown in the screenshot below. When you click the "Run" button, BEAST2 will start the analysis.<p align="center"><img src="img/beast1.png" alt="BEAUti" width="500"></p>
-
-
-
-
-
-
-
-
-
-
-
+* Now, open the program BEAST2 and select the file [`combined.xml`](res/combined.xml) as input file, as shown in the screenshot below. When you click the "Run" button, BEAST2 will start the analysis.<p align="center"><img src="img/beast1.png" alt="BEAUti" width="500"></p>While BEAST2 is running, you may continue with the next part of this tutorial. The results of this analysis and the analysis described below will be investigated and compared after both analyses have completed.
 
 
 <a name="bmodeltest"></a>
@@ -119,4 +108,39 @@ In the above phylogenetic inference, we assumed that the GTR substitution model 
 
 * Leave all settings in the "Clock Model" and "Priors" tabs unchanged, and go to the "MCMC" tab, where the output file names should be changed to avoid overwriting the output of the previous BEAST2 analysis. Click on the black triangle to the left of "tracelog" and specify "combined\_bmodeltest.log" as the name of the log output file. Then, click on the triangle next to "treelog" and specify "combined\_bmodeltest.trees" as the name of the tree file. Finally, click "Save As" in BEAUti's "File" menu and save the analysis settings to a new file named `combined_bmodeltest.xml`.
 
-* Open the program BEAST2 again, select now the file [`combined_bmodeltest.xml`](res/combined_bmodeltest.xml) as input file, and start the analysis by clicking on the "Run" button.
+* To run BEAST2 with the file [`combined_bmodeltest.xml`](res/combined_bmodeltest.xml), we may now not be able to do so with the GUI version of BEAST2 because the analysis of file `combined.xml` may still be running. If this is the case, we can run BEAST2 on the command-line instead, because the BEAST2 package that you downloaded also includes scripts to do so. Find out the path to your BEAST2 program package (on Mac OS X, this is usually `/Applications/BEAST\ 2.5.0/bin/` but you may have placed the package elsewhere). To familiarize yourself with the command-line options of BEAST2, type
+
+		/Applications/BEAST\ 2.5.0/bin/beast -help
+		
+	(assuming that your BEAST2 package is in that location; if not, just change the path).
+	If this works, then run BEAST2 on the command line with file [`combined_bmodeltest.xml`](res/combined_bmodeltest.xml):
+	
+		/Applications/BEAST\ 2.5.0/bin/beast combined_bmodeltest.xml
+		
+* While the two versions of BEAST2 are running with the files `combined.xml` (the GUI version) and `combined_bmodeltest.xml` (the command-line version), have a look at the screen output produced by both analyses. **Question 1:** How long does each analysis require per one million MCMC iterations? Is one of them faster? [(see answer)](#q1) If you don't want to wait for the analyses to finish, you may continue this tutorial with the output files of my analysis: The files [`combined.log`](res/combined.log) and [`combined.trees`](res/combined.trees) are the log and tree files resulting from the analysis of file `combined.xml`, and the files [`combined.log`](res/combined.log) and [`combined.trees`](res/combined.trees) are the output of the analysis with file [`combined_bmodeltest.xml`](res/`combined_bmodeltest.xml`).
+
+
+<a name="tracer"></a>
+## Assessing MCMC stationarity with Tracer
+
+In Bayesian analyses with the software BEAST2, it is rarely possible to tell *a priori* how many MCMC iterations will be required before the analysis can be considered complete. Instead, whether or not an analysis is complete is usually decided based on the inspection of the log file once BEAST2 has performed the specified number of MCMC iterations. There are various ways in which MCMC output can be used to assess whether or not an analysis can be considered complete, and in the context of phylogenetic analyses with BEAST2, the most commonly used diagnostic tools are those implemented in [Tracer](http://tree.bio.ed.ac.uk/software/tracer/) ([Rambaut et al. 2018](https://academic.oup.com/sysbio/advance-article/doi/10.1093/sysbio/syy032/4989127)) or the R package [coda](https://cran.r-project.org/web/packages/coda/index.html) ([Plummer et al. 2006](https://cran.r-project.org/doc/Rnews/Rnews_2006-1.pdf#page=7)). Here, we are going to investigate run completeness with Tracer. Ideally, we should have conducted the same BEAST2 analysis multiple times, then we could assess whether the replicate MCMC chains "converge" to the same posterior distribution, which would be a requirement for a complete MCMC analysis. However, given that we only conducted a single replicate of each of the two MCMC analyses (one with file `combined.xml` and one with file `combined_bmodeltest.xml`), we are limited to assessing the "stationarity" of the two chains. The easiest ways to do this in Tracer are:
+
+1. Calculation of "effective sample sizes" (ESS). Because consecutive MCMC iterations are always highly correlated, the number of effectively independent samples obtained for each parameter is generally much lower than the total number of sampled states. Calculating ESS values for each parameter is a way to assess the number of independent samples that would be equivalent to the much larger number of auto-correlated samples drawn for these parameters. These ESS values are automatically calculated for each parameter by Tracer. As a rule of thumb, the ESS values of all model parameters, or at least of all parameters of interest, should be above 200.
+2. Visual investigation of trace plots. The traces of all parameter estimates, or at least of those parameters with low ESS values should be visually inspected to assess MCMC stationarity. A good indicator of stationarity is when the trace plot has similarities to a "hairy caterpillar". While this comparison might sound odd, you'll understand its meaning when you see such a trace plot in Tracer.
+
+Thus, both the calculation of ESS values as well as the visual inspection of trace plots should indicate stationarity of the MCMC chain, otherwise, the run should be resumed. For BEAST2 analyses, this is possible with the "-resume" option when using BEAST2 on the command-line, or by selecting option "resume: appends log to existing files" in the drop-down menu at the top of the BEAST2 window when using the GUI version.
+
+
+* After the two BEAST2 analyses have completed (or if you decided not to wait and use the output of my analysis instead), open the file [`combined.log`](res/combined.log) in the program Tracer.
+
+
+
+<br><hr>
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+## Answers
+
+<a name="q1"></a>
+
+* **Question 1:** The times required per one million iterations should be very comparable between the two analyses. On my machine, about 6 minutes are required in both cases, with the analysis of file `combined.xml` being slightly faster. Thus, to complete the 25 million iterations specified in both files, run times of about 2.5 hours are required.
