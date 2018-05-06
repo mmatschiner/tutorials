@@ -12,6 +12,9 @@ In contrast to maximum-likelihood inference, Bayesian inference can take into ac
 * [Dataset](#dataset)
 * [Requirements](#requirements)
 * [Bayesian phylogenetic inference with BEAST2](#beast2)
+* [Automatic substitution model selection with BEAST2](#bmodeltest)
+
+
 
 
 <a name="outline"></a>
