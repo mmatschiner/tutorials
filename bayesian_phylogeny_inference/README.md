@@ -114,14 +114,23 @@ In the above phylogenetic inference, we assumed that the GTR substitution model 
 
 * Leave all settings in the "Clock Model" and "Priors" tabs unchanged, and go to the "MCMC" tab, where the output file names should be changed to avoid overwriting the output of the previous BEAST2 analysis. Click on the black triangle to the left of "tracelog" and specify "combined\_bmodeltest.log" as the name of the log output file. Then, click on the triangle next to "treelog" and specify "combined\_bmodeltest.trees" as the name of the tree file. Finally, click "Save As" in BEAUti's "File" menu and save the analysis settings to a new file named `combined_bmodeltest.xml`.
 
-* To run BEAST2 with the file [`combined_bmodeltest.xml`](res/combined_bmodeltest.xml), we may now not be able to do so with the GUI version of BEAST2 because the analysis of file `combined.xml` may still be running. If this is the case, we can run BEAST2 on the command-line instead, because the BEAST2 package that you downloaded also includes scripts to do so. Find out the path to your BEAST2 program package (on Mac OS X, this is usually `/Applications/BEAST\ 2.5.0/bin/` but you may have placed the package elsewhere). To familiarize yourself with the command-line options of BEAST2, type
+* To run BEAST2 with the file [`combined_bmodeltest.xml`](res/combined_bmodeltest.xml), we may now not be able to do so with the GUI version of BEAST2 because the analysis of file `combined.xml` may still be running. If this is the case, we can run BEAST2 on the command-line instead, because the BEAST2 package that you downloaded also includes scripts to do so. Find out the path to your BEAST2 program package (on Mac OS X, this is usually `/Applications/BEAST\ 2.5.0/bin/` but you may have placed the package elsewhere). To familiarize yourself with the command-line options of BEAST2, type either
 
 		/Applications/BEAST\ 2.5.0/bin/beast -help
+		
+	or
+	
+		export JAVA_HOME=/Applications/BEAST\ 2.5.0/jre1.8.0_161
+		/Applications/BEAST\ 2.5.0/jre1.8.0_161/bin/java -jar /Applications/BEAST\ 2.5.0/lib/beast.jar -help
 		
 	(assuming that your BEAST2 package is in that location; if not, just change the path).
 	If this works, then run BEAST2 on the command line with file [`combined_bmodeltest.xml`](res/combined_bmodeltest.xml):
 	
 		/Applications/BEAST\ 2.5.0/bin/beast combined_bmodeltest.xml
+		
+	or
+	
+		/Applications/BEAST\ 2.5.0/jre1.8.0_161/bin/java -jar /Applications/BEAST\ 2.5.0/lib/beast.jar combined_bmodeltest.xml
 		
 * While the two versions of BEAST2 are running with the files `combined.xml` (the GUI version) and `combined_bmodeltest.xml` (the command-line version), have a look at the screen output produced by both analyses. **Question 1:** How long does each analysis require per one million MCMC iterations? Is one of them faster? [(see answer)](#q1) If you don't want to wait for the analyses to finish, you may continue this tutorial with the output files of my analysis: The files [`combined.log`](res/combined.log) and [`combined.trees`](res/combined.trees) are the log and tree files resulting from the analysis of file `combined.xml`, and the files [`combined.log`](res/combined.log) and [`combined.trees`](res/combined.trees) are the output of the analysis with file [`combined_bmodeltest.xml`](res/`combined_bmodeltest.xml`).
 

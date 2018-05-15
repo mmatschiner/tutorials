@@ -338,9 +338,14 @@ Note that a far more extensive tutorial on divergence-time estimation with the F
 			
 	Save the XML file again with the same name (`Near_et_al_red_fbd.xml`).
 	
-* The XML file [`Near_et_al_red_fbd.xml`](res/Near_et_al_red_fbd.xml) is then ready to be analyzed with BEAST2. Since the GUI version of BEAST2 might still be running for the analysis with the CladeAge model, use once again (as in tutorial [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.md)) the command-line version of BEAST2 for this analysis with the FBD model. Assuming that your BEAST2 installation is `/Applications/BEAST\ 2.5.0`, use the following command to start the analysis:
+* The XML file [`Near_et_al_red_fbd.xml`](res/Near_et_al_red_fbd.xml) is then ready to be analyzed with BEAST2. Since the GUI version of BEAST2 might still be running for the analysis with the CladeAge model, use once again (as in tutorial [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.md)) the command-line version of BEAST2 for this analysis with the FBD model. Assuming that your BEAST2 installation is `/Applications/BEAST\ 2.5.0`, use one of the two following commands to start the analysis:
 
 		/Applications/BEAST\ 2.5.0/bin/beast Near_et_al_red_fbd.xml
+		
+	or
+	
+		export JAVA_HOME=/Applications/BEAST\ 2.5.0/jre1.8.0_161
+		/Applications/BEAST\ 2.5.0/jre1.8.0_161/bin/java -jar /Applications/BEAST\ 2.5.0/lib/beast.jar Near_et_al_red_fbd.xml
 
 	**Question 2:** How long does BEAST2 take for one million iterations in this analysis? [(see answer)](#q2)
 

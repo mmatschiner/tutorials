@@ -14,3 +14,5 @@ A collection of tutorials on phylogenetic and phylogenomic methods
 * [Bayesian Phylogenetic Inference](bayesian_phylogeny_inference)
 
 * [Phylogenetic Divergence-Time Estimation](divergence_time_estimation)
+
+* [Ortholog Detection](ortholog_detection)
