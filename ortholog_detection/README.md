@@ -1,4 +1,4 @@
-# Ortholog detection
+# Ortholog Detection
 
 A tutorial on the detection of orthologs in assembled genomes
 
