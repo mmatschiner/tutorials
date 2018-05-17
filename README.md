@@ -18,3 +18,5 @@ A collection of tutorials on phylogenetic and phylogenomic methods
 * [Ortholog Detection](ortholog_detection/README.md)
 
 * [Maximum-Likelihood Species-Tree Inference](ml_species_tree_inference/README.md)
+
+* [Bayesian Species-Tree Inference](bayesian_species_tree_inference/README.md)

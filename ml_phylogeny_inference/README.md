@@ -1,6 +1,6 @@
 # Maximum-Likelihood Phylogenetic Inference
 
-A tutorial on phylogenetic inference with maximum likelihood.
+A tutorial on phylogenetic inference with maximum likelihood
 
 ## Summary
 

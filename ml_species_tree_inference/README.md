@@ -1,6 +1,6 @@
 # Maximum-Likelihood Species-Tree Inference
 
-A tutorial on maximum-likelihood species tree inference based on gene trees
+A tutorial on maximum-likelihood species-tree inference based on gene trees
 
 ## Summary
 
@@ -22,7 +22,7 @@ In this tutorial, I will present how to quickly generate a set of gene trees bas
 <a name="dataset"></a>
 ## Dataset
 
-The dataset used in this tutorial is the set of alignments for 72 genes produced in tutorial [Ortholog Detection](../ortholog_detection/README.md). In brief, this dataset includes sequences for eleven cichlid species, two of which represent Neotropical cichlids while the remaining nine species are from Africa. The focus of the taxon set is on cichlids of the rapid radiations in the East African lakes Tanganyika, Malawi, and Victoria. The table below lists all species included in the set of alignments. Note, however, that the sequence data for *Ophthalmotilapia ventralis* was extracted from a transcriptome assembly whereas genome assemblies were available for all other species.
+The dataset used in this tutorial is the set of alignments for 72 genes produced in tutorial [Ortholog Detection](../ortholog_detection/README.md). In brief, this dataset includes sequences for eleven cichlid species, two of which represent Neotropical cichlids while the remaining nine species are from Africa. The focus of the taxon set is on cichlids of the rapid radiations in the East African lakes Tanganyika, Malawi, and Victoria. The table below lists all species included in the set of alignments. Note, however, that the sequence data for *Ophthalmotilapia ventralis* were extracted from a transcriptome assembly whereas genome assemblies were available for all other species.
 
 <center>
 
