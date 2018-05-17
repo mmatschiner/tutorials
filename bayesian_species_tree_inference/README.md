@@ -4,7 +4,7 @@ A tutorial on Bayesian inference of time-calibrated species trees
 
 ## Summary
 
-XXX
+Most approaches for species-tree inference based on the multi-species coalescent model use sets of gene trees as input and assume that these gene trees are known without error. Unfortunately, this is rarely the case and misleading estimates can result if gene trees are in fact incorrect due to poor phylogenetic signal or other reasons. This problem can be avoided when gene trees and species trees are co-estimated in one and the same analysis, and when this is done in a Bayesian framework. One of the most popular tools implementing this approach is StarBEAST2, which, as an add-on package for the software BEAST2, also has the advantage that it allows the estimation of accurate divergence times under the multi-species coalescent model.
 
 ## Table of contents
 
@@ -19,7 +19,7 @@ XXX
 <a name="outline"></a>
 ## Outline
 
-In this tutorial, XXX
+In this tutorial, I am going to present how a time-calibrated species tree can be inferred from a set of alignments with the multi-species-coalescent model implemented in StarBEAST2 ([Ogilvie et al. 2017](https://academic.oup.com/mbe/article/34/8/2101/3738283)), an add-on package for the program BEAST2. For comparison, the species tree will also be inferred based on concatenation, and differences between the divergence times estimated with both approaches will be investigated and discussed.
 
 
 <a name="dataset"></a>
@@ -85,7 +85,7 @@ In the part of the tutorial, we are going to use the multi-species-coalescent mo
 
 * We'll ignore the "Tip Dates" tab as in tutorial [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.md). Have a look at the "Gene Ploidy" tab instead. This is where you can specify the ploidy for each gene, which would have to be adjusted if we had mitochondrial markers. Given that all genes are from the nuclear genome (and assuming that none are from sex chromosomes), the default ploidy of 2 is correct; thus, don't change anything in this tab.<p align="center"><img src="img/beauti6.png" alt="BEAUti" width="700"></p>
 
-* Move on to the tab named "Population Model". As you can see from the selection in the drop-down menu at the top of this window, the default setting for the population model is "Automatic Population Size Integration". This default is a good option when multiple individuals are used per species; however, because our dataset includes only a single individual for each species, we should fix the population size to a reasonable estimate instead. To do so, select "Constant Populations" from the drop-down menu. In the field to the right of "Population Sizes", just leave the default value of 1.0. Even though unintuitive, this value does not directly specify the effective population size. Instead, this value needs to be scaled by the number of generations per time unit. Given that we will use 1 million years as the time unit in our analysis (as in the other tutorials), and assuming a generation time of 3 years for cichlids ([Malinsky et al. 2015](http://science.sciencemag.org/content/350/6267/1493)), there are 333,333 generations per time unit. Thus the value of 1.0 specified for the population size in fact translates to an assumed effective population size of 333,333, which is comparable to the population sizes estimated for African cichlid fishes in [Meyer et al. (2017)](https://academic.oup.com/sysbio/article-abstract/66/4/531/2670093). Make sure to leave the checkbox for to the left of "estimate" at the right of the window unticked so that the specified population size is in fact fixed. The window should then look as in the screenshot below.
+* Move on to the tab named "Population Model". As you can see from the selection in the drop-down menu at the top of this window, the default setting for the population model is "Automatic Population Size Integration". This default is a good option when multiple individuals are used per species; however, because our dataset includes only a single individual for each species, we should fix the population size to a reasonable estimate instead. To do so, select "Constant Populations" from the drop-down menu. In the field to the right of "Population Sizes", just leave the default value of 1.0. Even though unintuitive, this value does not directly specify the effective population size. Instead, this value needs to be scaled by the number of generations per time unit. Given that we will use 1 million years as the time unit in our analysis (as in the other tutorials), and assuming a generation time of 3 years for cichlids ([Malinsky et al. 2015](http://science.sciencemag.org/content/350/6267/1493)), there are 333,333 generations per time unit. Thus the value of 1.0 specified for the population size in fact translates to an assumed effective population size of 333,333, which is comparable to the population sizes estimated for African cichlid fishes in [Meyer et al. (2017)](https://academic.oup.com/sysbio/article/66/4/531/2670093). Make sure to leave the checkbox for to the left of "estimate" at the right of the window unticked so that the specified population size is in fact fixed. The window should then look as in the screenshot below.
 <p align="center"><img src="img/beauti7.png" alt="BEAUti" width="700"></p>
 
 * Continue to the "Site Model" tab. As in the other tutorials, select the "BEAST Model Test" model from the first drop-down menu to average over a set of substitution models, and choose the "namedExtended" set of substitution models from the second drop-down menu. Make sure to set a tick in the checkbox next to "estimate" at the right of the window to estimate the mutation rate of the first partition relative to those of other partitions. The BEAUti window should then look as shown in the next screenshot.<p align="center"><img src="img/beauti8.png" alt="BEAUti" width="700"></p>
@@ -140,11 +140,53 @@ In the part of the tutorial, we are going to use the multi-species-coalescent mo
 		
 	Save your changes to file `starbeast.xml`. This file is then ready to be analyzed with BEAST2.
 		
-* Open the program BEAST2, select file `starbeast.xml`, and click on "Run" to start the analysis.
+* Open the program BEAST2, select file [`starbeast.xml`](res/starbeast.xml), and click on "Run" to start the analysis.
 
 As described above, this analysis may take between 1 and 10 hours depending on the length of the MCMC chain that you decided to specify. Instead of waiting for the analysis to finish, you could cancel it at some point and use the output of my analysis to complete this tutorial. However, you could in any case first continue with the next part of the tutorial which is independent of the results of the StarBEAST2 analysis, and you could keep the StarBEAST2 analysis running in the meantime.
 
-[Bayesian species-tree inference with concatenation](#concatenation)
+<a name="concatenation"></a>
+## Bayesian species-tree inference with concatenation
+
+For comparison only, we are also going to repeat the above analysis not with the multi-species-coalescent model of StarBEAST2, but with BEAST2 based on concatenation. Several studies have already suggested that concatenation may not only lead to strong support for incorrect topologies ([Kubatko and Degnan 2007](https://academic.oup.com/sysbio/article/56/1/17/1658327)), but that it might also bias divergence times towards overestimation ([Meyer et al. 2017](https://academic.oup.com/sysbio/article/66/4/531/2670093); [Ogilvie et al. 2017](https://academic.oup.com/mbe/article/34/8/2101/3738283)). To see how this effect might influence divergence-time estimates of the eleven cichlid species, we are here going to analyze the dataset of twelve gene alignments also with concatenation and we will afterwards compare the results to those of the analysis with the multi-species-coalescent model.
+
+* Open BEAUti once again and do not load a template this time.
+
+* Import the same twelve alignments again. If you're asked to choose the datatype of the alignments, select "all are nucleotide" as before.
+
+* Select again all partitions, and this time click on both "Link Trees" and "Link Clock Models". As before, do not split the partitions according to codon position so that the results of this analysis with concatenation will be as comparable as possible with those of the analysis with the multi-species-coalescent model.
+
+* In the "Site Model" tab, select again the "BEAST Model Test" model to average over a set of substitution models, and choose the set of "namedExtended" models for this. Also set the tick in the checkbox next to "estimate" to allow estimation of the mutation rate of the first partition compared to other partitions. The window should then look as shown in the screenshot below.<p align="center"><img src="img/beauti20.png" alt="BEAUti" width="700"></p>
+
+* As before, select all partitions in the list on the left-hand side of the window and click "OK" to copy the settings from the first partition to all other partitions.
+
+* In the "Clock Model" tab, again select the strict-clock model. If the checkbox next to "estimate" at the right of the screen should be inactive, click on "Automatic set clock rate" in BEAUti's "Mode" menu to activate it. Then, set a tick in this checkbox, as shown in the next screenshot, to enable estimation of the clock rate.<p align="center"><img src="img/beauti21.png" alt="BEAUti" width="700"></p>
+
+* In the "Priors" tab, select again the "Birth Death Model" from the first drop-down menu.
+
+* Then, scroll again to the bottom of the list shown in the "Priors" tab and click the "+ Add Prior" button to add a calibration for the age of the root of the phylogeny as we did before for the StarBEAST2 analysis. Use again a normally distributed prior density with a mean of 65 and a standard deviation of 5.1. The BEAUti window should then look as shown in the next screenshot.<p align="center"><img src="img/beauti22.png" alt="BEAUti" width="700"></p>
+
+* For some reason, the default prior density for the clock rate is different when the StarBeast template is not used. Therefore, to keep the two two analyses as comparable as possible, we'll change the currently selected prior density for the clock rate so that it matches the one that we used in the the analysis with the multi-species-coalescent model. In that earlier analysis, the default prior density for the clock rate was lognormally distributed with a mean of 1 and a standard deviation (in real space) of 1. To use the same density here again, select "Log Normal" from the drop-down menu to the right of  "clockRate.c:ENSDARG000..." and click on the black triangle to the left of it. Then, specify "1.0" in the fields to the right of "M" (the mean) and "S" (the standard deviation). Also make sure to set a tick for "Mean In Real Space", as shown in the screenshot below.<p align="center"><img src="img/beauti23.png" alt="BEAUti" width="700"></p>
+
+* Continue to the "MCMC" tab and specify a chain length according to the time available for this analysis. A chain with 20 million iterations would probably require about 45 minutes and could be used in the rest of the tutorial, but it will not have reached stationarity. For a more complete analysis, use 100 million iterations if you can wait 4-5 hours for the analysis to finish. Specify a frequency of 5,000 in the field to the right of "Store Every", name the log output file "concatenated.log", and also specify a log frequency of 5,000 as shown in the next screenshot.<p align="center"><img src="img/beauti24.png" alt="BEAUti" width="700"></p>Finally, set the name of the tree file to "concatenated.trees" and again use a log frequency of 5,000 as shown below.<p align="center"><img src="img/beauti25.png" alt="BEAUti" width="700"></p>
+
+* Then, use "Save As" in BEAUti's "File" menu to save the settings to a file named `concatenated.xml`.
+ 
+* If the analysis with the GUI version of BEAST2 is still running for the analysis with the multi-species-coalescent model you can again (as described in tutorial [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.md)) the command-line version of BEAST2 to analyze the file [`concatenated.xml`](res/concatenated.xml). Assuming that your BEAST2 installation is `/Applications/BEAST\ 2.5.0`, use one of the two following commands to start the analysis:
+
+		/Applications/BEAST\ 2.5.0/bin/beast concatenated.xml
+		
+	or
+	
+		export JAVA_HOME=/Applications/BEAST\ 2.5.0/jre1.8.0_161
+		/Applications/BEAST\ 2.5.0/jre1.8.0_161/bin/java -jar /Applications/BEAST\ 2.5.0/lib/beast.jar concatenated.xml
+
+Depending on the chosen number of MCMC iterations, this analysis is likely to run for a duration between 45 minutes (with a chain length of 20 million) and 5 hours (with a chain length of 100 million).
+
+<a name="comparison"></a>
+## Comparing divergence times estimated with StarBEAST2 and concatenation
+
+XXX
+
 <br><hr>
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
