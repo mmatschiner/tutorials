@@ -12,7 +12,8 @@ XXX
 * [Dataset](#dataset)
 * [Requirements](#requirements)
 * [Bayesian species-tree inference with StarBEAST2](#starbeast2)
-* [Comparing divergence times estimated with StarBEAST2 and BEAST2](#bmodeltest)
+* [Bayesian species-tree inference with concatenation](#concatenation)
+* [Comparing divergence times estimated with StarBEAST2 and concatenation](#comparison)
 
 
 <a name="outline"></a>
@@ -57,7 +58,7 @@ As in tutorial [Maximum-Likelihood Species-Tree Inference](../ml_species_tree_in
 <a name="starbeast2"></a>
 ## Bayesian species-tree inference with StarBEAST2
 
-XXX Mention that if not yet familiar with BEAST2, the tutorial [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.md) should be checked!
+In the part of the tutorial, we are going to use the multi-species-coalescent model implementation of StarBEAST2 ([Ogilvie et al. 2017](https://academic.oup.com/mbe/article/34/8/2101/3738283)) to estimating a time-calibrated species tree from the set of twelve alignments. If you're not familiar with the BEAST2 environment yet, you might want to check the tutorials on [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.md) and [Phylogenetic Divergence-Time Estimation](../divergence_time_estimation/README.md) before going through this tutorial.
 
 * Download the compressed directory [`09.tgz`](data/09.tgz) containing the 72 filtered alignments produced in tutorial [Ortholog Detection](../ortholog_detection/README.md).
 
@@ -115,7 +116,7 @@ XXX Mention that if not yet familiar with BEAST2, the tutorial [Bayesian Phyloge
 
 * Then, save the file using "Save As" in BEAUti's "File" menu and name it "starbeast.xml".
 
-* Before we analyze file "starbeast.xml" with BEAST2, we still need to make small adjustments to the file. This is because for some reason, BEAUti writes a parameter for the population size to the file and also places operators and a prior density on this parameter, even though we specified to use a constant population size. As a result, the prior probability would change throughout the MCMC analysis without any impact on the likelihood, which massively increases the number of iterations required to reach stationarity. Thus, we'll completely remove this parameter from the BEAST2 input file. To do so, open the file in a text editor find the following line on which the parameter is introduced, and delete the line:
+* Before we analyze file `starbeast.xml` with BEAST2, we still need to make small adjustments to the file. This is because for some reason, BEAUti writes a parameter for the population size to the file and also places operators and a prior density on this parameter, even though we specified to use a constant population size. As a result, the prior probability would change throughout the MCMC analysis without any impact on the likelihood, which massively increases the number of iterations required to reach stationarity. Thus, we'll completely remove this parameter from the BEAST2 input file. To do so, open the file in a text editor find the following line on which the parameter is introduced, and delete the line:
 
 		<parameter id="constPopMean.Species" lower="0.0" name="stateNode">1.0</parameter>
 				
@@ -137,10 +138,13 @@ XXX Mention that if not yet familiar with BEAST2, the tutorial [Bayesian Phyloge
 	
 		<log idref="constPopMean.Species"/>
 		
-	Save your changes to file "starbeast.xml". This file is then ready to be analyzed with BEAST2.
+	Save your changes to file `starbeast.xml`. This file is then ready to be analyzed with BEAST2.
 		
+* Open the program BEAST2, select file `starbeast.xml`, and click on "Run" to start the analysis.
 
+As described above, this analysis may take between 1 and 10 hours depending on the length of the MCMC chain that you decided to specify. Instead of waiting for the analysis to finish, you could cancel it at some point and use the output of my analysis to complete this tutorial. However, you could in any case first continue with the next part of the tutorial which is independent of the results of the StarBEAST2 analysis, and you could keep the StarBEAST2 analysis running in the meantime.
 
+[Bayesian species-tree inference with concatenation](#concatenation)
 <br><hr>
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
