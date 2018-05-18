@@ -178,7 +178,7 @@
 <map name="OneOnX" >beast.math.distributions.OneOnX</map>
 
 
-<run id="mcmc" spec="MCMC" chainLength="500000000" storeEvery="50000">
+<run id="mcmc" spec="MCMC" chainLength="100000000" storeEvery="50000">
     <state id="state" storeEvery="5000">
         <stateNode id="Tree.t:Species" spec="starbeast2.SpeciesTree">
             <taxonset id="taxonsuperset" spec="starbeast2.StarBeastTaxonSet">

@@ -13,7 +13,7 @@ Most approaches for species-tree inference based on the multi-species coalescent
 * [Requirements](#requirements)
 * [Bayesian species-tree inference with StarBEAST2](#starbeast2)
 * [Bayesian species-tree inference with concatenation](#concatenation)
-* [Comparing divergence times estimated with StarBEAST2 and concatenation](#comparison)
+* [Comparing species trees estimated with StarBEAST2 and concatenation](#comparison)
 
 
 <a name="outline"></a>
@@ -77,7 +77,7 @@ In the part of the tutorial, we are going to use the multi-species-coalescent mo
 * You may notice that the interface of BEAUti apparently has not yet changed after installing the StarBEAST2 package. This is because we still need to load one of several BEAUti templates that are provided by StarBEAST2. If you hover with the mouse over "Template" in BEAUti's "File" menu, you'll see that several templates are now available that apparently are connected to StarBEAST2, as shown in the next screenshot.<p align="center"><img src="img/beauti2.png" alt="BEAUti" width="700"></p>The templates provided by StarBEAST2 are "SpeciesTreeUCED", "SpeciesTreeRLC", "StarBeast2", and "SpeciesTreeUCLN" (the template named "StarBeast" refers to the older version of StarBEAST that is installed by default). Of the four templates for StarBEAST2, the one named "StarBeast2" implements a strict-clock model, the two templates named "SpeciesTreeUCED" and "SpeciesTreeUCLN" implement relaxed-clock models with exponentially or lognormally distributed rate variation, respectively, and the template named "SpeciesTreeRLC" implements a random local clock. In contrast to the first version of StarBEAST (\*BEAST), rate variation is modelled in StarBEAST2 as a species trait that applies to all genes instead of being estimated individually for each gene; this is one of the reasons why StarBEAST2 is much faster than StarBEAST (\*BEAST). The different clock models and their implementations are described in detail in [Ogilvie et al. (2017)](https://academic.oup.com/mbe/article/34/8/2101/3738283).<br>Because we are here investigating relationships of rather closely related species with comparable lifestyle and habitat, we'll assume that differences in their evolutionary rates are negligible. This choice will also be the more convenient one for this tutorial as relaxed-clock models would be computationally more demanding. Thus, select the template named "StarBeast2" to use the strict-clock model. Note, however, that if the analysis would be for a publication, it would be worth also exploring models of rate variation.<br>After clicking on the "StarBeast2" template, you should see that the tabs "Taxon sets", "Gene Ploidy", and "Population Model" have been added to the BEAUti window, as shown in the next screenshot.
 <p align="center"><img src="img/beauti3.png" alt="BEAUti" width="700"></p>
 
-* Click on "Import Alignment" in the "File" menu and select the twelve alignments of our dataset. The window should then look as shown below.<p align="center"><img src="img/beauti4.png" alt="BEAUti" width="700"></p>
+* Click on "Import Alignment" in the "File" menu and select the twelve alignment files from directory `10`. The window should then look as shown below.<p align="center"><img src="img/beauti4.png" alt="BEAUti" width="700"></p>
 
 * Select all partitions and click on "Link Clock Models" in the menu bar above the partitions table. However, unlike in tutorial [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.md), leave the tree models unlinked. In contrast to the analyses in this other tutorial, we will also not split each partition according to codon positions. For a full analysis it could be worthwile to do so, but to reduce computational requirements, we will here use only one partition per gene.
 
@@ -116,7 +116,7 @@ In the part of the tutorial, we are going to use the multi-species-coalescent mo
 
 * Then, save the file using "Save As" in BEAUti's "File" menu and name it "starbeast.xml".
 
-* Before we analyze file `starbeast.xml` with BEAST2, we still need to make small adjustments to the file. This is because for some reason, BEAUti writes a parameter for the population size to the file and also places operators and a prior density on this parameter, even though we specified to use a constant population size. As a result, the prior probability would change throughout the MCMC analysis without any impact on the likelihood, which massively increases the number of iterations required to reach stationarity. Thus, we'll completely remove this parameter from the BEAST2 input file. To do so, open the file in a text editor find the following line on which the parameter is introduced, and delete the line:
+* Before we analyze file `starbeast.xml` with BEAST2, we still need to make small adjustments to the XML file. This is because for some reason, BEAUti writes a parameter for the population size to the file and also places operators and a prior density on this parameter, even though we specified to use a constant population size. As a result, the prior probability would change throughout the MCMC analysis without any impact on the likelihood, which massively increases the number of iterations required to reach stationarity. Thus, we'll completely remove this parameter from the BEAST2 input file. To do so, open the file in a text editor find the following line on which the parameter is introduced, and delete the line:
 
 		<parameter id="constPopMean.Species" lower="0.0" name="stateNode">1.0</parameter>
 				
@@ -183,9 +183,51 @@ For comparison only, we are also going to repeat the above analysis not with the
 Depending on the chosen number of MCMC iterations, this analysis is likely to run for a duration between 45 minutes (with a chain length of 20 million) and 5 hours (with a chain length of 100 million).
 
 <a name="comparison"></a>
-## Comparing divergence times estimated with StarBEAST2 and concatenation
+## Comparing species trees estimated with StarBEAST2 and concatenation
 
-XXX
+We are now going to compare the time-calibrated species trees estimated with the multi-species coalescent model and with concatenation. Recall that both analyses used the same sequence data, the same time calibration, and the same substitution and clock models. The difference between the two approaches is only that the multi-species coalescent model estimates the species tree and all gene trees separately whereas just a single tree is estimated based on concatenation.
+
+* First, we'll assess the stationarity of the MCMC analyses once again with the software Tracer. Thus, open the log files resulting from both analyses, [`starbeast.log`](starbeast.log) and [`concatenated.log`](concatenated.log) in Tracer. If you ran the analysis with StarBEAST2 for a billion generations, the trace plot for the posterior of that analysis should look more or less as shown in the next screenshot.<p align="center"><img src="img/tracer1.png" alt="Tracer" width="700"></p>The ESS value for the posterior as well as for the likelihood are below 200, suggesting that the analysis should ideally have run even longer. Nevertheless, the current results are sufficient to allow a comparison of the divergence times obtained with the two models.
+
+* Have a look at the estimates for the parameters named "TreeHeight.Species" or "TreeHeight.t:ENSDAR...". These are the mean age estimates for the roots of the species tree and the all gene trees. You'll see that the mean estimate for the root of the species tree is slightly younger than the mean of the prior density that we placed on it. This could for example be caused by the prior density on the clock rate that might push the rate towards larger values and thus the tree age towards a younger origin. However, given that the relative difference to the expected root age is minor, we'll ignore it here. More interesting is the difference between the age of the species-tree root and the ages of the gene-tree roots. **Question 2:** What is the average age difference between the root of the species tree and those of the gene trees; and could we have expected this difference? [(see answer)](#q2)
+
+* Scroll down the list of parameters to check the other ESS values. You'll notice that particularly the ESS values for the first two gene-tree likelihoods are rather poor. The histogram for the first of these gene-tree likelihoods should have a bimodal distribution similar to that shown in the next screenshot.<p align="center"><img src="img/tracer2.png" alt="Tracer" width="700"></p>The trace plot for the same gene-tree likelihood shows that the MCMC chain seems to have switched back and forth between two different states, as shown below.<p align="center"><img src="img/tracer3.png" alt="Tracer" width="700"></p> **Question 3:** Can you figure out what might cause these switches? [(see answer)](#q3)
+
+* Next, check the stationarity of the chain for the concatenated analysis. You'll see that the patter for this analysis (after 100 million MCMC iterations) is quite comparable to that of the analysis with the multi-species-coalescent model (after 1 billion iterations). It is not surprising that the analysis with the multi-species coalescent model requires more iterations to reach a similar level of stationarity, given that twelve gene trees and a species tree need to be optimized by that model wheras only a single tree is estimated based on concatenation.
+
+* Next, use TreeAnnotator (see tutorial [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.md) if you are not familiar with this tool yet) to generate maximum-clade-credibility summary trees for the species tree of the analysis with the multi-species-coalescent model (file [`starbeast_species.trees`](res/starbeast_species.trees)) and for the tree based on concatenation (file [`concatenated.trees`](res/concatenated.trees)). To do so, use a burnin percentation of 10 and select "Mean heights" from the drop-down menu next to "Node heights:". Select either [`starbeast_species.trees`](res/starbeast_species.trees)) or [`concatenated.trees`](res/concatenated.trees) as input tree file and name the output file accordingly `starbeast_species.tre` or `concatenated.tre`. The next screenshot shows these settings for the species tree of the analysis with the multi-species-coalescent model.<p align="center"><img src="img/treeannotator1.png" alt="TreeAnnotator" width="500"></p>
+
+* Open the two summary trees of files [`starbeast_species.tre`](res/starbeast_species.tre) and [`concatenated.tre`](res/concatenated.tre) in FigTree, select "Node ages" to be displayed as node labels, and compare these between the two trees. The two summary trees should look similar to those shown in the next two screenshots.  **Question 4:** What do you notice? [(see answer)](#q4)<p align="center"><img src="img/figtree1.png" alt="BEAUti" width="600"></p><p align="center"><img src="img/figtree2.png" alt="BEAUti" width="600"></p>
+
+* If you display the "posterior" instead of the node ages as the node labels in both trees, you'll see that generally the support values are higher when based on concatenation. **Question 5:** Given these differences, which phylogeny do you consider more reliable? [(see answer)](#q5)
+
+* To visualize the variation among the gene trees, we'll also generate maximum-clade-credibility summary trees for each of the twelve gene trees. We could do so again using the GUI verson of TreeAnnotator, but it will be faster to do so with the command-line version of the program instead. If your BEAST2 installation should be located in `/Applications/Beast/2.5.0`, you should be able to use the following command to run TreeAnnotator for all gene trees; if not, you will have to adjust the path given in this command:
+
+		for i in starbeast_ENSDARG*.trees
+		do
+			/Applications/Beast/2.5.0/bin/treeannotator -burnin 10 -heights mean ${i} ${i%.trees}.tre
+		done
+
+* You should then have twelve summary-tree files ending in `.tre`. To see if this is the case, you could do a quick check with
+
+		ls starbeast_ENSDARG*.tre | wc -l
+		
+* To visualize the summary trees for all genes jointly with the species tree from the analysis with the multi-species-coalescent model, we can use the program Densitree ([Bouckaert 2010](https://academic.oup.com/bioinformatics/article/26/10/1372/192963)) that is distributed as part of the BEAST2 package. Thus, you will find it in the same directory as BEAST2, BEAUti, and TreeAnnotator. However, before we can open all summary trees jointly in Densitree, we'll need to prepare a single file containing all of them. The easiest way to do so is with the Python script [`logcombiner.py`](src/logcombiner.py), which accepts a list with the names of tree files as input and produces a single tree file with these trees as output. Thus, first generate a file with a list of the names of the summary-tree files for the species tree as well as the gene trees from the analysis with the multi-species-coalescent mode:
+		
+		ls starbeast_species.tre starbeast_ENSDARG*.tre > starbeast_trees.txt
+		
+
+* Then, use this file as input for the script `logcombiner.py` and specify `starbeast_genes.trees` as the name of the output file:
+	
+		python3 logcombiner.py starbeast_trees.txt starbeast.trees
+		
+	(there will be a warning message but you can ignore it).
+
+* You can then open file [`starbeast.trees`](res/starbeast.trees) in the software Densitree. After rotating some nodes to match the node order of the FigTree screenshots above (click "Show Edit Tree" in DensiTree's "Edit" menu to do this), the set of trees should look as shown in the next screenshot.<p align="center"><img src="img/densitree1.png" alt="DensiTree" width="600"></p> **Question 6:** Can you tell which of the trees shown in DensiTree is the species tree? [(see answer)](#q6)
+
+* As you'll see from the DensiTree visualization, there is much variation in the topologies of the gene trees. This could either only appear to be so due to a lack of phylogenetic signal or it could reflect real gene-tree discordance due to incomplete lineage sorting. To find out which of the two possibilities is responsible for the displayed variation, we can check if discordant relationships are strongly supported in different gene trees. For example, open the summary trees for the genes ENSDARG00000058676 and ENSDARG00000062267 (files [`starbeast_ENSDARG00000058676.tre`](res/starbeast_ENSDARG00000058676.tre) and [`starbeast_ENSDARG00000062267.tre`](res/starbeast_ENSDARG00000062267.tre)) in FigTree, and select the "posterior" to be displayed as node labels in both trees. The two FigTree windows should then look more or less like the two screenshots below.<p align="center"><img src="img/figtree3.png" alt="FigTree" width="600"></p><p align="center"><img src="img/figtree4.png" alt="FigTree" width="600"></p>You'll see that many relationships in these two trees are strongly supported but nevertheless disagree between the two genes. For example, a sister-group relationship between *Metriaclima zebra* ("metzeb")and *Pundamilia nyererei* ("punnye") is strongly supported (Bayesian posterior probability = 1.0) by gene ENSDARG00000058676 whereas gene ENSDARG00000062267 gives the same strong support to a sister-group relationship between *Astatotilapia burtoni* ("astbur") and *Pundamilia nyererei* ("punnye"). Moreover, none of the relationships among the species of genus *Neolamprologus* ("neobri", "neogra", "neomar", and "neooli") agree between the two trees and yet all are very strongly supported. These well-supported conflicts are strong evidence for either incomplete lineage sorting or introgression, two processes that would result in misleading estimates when concatenation is used for phylogenetic inference.
+
+By accounting for incomplete lineage sorting, our analysis with the multi-species coalescent model have now generated a timeline of cichlid divergences that may be considered relatively robust (assuming that it is not overly biased by unaccounted introgression). Notably, our estimates indicate that the four *Neolamprologus* species from Lake Tanganyika diversified within the last million years, a time period that is very short compared to the estimated age of the lake of 9-12 million years ([Salzburger et al. 2015](https://www.annualreviews.org/doi/10.1146/annurev-ecolsys-120213-091804)).
 
 <br><hr>
 
@@ -195,6 +237,31 @@ XXX
 
 <a name="q1"></a>
 
-* **Question 1:** After removing alignments that do not contain sequence information for all eleven cichlid species, twelve sequence alignments remain in the dataset, as can be shown with
+* **Question 1:** After removing alignments that do not contain sequence information for all eleven cichlid species, twelve sequence alignments remain in the dataset, as can be shown with this command:
 
 		ls 10/*.fasta | wc -l
+		
+
+<a name="q2"></a>
+
+* **Question 2:** In file [`starbeast.log`](starbeast.log), the ages of gene trees are 65.268, 64.546, 64,786, 65.410, 65.128, 65.433, 65.485, 67.384, 65.213, 65.740, 64.919, and 65.638 Ma. The mean of these ages is 65.413 Ma, a little more than 2 million years older than the age of the species tree. This is pretty much what we could have expected, because the time expected for two alleles in a panmictic population is 2 &times; <i>N</i><sub>e</sub> &times; <i>g</i>, where <i>N</i><sub>e</sub> is the effective population size and <i>g</i> is the generation time (note that in the model, the ancestral population is assumed to be panmictic before the species divergence). Recall that we had fixed the population-size value in the "Population Model" tab in BEAUti to 1.0, because we assumed a population size of 333,333, equal to the number of generations per million year if we assume a generation time of 3 years for cichlids. With the same assumed values for the population size and generation time, the expected time to coalescence is 2 &times; 333,333 * 3 = 2,000,000, very much in line with the observed age difference between the species tree and the gene trees.
+
+
+<a name="q3"></a>
+
+* **Question 3:** The reason for the switches in the likelihood of the first gene tree are actually not very obvious. Usually, such patterns can arise when rare topological changes of the species tree occur during the MCMC chain, that increase the likelihood of one gene tree while decreasing the likelihood of another gene tree so that the overall likelihood remains more or less constant. However, this is not the case here. Examining the tree files for the species tree ([`starbeast_species.trees`](res/starbeast_species.trees)) and the first gene tree ([`starbeast_ENSDARG00000012368.trees`](starbeast_ENSDARG00000012368.trees)) shows that both topologies change much more frequently than the switches in the likelihood occur. Instead, it is possible that the changes in the likelihood are driven by variation in substitution-rate estimates. At least a comparison of the first gene-tree likelihood with the rate of C &rarr; T changes indicates that both correlate, as shown in the next screenshot. Regardless of the underlying cause it appears that running the chain with more iterations (perhaps five times longer) might allow to average adequately over both states so that the chain can eventually be considered stationary despite the switches between the two states.<p align="center"><img src="img/tracer4.png" alt="Tracer" width="700"></p>
+
+
+<a name="q4"></a>
+
+* **Question 4:** You should be able to see that particularly the young divergence times are proportionally very different between the two trees. In the extreme case, the divergence of youngest divergence event is estimated around 0.4 Ma with the multi-species-coalescent model, but four times older, around 1.7 Ma based on concatenation. Note, however, that the two species involved in this divergence are not identical in the two trees, the two divergence times are therefore not directly comparable. Nevertheless, age estimates are also very different for strongly supported nodes that are only slightly older: The first divergence among the species of the genus *Neolamprologus* is estimated at around 0.9 Ma with the multi-species coalescent model, but around 2.5 Ma (still more than twice as old!) with concatenation.
+
+
+<a name="q5"></a>
+
+* **Question 5:** It is well known that concatenation can lead to inflated node support (e.g. [Kubatko and Degnan 2007](https://academic.oup.com/sysbio/article/56/1/17/1658327); [Degnan and Rosenberg 2009](https://www.sciencedirect.com/science/article/pii/S0169534709000846)), so the higher node-support values based on concatenation are not unexpected and they should not be trusted. In addition, the divergence-time estimates based on concatenation should also be seen with caution, as simulations have shown in several studies (e.g. [Ogilvie et al. 2017](https://academic.oup.com/mbe/article/34/8/2101/3738283); [Stange et al. 2018](https://academic.oup.com/sysbio/advance-article/doi/10.1093/sysbio/syy006/4827616)) that these can be overestimated. The multi-species-coalescent model, on the other hand, accounts for variation in gene trees due to incomplete lineage sorting and recombination, and thus should be robust to one of the most important sources of potential bias. However, it should be noted that the multi-species-coalescent model also does not account for other processes that might influence the reliability of the phylogenetic estimates, such as hybridization and gene flow or ancestral population structure.
+
+
+<a name="q6"></a>
+
+* **Question 6:** Even though it is difficult to see, one can tell that the species tree is shown in dark green. This is because necessarily all divergences in the species tree are younger than the corresponding divergences in the gene tree, and this is the case for the tree shown in dark green. The opposite, gene tree divergences younger than species tree divergences, could only be possible through introgression; however, this since introgression is not included in the the multi-species-coalescent model used for this analysis, gene trees must be older than the species tree.
