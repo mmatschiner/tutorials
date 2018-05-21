@@ -1,0 +1,16 @@
+BEGIN SETS;
+    TAXPARTITION SPECIES =
+        astbur: 1-2,
+        altfas: 3-4,
+        telvit: 5-6,
+        neobri: 7-8,
+        neochi: 9-10,
+        neocra: 11-12,
+        neogra: 13-14,
+        neohel: 15-16,
+        neomar: 17-18,
+        neooli: 19-20,
+        neopul: 21-22,
+        neosav: 23-24,
+        neowal: 25-26;
+END;
