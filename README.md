@@ -21,13 +21,13 @@ A collection of tutorials on phylogenetic and phylogenomic methods
 
 * [Bayesian Species-Tree Inference](bayesian_species_tree_inference/README.md)
 
-* [Local Assembly](local_assembly/README.md)
+* [Local Assembly](local_assembly/README.md) <!-- inprogress -->
 
-* Species-Tree Inference with SNP Data <!-- SVDQuartets -->
+* [Species-Tree Inference with SNP Data](species_tree_inference_with_snp_data/README.md) <!-- inprogress -->
 
-* Divergence-Time Estimation with SNP Data <!-- SNAPP -->
+* [Divergence-Time Estimation with SNP Data](divergence_time_estimation_with_snp_data/README.md) <!-- inprogress -->
 
-* Bayesian Analysis of Reticulate Evolution <!-- Species Network -->
+* [Bayesian Analysis of Reticulate Evolution](bayesian_analysis_of_reticulate_evolution/README.md) <!-- inprogress -->
 
 * Analysis of Introgression with SNP Data <!-- D-Statistics, Phasing, TWISST, plots for alleles fixed between parents, Improving phasing based on parents -->
 
