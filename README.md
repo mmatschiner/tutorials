@@ -27,7 +27,7 @@ A collection of tutorials on phylogenetic and phylogenomic methods
 
 * [Divergence-Time Estimation with SNP Data](divergence_time_estimation_with_snp_data/README.md)
 
-* [Bayesian Analysis of Species Networks](bayesian_analysis_of_species_networks/README.md) <!-- inprogress -->
+* [Bayesian Analysis of Species Networks](bayesian_analysis_of_species_networks/README.md)
 
 * [Analysis of Introgression with SNP Data](analysis_of_introgression_with_snp_data/README.md) <!-- D-Statistics, Phasing, TWISST, plots for alleles fixed between parents, Improving phasing based on parents -->
 

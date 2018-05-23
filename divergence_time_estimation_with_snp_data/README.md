@@ -64,7 +64,7 @@ The SNP data used in this tutorial is the filtered dataset used for species-tree
 <a name="requirements"></a>
 ## Requirements
 
-* **BEAST2:** If you followed other tutorials in this collection, you likely have the BEAST2 package, including BEAST2 itself and TreeAnnotator, installed already. If not, you can downloaded these from the BEAST2 website [https://www.beast2.org](https://www.beast2.org). As all these programs are written in Java, compilation is not required, and all programs should work on Mac OS X, Linux, and Windows. I recommend downloading the program versions that include the Java Runtime Environment, which may prevent conflicts with Java versions that may already be installed on your machine.<br>
+* **BEAST2:** If you followed other tutorials in this collection, you likely have the BEAST2 package, including BEAST2 itself and TreeAnnotator, installed already. If not, you can downloaded it from the BEAST2 website [https://www.beast2.org](https://www.beast2.org). As all these programs are written in Java, compilation is not required, and all programs should work on Mac OS X, Linux, and Windows. I recommend downloading the program versions that include the Java Runtime Environment, which may prevent conflicts with Java versions that may already be installed on your machine.<br>
 
 * **Tracer:** Like BEAST2, you probably have Tracer installed already if you did other tutorials of this collection. If not, you can download Tracer for Mac OS X, Linux, or Windows from [http://tree.bio.ed.ac.uk/software/tracer/](http://tree.bio.ed.ac.uk/software/tracer/). The file with the extension `.dmg` is for Mac OS X, the one with the extension `.tgz` is for Linux, and the Windows version is the file ending in `.zip`.
 		
