@@ -37,7 +37,7 @@ The data used in this tutorial are the filtered versions of the alignments gener
 
 * **Tracer:** Just like BEAST2, Tracer is written in Java and should work on your system without problems. The program can be downloaded for Mac OS X, Linux, or Windows from [http://tree.bio.ed.ac.uk/software/tracer/](http://tree.bio.ed.ac.uk/software/tracer/). The file with the extension `.dmg` is for Mac OS X, the one with the extension `.tgz` is for Linux, and the Windows version is the file ending in `.zip`.
 
-* **FigTree:** The program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) by Andrew Rambaut is a very intuitive and useful tool for the visualization and (to a limited extent) manipulation of phylogenies encoded in [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) format. Executables for Mac OS X, Linux, and Windows are provided on [http://tree.bio.ed.ac.uk/software/figtree/](http://tree.bio.ed.ac.uk/software/figtree/).
+* **FigTree:** If you followed tutorial [Maximum-Likelihood Phylogenetic Inference](../ml_phylogeny_inference/README.md), you should already have [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) installed. If not, you will find executables for Mac OS X, Linux, and Windows on [http://tree.bio.ed.ac.uk/software/figtree/](http://tree.bio.ed.ac.uk/software/figtree/).
 
 
 <a name="beast2"></a>

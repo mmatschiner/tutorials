@@ -34,7 +34,7 @@ We are going to perform local assembly with read data of *Neolamprologus pulcher
 * **aTRAM2:** The software aTRAM2 itself is easy to install as it is written in Python3. The installation is described on the [aTRAM github repository](https://github.com/juliema/aTRAM), but you can skip the part in those instructions about the virtual environment, and simply use the two commands below to download the latest version of aTRAM2 and install required Python libraries:
 
 		git clone https://github.com/juliema/aTRAM.git
-		pip3 install -r aTRAM/requirements.txt
+		python3 -m pip install --user -r aTRAM/requirements.txt
 		
 	If the second command should fail, you might have to check if pip3 is installed under the name of "pip" instead. To do so, use `pip --version` and if this outputs a pip version associated with Python 3, then you can use `pip` instead of `pip3`.
 		

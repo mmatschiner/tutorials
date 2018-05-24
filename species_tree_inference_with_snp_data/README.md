@@ -1,6 +1,6 @@
 # Species-Tree Inference with SNP Data
 
-A tutorial on the inference of species trees from SNP data based on phylogenetic invariants.
+A tutorial on the inference of species trees from SNP data based on quartets
 
 ## Summary
 
@@ -68,7 +68,7 @@ Note that one of these *Neolamprologus* species, *Neolamprologus cancellatus* ("
 
 * **bcftools:** [bcftools](http://www.htslib.org/doc/bcftools.html) ([Li 2011](https://academic.oup.com/bioinformatics/article/27/21/2987/217423)) is a fast and versatile tool for the manipulation and filtering of variant data in VCF format. Downloads and instructions for installation on Mac OS X and Linux are available at the [HTSlib download webpage](http://www.htslib.org/download/). Installation on Windows is apparently not possible. If you should fail to install bcftools, you could skip the optional [SNP filtering](#filtering) steps in the first part of the tutorial and still run the SVDQuartets analysis.
 
-* **vcftools:** Similar to bcftools, [vcftools](https://vcftools.github.io/downloads.html) ([Danecek et al. 2011](https://academic.oup.com/bioinformatics/article/27/15/2156/402296)) is a program for the manipulation of files in VCF format. vcftools is generally slower than bcftools and is increasingly being replaced by it. Nevertheless, some functions that are available in vcftools have not yet been implemented in bcftools; therefore vcftools will also be used in thus tutorial. Download files and installation instructions can be found at the [vcftools download webpage](https://vcftools.github.io/downloads.html). Like the bcftools installation, installing vcftools is not absolutely required for this tutorial because you could skip the [SNP filtering](#filtering) part of the tutorial.
+* **vcftools:** Similar to bcftools, [vcftools](https://vcftools.github.io/downloads.html) ([Danecek et al. 2011](https://academic.oup.com/bioinformatics/article/27/15/2156/402296)) is a program for the manipulation of files in VCF format. vcftools is generally slower than bcftools and is increasingly being replaced by it. Nevertheless, some functions that are available in vcftools have not yet been implemented in bcftools; therefore vcftools will also be used in this tutorial. Download files and installation instructions can be found at the [vcftools download webpage](https://vcftools.github.io/downloads.html). Like the bcftools installation, installing vcftools is not absolutely required for this tutorial because you could skip the [SNP filtering](#filtering) part of the tutorial.
 
 
 <a name="filtering"></a>
