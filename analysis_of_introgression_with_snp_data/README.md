@@ -474,35 +474,71 @@ A very simple alternative way of investigating patterns of ancestry in potential
 	We'll use the file `pops1.fixed.txt` as input, name the output file `pops1.fixed.svg`, require again that no missing data remains in the output, and we'll thin the remaining distances so that those plotted have a minimum distance of 1,000 bp to each other. Thus, use the following command to draw the ancestry painting:
 
 		ruby plot_fixed_site_gts.rb pops1.fixed.txt pops1.fixed.svg 1.0 1000
+		
+	The screen output of this script should have indicated that 6,071 sites with the required completeness were found, these are the sites included in the ancestry painting.
 
-* Open the file `pops1.fixed.svg` with a program capable of reading files in SVG format, for example with a browser such as Firefox or with Adobe Illustrator. <p align="center"><img src="img/pops1.fixed.png" alt="Ancestry Painting" width="600"></p>
+* Open the file `pops1.fixed.svg` with a program capable of reading files in SVG format, for example with a browser such as Firefox or with Adobe Illustrator. You should see a plot like the one shown below. <p align="center"><img src="img/pops1.fixed.png" alt="Ancestry Painting" width="600"></p>
 
+	In this ancestry painting, the two samples of the two parental species are each drawn in solid colors because all included sites were required to be completely fixed and completely without missing data. The samples of *Neolamprologus cancellatus*, "LJC9" and "LJD1" are drawn in between, with two rows per sample that are colored according to alleles observed at the 6,071 sites.
+	
+	**Question 6:** Do you notice any surprising difference to the ancestry plots of [Der Sarkassian et al. (2015; Fig. 4)](https://www.cell.com/current-biology/abstract/S0960-9822(15)01003-9) and [Runemark et al. (2018; Suppl. Fig. 4)](https://www.nature.com/articles/s41559-017-0437-7)? [(see answer)](#q6)
+
+	**Question 7:** How can this difference be explained? [(see answer)](#q7)
 
 <a name="improvedphasing"></a>
 ## Improved allele phasing for recent hybrids
 
-* Extract separately the header and the body of the VCF file.
+Assuming that the two *Neolamprologus cancellatus* samples "LJC9" and "LJD1" are in fact first-generation hybrids between *Altolamprologus fasciatus* individuals and *Telmatochromis vittatus* individuals, we would expect that both *Neolamprologus cancellatus* carry one version of chromosome 5 from each parental species. Thus, in the ancestry-painting plot shown above, each of the two individuals should have one row that is completely blue and one row that is completely red. The fact this this is not what we observe shows that the phasing did not result in completely resolved haplotypes, and it gives us an indication of how incorrect the phasing results actually are.
+
+* With the following command, we can count the numbers of red or blue blocks per row in the ancestry painting:
+
+		cat pops1.fixed.svg | grep -e 27abd0 -e ef2746 | cut -d " " -f 4 | cut -d "\"" -f 2| sort -n | uniq -c | cut -c 1-4
+		
+	If you run this command, you'll see that the rows for the *Neolamprologus cancellatus* samples "LJC9" and "LJD1" all contain between 1,400 and 1,700 red or blue blocks, indicating that at least this many breakpoints between the haplotypes of those individuals were incorrectly inferred by BEAGLE.
+
+* However, we can also now use the information that both *Neolamprologus cancellatus* samples are first-generation hybrids to improve their phasing. Given that one of their chromosomal haplotypes should be similar to the *Altolamprologus fasciatus* sequence and the other should be similar to the *Telmatochromis vittatus*, it may be reasonable to phase each site that is heterozygous in the *Neolamprologus cancellatus* sample but fixed or nearly fixed in the two parental species so that, say, the first of the alleles of the heterozygous genotype matches the allele predominantly found in *Altolamprologus fasciatus* and the second matches the allele that is more dominant in *Telmatochromis vittatus*.
+
+	To improve the phasing of the *Neolamprologus cancellatus* samples as described above, we can use the Ruby script [`fix_hybrid_phasing.rb`](src/fix_hybrid_phasing.rb). This script expects five or more arguments; these are
+	* the name of a file containing only the uncompressed header of a VCF file (this is needed only to identify the columns of hybrid and parental samples),
+	* the name of a file containing the uncompressed records of the same VCF file without a header,
+	* the name of an output file,
+	* the name of a file with a table assigning samples to species,
+	* and one or more strings with the comma-separated species IDs of parent and hybrid species (the ID of the hybrid species should be listed second).
+
+	The output is going to have the same content as the second input file (the file with records from the original VCF file that is stripped of its header) except that the phasing of the hybrid samples is adjusted.
+	
+	Before running the script [`fix_hybrid_phasing.rb`](src/fix_hybrid_phasing.rb), we therefore first need to generate an uncompressed file containing only the header of the VCF file `NC_031969.f5.sub1.phased.masked.vcf.gz` as well as another uncompressed file containing the records of file `NC_031969.f5.sub1.phased.masked.vcf.gz`. We can generate these two files with the following commands:
 
 		cat NC_031969.f5.sub1.phased.masked.vcf | grep "#" > header.vcf
 		cat NC_031969.f5.sub1.phased.masked.vcf | grep -v "#" > main.vcf
 		
-* Run Ruby script [`fix_hybrid_phasing.rb`](src/fix_hybrid_phasing.rb).
+* Then, we are ready to run the Ruby script [`fix_hybrid_phasing.rb`](src/fix_hybrid_phasing.rb) with the following command.
 
 		ruby fix_hybrid_phasing.rb header.vcf main.vcf main.mod.vcf samples.txt altfas,neocan,telvit
 
-* Combine again the header and the main part of the modified VCF.
+	The screen output of this script will report the number of lines that were changed; this number is equivalent to the number of sites for which the phasing of one or both *Neolamprologus cancellatus* samples was adjusted.
+
+* To quickly see some of the changes that were made to the phasing of the *Neolamprologus cancellatus* samples, you could use the following command:
+
+		diff <(head -n 1000 main.vcf ) <(head -n 1000 main.mod.vcf ) | less -S
+		
+	In the screen output generated by this command, the original version of a record is always followed by the same record after the phasing adjustment. 
+	
+	**Question 8:** Can you identify the change that was made between the very first pair of lines reported by the last command? [(see answer)](#q8)
+
+* We'll combine again the file with the VCF header and the file with the adjusted records of the VCF, using the following command:
 
 		cat header.vcf main.mod.vcf > NC_031969.f5.sub1.phased.masked.mod.vcf
 
-* Clean up.
+* You might want to remove some of the larger files that are now not needed anymore, using the following command:
 
 		rm header.vcf main.vcf main.mod.vcf
 
-* Generate once again a plot of the genotypes at fixed sites.
+* Once again perform ancestry painting as described above, but with file `NC_031969.f5.sub1.phased.masked.mod.vcf` as input instead of file `NC_031969.f5.sub1.phased.masked.vcf`.
 
-		ruby get_fixed_site_gts.rb NC_031969.f5.sub1.phased.masked.mod.vcf pops1.mod.fixed.txt AUE7,AXD5 JBD5,JBD6 LJC9,LJD1 1.0
-		ruby plot_fixed_site_gts.rb pops1.mod.fixed.txt pops1.mod.fixed.svg 1.0 1000
+	**Question 9:** Does the ancestry painting look very different this time? [(see answer)](#q9)
 
+XXX
 
 <br><hr>
 
@@ -556,3 +592,29 @@ A very simple alternative way of investigating patterns of ancestry in potential
 * **Question 5:** One obvious difference between the results of TWISST analyses with different window sizes is that the width of the bars in file `pops1.rect.pdf` becomes wider with larger windows. This is, however, not surprising since the width of these bars corresponds to the absolute chromosomal positions of the first and last SNP within the window. More interesting is that the dominant topologies become more dominant with larger window and less dominant with smaller windows. For example, compare the smoothed weights of the <font color="#d33682">second topology</font> in a plot generated with a window size of 12 and with a window size of 800, as shown in the images below. This change in the topology weights suggests on the one hand that particularly short windows do not contain sufficient phylogenetic information and that the results based on such windows are largely stochastic. Particularly large windows, on the other hand, will often average over multiple different topologies and thus may have a bias towards a consensus topology. Finding the right balance between too short and too long window sizes may therefore be tricky. Based on simulations, [Martin and van Belleghem (2017)](http://www.genetics.org/content/206/1/429) found that a window size of 50 sites is a good compromise between too little information and averaging over too many distinct topologies; however, this may depend on factors such as the substitution rate, the population size, and the recombination rate, and therefore it may be advisable to test a range of window sizes before drawing conclusions based on TWISST results.
 <p align="center"><img src="img/pops1.smooth.12.png" alt="TWISST" width="600"></p>
 <p align="center"><img src="img/pops1.smooth.800.png" alt="TWISST" width="600"></p>
+
+
+<a name="q6"></a>
+
+* **Question 6:** One remarkable difference compared to the ancestry painting of [Der Sarkassian et al. (2015; Fig. 4)](https://www.cell.com/current-biology/abstract/S0960-9822(15)01003-9) and [Runemark et al. (2018; Suppl. Fig. 4)](https://www.nature.com/articles/s41559-017-0437-7) is that almost no homozygous genotypes are observed in the two samples of *Neolamprologus cancellatus*: Whenever the bottom row of these samples is drawn in red, the top row is drawn in blue and vice versa.
+
+
+<a name="q7"></a>
+
+* **Question 7:** The fact that both *Neolamprologus cancellatus* samples are heterozygous for basically all sites that are differentially fixed in the two parental species can only be explained if both of these samples are in fact first-generation hybrids. If introgression would instead be more ancient and back-crossing (or recombination within the hybrid population) had occurred, we would expect that only certain regions of the chromosome are heterozygous while others should be homozygous for the alleles of one or the other of the two parental species. However, unlike in cases where the genomes have been sequenced of parent-offspring trios, we do not know who the actual parent individuals were. We can guess that the parent individuals were members of the species *Altolamprologus fasciatus* and *Telmatochromis vittatus*, but whether the parental individuals were part of the same population as the sampled individuals or a more distantly related population within these species remains uncertain.
+
+
+<a name="q8"></a>
+
+* **Question 8:** Due to stochasticity in the phasing with BEAGLE, the first line on which a change happened may differ in your case. In my analysis, the first adjustment made by script `fix_hybrid_phasing.rb` was for the site at position 575342, where the phasing of the tenth sample was rotated, as shown below.
+
+		316c316
+		< NC_031969     575342  .       G       C       .       PASS    .       GT      0|0     0|0     0|0     0|0     1|1     1|1     0|0     .|.     0|1     1|0     
+		---
+		> NC_031969     575342  .       G       C       .       PASS    .       GT      0|0     0|0     0|0     0|0     1|1     1|1     0|0     .|.     0|1     0|1     
+
+
+<a name="q9"></a>
+
+* **Question 9:** The ancestry painting should in fact have changed substantially, and the haplotypes of both *Neolamprologus cancellatus* samples should now be drawn with one row that is almost completely red and one row that is almost completely blue, as shown in the figure below.
+<p align="center"><img src="img/pops1.mod.fixed.png" alt="Ancestry Painting" width="600"></p>
