@@ -1,11 +1,11 @@
 # Tutorials
 
-A collection of tutorials on phylogenetic and phylogenomic methods
+A collection of tutorials on phylogenetic and phylogenomic analyses
 
 
 ## Preparation
 
-* [Requirements](requirements.md)<br>A list of the installations required for the tutorials
+* [Requirements](requirements.md)<br>A list of all installations required for the tutorials
 
 ## Phylogenetic inference
 

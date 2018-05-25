@@ -107,9 +107,9 @@ In this part of the tutorial, we are going to prepare the XML input file for SNA
 	
 * Examples for the table and constraint files can be found on the [github repository for `snapp_prep.rb`](https://github.com/mmatschiner/snapp_prep). Have a look at these example files; the example table file is named [`example.spc.txt`](https://github.com/mmatschiner/snapp_prep/blob/master/example.spc.txt) and the example constraint file is named [`example.con.txt`](https://github.com/mmatschiner/snapp_prep/blob/master/example.con.txt).
 
-* To prepare the table file assigning samples to species, write the following text to a new file named `specimens.txt`:
+* To prepare the table file assigning samples to species, write the following text to a new file named `samples.txt`:
 
-		species	specimens
+		species	sample
 		astbur	IZC5
 		altfas	AUE7
 		telvit	JBD6
@@ -132,7 +132,7 @@ In this part of the tutorial, we are going to prepare the XML input file for SNA
 
 * With the table file and the constraints file prepared, we can now prepare the input file for SNAPP with the script `snapp_prep.rb`. To limit the dataset to 1,000 randomly selected SNPs and to set a chain length of 100,000 MCMC iterations, we'll use the options "-m 1000" and "-l 100000", respectively. Thus, use the following command to generate the XML input file for SNAPP:
 
-		ruby snapp_prep.rb -v NC_031969.f5.sub6.vcf -t specimens.txt -c constraints.txt -m 1000 -l 100000
+		ruby snapp_prep.rb -v NC_031969.f5.sub6.vcf -t samples.txt -c constraints.txt -m 1000 -l 100000
 		
 	You may notice that the chain length of 100,000 MCMC iterations is extremely short compared to those used in the BEAST2 analyses of other tutorials. Using much shorter chain lengths with SNAPP than BEAST2 is quite common, given that the SNAPP model has far fewer model parameters than most models used in other BEAST2 analyses, and that each individual iteration is much slower with SNAPP due to the high computational demand of the integration over all possible gene trees at each SNP.
 		

@@ -76,7 +76,7 @@ Note that one of these *Neolamprologus* species, *Neolamprologus cancellatus* ("
 
 The dataset of SNP variation for the above-listed 28 individuals of 14 Lake Tanganyika cichlid species is stored in in compressed variant-call format (VCF) in file [`NC_031969.f5.sub1.vcf.gz`](data/NC_031969.f5.sub1.vcf.gz). To identify the SNPs most suitable for phylogenetic analysis, we will filter the information from this file with the programs bcftools and vcftools. If you failed to install one or both of these tools, you could skip the commands in this part of the tutorial and continue with [Species-tree inference with SVDQuartets](#svdquartets).
 
-* Download this file (24 MB) to your analysis directory without uncompressing it yet.
+* Download the file [`NC_031969.f5.sub1.vcf.gz`](data/NC_031969.f5.sub1.vcf.gz) (24 MB) to your analysis directory without uncompressing it yet.
 
 * As mentioned above, one of the species included in the dataset, *Neolamprologus cancellatus*, is presumed to be a hybrid species. As hybridization would represent a violation of the multi-species-coalescent model, we will here exclude the two samples of this species ("LJC9" and "LJD1") from the dataset (but these will be investigated in more detail in the following tutorials). To exclude the two samples from the VCF file, we can use the program bcftools with the following command:
 
