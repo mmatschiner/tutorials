@@ -4,7 +4,7 @@ A tutorial on the analysis of hybridization and introgression with SNP data
 
 ## Summary
 
-XXX
+A number of approaches for the analysis of introgression based on SNP data have been developed recently. Among these is the well-known ABBA-BABA test ([Green et al. 2010](http://science.sciencemag.org/content/328/5979/710.full)) that uses the so-called <i>D</i>-statistic to assess support for introgression in sets of four species. The original ABBA-BABA test has been extended in various ways, including the <i>D</i><sub>FOIL</sub>-statistic that allows inferring the direction of introgression from sets of five species ([Pease and Hahn 2015](https://academic.oup.com/sysbio/article/64/4/651/1650669)) and the <i>f</i><sub>D</sub>-statistic that is better suited for the identification of gene flow pertaining to certain regions of the genome ([Martin et al. 2014](https://academic.oup.com/mbe/article/32/1/244/2925550)). If a putative hybrid individual as well as the presumed parental species have already been identified, patterns of introgression can be investigated with ancestry painting, a method that sites that are fixed between the parental species and the alleles observed at these sites in the putative hybrid. SNP data can also be used in phylogenetic approaches for introgression analysis; one such approach is implemented in the recently introduced method TWISST, which weighs topologies of local SNP phylogenies according to how well they are supported by different samples of the same species.
 
 ## Table of contents
 
@@ -21,7 +21,7 @@ XXX
 <a name="outline"></a>
 ## Outline
 
-In this tutorial I am going XXX
+In this tutorial I am going to present the application of three different methods for the analysis of introgression with SNP data: <i>D</i>-statistics obtained with the ABBA-BABA test, topology weighting with TWISST, and ancestry painting. As the use of phased data is recommended for analysis with TWISST, allele phasing with the software [BEAGLE](https://faculty.washington.edu/browning/beagle/beagle.html) ([Browning and Browning 2007](https://www.cell.com/ajhg/fulltext/S0002-9297(07)63882-8)) is going to be applied before this analysis.
 
 
 <a name="dataset"></a>
@@ -538,7 +538,7 @@ Assuming that the two *Neolamprologus cancellatus* samples "LJC9" and "LJD1" are
 
 	**Question 9:** Does the ancestry painting look very different this time? [(see answer)](#q9)
 
-XXX
+With the above analyses, we have found strong support for the hypothesis that *Neolamprologus cancellatus* is a hybrid species. However, the overall patterns of introgression among the species included in the dataset is still poorly resolved, in part because of the limitation of the above analysis that they are applicable only to 3 to 4 species at a time (TWISST could be used with a few more but the topology weights would become difficult to interpret).
 
 <br><hr>
 
