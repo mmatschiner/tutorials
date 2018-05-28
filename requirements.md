@@ -18,7 +18,7 @@ A list of the installations required for the tutorials
 
 ## Libraries
 
-* **Libraries for Python 2.7:** The [ete toolkit](http://etetoolkit.org) ([Huerta-Cepas et al. 2016](https://academic.oup.com/mbe/article/33/6/1635/2579822)) will be required for topology-weighting analyses with [TWISST](https://github.com/simonhmartin/twisst) ([Martin and van Belleghem 2017](http://www.genetics.org/content/206/1/429)). Instructions for the installation of the ete toolkit on Mac OS X and Linux are provided on the [ete download webpage](http://etetoolkit.org/download/); however, the easiest way to install the ete3 toolkit might be with the pip package manager for Python, using the following command:
+* **Libraries for Python 2.7:** The [ete toolkit](http://etetoolkit.org) ([Huerta-Cepas et al. 2016](https://academic.oup.com/mbe/article/33/6/1635/2579822)) will be required for comparisons between phylogenetic trees and for topology-weighting analyses with [TWISST](https://github.com/simonhmartin/twisst) ([Martin and van Belleghem 2017](http://www.genetics.org/content/206/1/429)). Instructions for the installation of the ete toolkit on Mac OS X and Linux are provided on the [ete download webpage](http://etetoolkit.org/download/); however, the easiest way to install the ete3 toolkit might be with the pip package manager for Python, using the following command:
 
 		python -m pip install --user ete3
 		
@@ -49,13 +49,6 @@ A list of the installations required for the tutorials
 		python3 -c 'import scipy'
 		python3 -c 'import msprime'
 
-* **Libraries for R:** The two R libraries [ape](https://cran.r-project.org/web/packages/ape/) and [phangorn](https://cran.r-project.org/web/packages/phangorn/) are required for the calculation of the Robinson-Foulds distance between phylogenies. If you're familiar with R, just install these packages in the usual way. If not, the easiest way might be the following:
-
-	* Type `R` on the command line to start R interactively.
-	* Then, use the `install.packages()` command as follows to install both ape and phangorn:
-
-			install.packages("ape", repos="https://cloud.r-project.org", dependencies=T)
-			install.packages("phangorn", repos="https://cloud.r-project.org", dependencies=T)
 
 ## Programs
 

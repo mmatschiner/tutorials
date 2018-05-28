@@ -73,8 +73,16 @@ For installation on Linux, instructions are provided in the `README` file that y
 	
 * **FigTree:** The program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) by Andrew Rambaut is a very intuitive and useful tool for the visualization and (to a limited extent) manipulation of phylogenies encoded in [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) format. Executables for Mac OS X, Linux, and Windows are provided on [http://tree.bio.ed.ac.uk/software/figtree/](http://tree.bio.ed.ac.uk/software/figtree/).
 
-* **R libraries:** The two R libraries [ape](https://cran.r-project.org/web/packages/ape/) and [phangorn](https://cran.r-project.org/web/packages/phangorn/) are required for the calculation of the Robinson-Foulds distance between phylogenies.
- 
+* **Python library ete3:** The [ete toolkit](http://etetoolkit.org) ([Huerta-Cepas et al. 2016](https://academic.oup.com/mbe/article/33/6/1635/2579822)) will be required to compare phylogenetic trees with the [Robinson-Foulds distance](https://en.wikipedia.org/wiki/Robinson–Foulds_metric) ([Robinson and Foulds 1981](https://www.sciencedirect.com/science/article/pii/0025556481900432?via%3Dihub)). Instructions for the installation of the ete toolkit on Mac OS X and Linux are provided on the [ete download webpage](http://etetoolkit.org/download/); however, the easiest way to install the ete3 toolkit might be with the pip package manager for Python, using the following command:
+
+		python -m pip install --user ete3
+		
+	To ensure that the installation worked, you could execute the following command:
+	
+		python -c 'import ete3'
+		
+	If no error message is given, the ete3 library is correctly installed and ready to be used.
+
 	
 <a name="raxml"></a>
 ## Maximum-likelihood phylogenetic inference with RAxML
@@ -195,9 +203,9 @@ Given that node support in the phylogeny for 16s sequences turned out to be poor
 
 We have now used bootstrapping to assess node support in two different phylogenies, the phylogeny for the 16s alignment and that of the rag1 alignment. We have visually inspected the two phylogenies, but we have not yet quantified the difference between them or the overall support that each of them has.
 
-* As a measure of the distance between two trees, the [Robinson-Foulds distance](https://en.wikipedia.org/wiki/Robinson–Foulds_metric) ([Robinson and Foulds 1981](https://www.sciencedirect.com/science/article/pii/0025556481900432?via%3Dihub)) is commonly used. This measure is defined as the number of topological rearrangements that are required to convert one of the trees into the other. It can be calculated with the R script [`get_rf_distance.r`](src/get_rf_distance.r) if the R packages [ape](https://cran.r-project.org/web/packages/ape/) and [phangorn](https://cran.r-project.org/web/packages/phangorn/) are installed on your machine:
+* As a measure of the distance between two trees, the [Robinson-Foulds distance](https://en.wikipedia.org/wiki/Robinson–Foulds_metric) ([Robinson and Foulds 1981](https://www.sciencedirect.com/science/article/pii/0025556481900432?via%3Dihub)) is commonly used. This measure is defined as the number of topological rearrangements that are required to convert one of the trees into the other. It can be calculated with the Python script [`get_rf_distance.py`](src/get_rf_distance.py) using this command:
 
-		Rscript get_rf_distance.r RAxML_bipartitions.16s_filtered_bs.out RAxML_bipartitions.rag1_filtered_bs.out
+		python get_rf_distance.py RAxML_bipartitions.16s_filtered_bs.out RAxML_bipartitions.rag1_filtered_bs.out
 		
 	**Question 9:** How many topological rearrangements separate the 16s and rag1 trees? [(see answer)](#q9)
 
