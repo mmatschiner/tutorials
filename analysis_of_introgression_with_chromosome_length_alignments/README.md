@@ -54,7 +54,7 @@ XXX
 <a name="requirements"></a>
 ## Requirements
 
-XXX CODA XXX (+ gplot)
+XXX CODA XXX
 
 <a name="saguaro"></a>
 ## Inferring recombination breakpoints with Saguaro
