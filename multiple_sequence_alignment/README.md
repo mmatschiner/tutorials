@@ -80,11 +80,11 @@ The dataset used here includes sequences for two genes; the mitochondrial 16S ge
 <a name="requirements"></a>
 ## Requirements
 
-* **MAFFT:** Installation instructions and precompiled versions of [MAFFT](https://mafft.cbrc.jp/alignment/software/) are available on [https://mafft.cbrc.jp/alignment/software/](https://mafft.cbrc.jp/alignment/software/). While the installation of the program should be easy on all operating systems, all steps of this tutorial can also be conducted using the [server version of MAFFT](https://mafft.cbrc.jp/alignment/server/), installation of this software is optional.
+* **MAFFT:** Installation instructions and precompiled versions of [MAFFT](https://mafft.cbrc.jp/alignment/software/) are available on the [MAFFT webpage](https://mafft.cbrc.jp/alignment/software/). While the installation of the program should be easy on all operating systems, all steps of this tutorial can also be conducted using the [server version of MAFFT](https://mafft.cbrc.jp/alignment/server/); installation of this software is therefore optional.
 
 * **AliView:** To visualize sequence alignments, the software [AliView](http://www.ormbunkar.se/aliview/) ([Larsson 2014](https://academic.oup.com/bioinformatics/article/30/22/3276/2391211)) is recommended. The installation of AliView is described at [http://www.ormbunkar.se/aliview/](http://www.ormbunkar.se/aliview/) and should be possible on all operating systems.
 
-* **BMGE:** The program [BMGE](https://research.pasteur.fr/en/software/bmge-block-mapping-and-gathering-with-entropy/) (Block Mapping and Gathering with Entropy) ([Criscuolo and Gribaldo 2010](https://bmcevolbiol.biomedcentral.com/articles/10.1186/1471-2148-10-210)) is highy useful to identify and remove poorly aligned regions of sequence alignments. The latest version of BMGE is provided as a Java jar file at [ftp://ftp.pasteur.fr/pub/gensoft/projects/BMGE/](ftp://ftp.pasteur.fr/pub/gensoft/projects/BMGE/) (choose login as guest to access the ftp server). Place this file in a convenient location on your own computer.
+* **BMGE:** The program [BMGE](https://research.pasteur.fr/en/software/bmge-block-mapping-and-gathering-with-entropy/) (Block Mapping and Gathering with Entropy) ([Criscuolo and Gribaldo 2010](https://bmcevolbiol.biomedcentral.com/articles/10.1186/1471-2148-10-210)) is highy useful to identify and remove poorly aligned regions of sequence alignments. The latest version of BMGE is provided as a Java jar file at [ftp://ftp.pasteur.fr/pub/gensoft/projects/BMGE/](ftp://ftp.pasteur.fr/pub/gensoft/projects/BMGE/) (choose login as guest to access the ftp server). Place this file in a convenient location on your analysis directory.
 
 
 <a name="mafft_aliview"></a>
@@ -92,15 +92,15 @@ The dataset used here includes sequences for two genes; the mitochondrial 16S ge
 
 We'll start by aligning sequences of the mitochondrial 16S gene with the program MAFFT and we will visualize and improve the alignment using the software AliView.
 
-* Download the file [`16s.fasta`](data/16s.fasta) containing 16S sequences to your computer. Have a look at the file in a text editor, or on the command line using for example the `less` command:
+* Download the file [`16s.fasta`](data/16s.fasta) containing 16S sequences to your analysis directory. Have a look at the file in a text editor, or on the command line using for example the `less` command:
 
 		less 16s.fasta
 
 	You'll see that each record consists of an ID and a sequence, of which the ID is always on a single line that starts with a ‘>' symbol, followed by lines containing the sequence. The sequences are not aligned yet; this is the reason why they contain no gaps and differ in length. Instead of the 14-character IDs used in this file, other naming schemes could be applied; however, I strongly recommend the use of short and simple IDs because in phylogenetic analyses, many programs or scripts may not work if you use actual latin or common species names that contain spaces or hyphens.
 
-* Open the website [https://mafft.cbrc.jp/alignment/server/](https://mafft.cbrc.jp/alignment/server/). This site provides a web interface to the MAFFT alignment program ([Katoh et al. 2017](https://academic.oup.com/bib/advance-article/doi/10.1093/bib/bbx108/4106928)). Instead of using the website, you may also use MAFFT your computer locally if you succeeded in installing it.
+* Open the [website for the online version of MAFFT](https://mafft.cbrc.jp/alignment/server/). This site provides a web interface to the MAFFT alignment program ([Katoh et al. 2017](https://academic.oup.com/bib/advance-article/doi/10.1093/bib/bbx108/4106928)). Instead of using the website, you may also use MAFFT on your computer if you succeeded in installing it.
 
-* Under the heading "Advanced settings" on the MAFFT server website (scroll down to see it) you'll find the available alignment options. In the first gray box with the title "Strategy" you can choose between global and local alignment methods. The "G-INS-i" method implements the global Needleman-Wunsch algorithm ([Needleman and Wunsch 1970](https://www.sciencedirect.com/science/article/pii/0022283670900574)), the "L-INS-i" method implements the local "Smith-Waterman" algorithm ([Smith and Waterman 1981](https://www.sciencedirect.com/science/article/pii/0022283681900875)). For simplicity, keep the default "Auto" option. If you use the command-line version of MAFFT on your own computer instead of the MAFFT server, the equivalent command would be
+* Under the heading "Advanced settings" on the MAFFT server website (scroll down to see it) you'll find the available alignment options. In the first gray box with the title "Strategy" you can choose between global and local alignment methods. The "G-INS-i" method implements the global Needleman-Wunsch algorithm ([Needleman and Wunsch 1970](https://www.sciencedirect.com/science/article/pii/0022283670900574)), the "L-INS-i" method implements the local "Smith-Waterman" algorithm ([Smith and Waterman 1981](https://www.sciencedirect.com/science/article/pii/0022283681900875)). For simplicity, keep the default "Auto" option. If you use the command-line version of MAFFT on your own computer instead of the MAFFT server, the equivalent command would be this:
 
 		mafft --auto 16s.fasta > 16s_aln.fasta
 
@@ -110,7 +110,7 @@ We'll start by aligning sequences of the mitochondrial 16S gene with the program
 
 * Download the alignment in Fasta format to your computer. To do so, right-click the link to "Fasta format" at the very top of the page. Name the file `16s_aln.fasta`.
 
-* Repeat the same, this time with a gap-opening penalty of 2 instead of the default value of 1.53. Name the alignment file resulting from this analysis `16s_op2_aln.fasta`. If you use the command-line version of MAFFT, the equivalent command would be 
+* Repeat the same, this time with a gap-opening penalty of 2 instead of the default value of 1.53. Name the alignment file resulting from this analysis `16s_op2_aln.fasta`. If you use the command-line version of MAFFT, the equivalent command would be this:
 
 		mafft --auto --op 2 16s.fasta > 16s_op2_aln.fasta
 
@@ -134,25 +134,23 @@ We'll start by aligning sequences of the mitochondrial 16S gene with the program
 
 As you can see, the alignment of 16S sequences contains a mix of highly variable as well as conserved regions. Thus, the homology of nucleotides is rather obvious in some parts of the gene but can be ambiguous in other parts. To avoid issues resulting from alignment errors in the downstream phylogenetic analyses, we will identify poorly aligned regions based on the proportion of gaps and the genetic variation found within these regions, and we will exclude them from the alignment.
 
-* To exclude unreliably aligned regions from the 16S alignment, use the software BMGE. To check if the program works on your computer, and to see the available options, open a command-line window (e.g. the Terminal application on Mac OSX) and type:
+* To exclude unreliably aligned regions from the 16S alignment, use the software BMGE. To check if the program works on your computer, and to see the available options, open a command-line window (e.g. the Terminal application on Mac OSX) and type the following command:
 
-		java -jar PATH_TO_FILE/BMGE.jar -?
+		java -jar BMGE.jar -?
 
-	(replace `PATH_TO_FILE` with the actual path to the file on your computer).
+* If the above worked, type this command:
 
-* If the above worked, type:
-
-	    java -jar PATH_TO_FILE/BMGE.jar -i 16s_aln.fasta -t DNA -of 16s_filtered.fasta -oh 16s_filtered.html
+	    java -jar BMGE.jar -i 16s_aln.fasta -t DNA -of 16s_filtered.fasta -oh 16s_filtered.html
 	
     With the above command, BMGE writes a filtered alignment in Fasta format in file `16s_filtered.fasta`, and visualizes the filtered alignment in HTML format in file `16s_filtered.html`.
 
 * Open file `16s_filtered.html` in your browser. Scroll through the alignment and note the black alignment blocks.
 
-* At the very top of the alignment, you'll see two measures plotted for each site in light grey and black. The gap proportion is shown with light gray equal signs and ranges from 0 to 1. Black colons indicate what the authors of BMGE call a "smoothed entropy-like score". Basically, this is a measure of the nucleotide diversity at this site (please see the [BMGE publication](https://bmcevolbiol.biomedcentral.com/articles/10.1186/1471-2148-10-210) for more information). You'll note that the black alignment blocks coincide with regions of low gap proportion and low entropy, which are be the most suitable alignment positions for phylogenetic inference. Our selection of alignment blocks is based on default settings of BMGE for the entropy score cut-off (option -h), the gap-rate cut-off (-g), and the minimum block size (-b). By default, BMGE selects sites with an entropy score below 0.5 (-h 0.5) and a gap proportion below 0.2 (-g 0.2), and only if these form a block of at least 5 sites with these properties (-b 5).
+* At the very top of the alignment, you'll see two values plotted for each site in light grey and black. The gap proportion is shown with light gray equal signs and ranges from 0 to 1. Black colons indicate what the authors of BMGE call a "smoothed entropy-like score" ([Criscuolo and Gribaldo 2010](https://bmcevolbiol.biomedcentral.com/articles/10.1186/1471-2148-10-210)). Basically, this is a measure of the nucleotide diversity at this site (see the [Criscuolo and Gribaldo (2010)](https://bmcevolbiol.biomedcentral.com/articles/10.1186/1471-2148-10-210) for more information). You'll note that the black alignment blocks coincide with regions of low gap proportion and low entropy, which are the most suitable alignment positions for phylogenetic inference. Our selection of alignment blocks is based on default settings of BMGE for the entropy score cut-off (option `-h`), the gap-rate cut-off (`-g`), and the minimum block size (-b). By default, BMGE selects sites with an entropy score below 0.5 (`-h 0.5`) and a gap proportion below 0.2 (`-g 0.2`), and only if these form a block of at least 5 sites with these properties (`-b 5`).
 
-* Repeat the BMGE block selection with custom settings for entropy-score cut-off, gap-rate cut-off, and minimum block size, and note how this changes the overall number of selected sites and the distribution of selected blocks in the alignment. For example, increase the allowed proportion of gaps using -g 0.3:
+* Repeat the BMGE block selection with custom settings for entropy-score cut-off, gap-rate cut-off, and minimum block size, and note how this changes the overall number of selected sites and the distribution of selected blocks in the alignment. For example, increase the allowed proportion of gaps using `-g 0.3`:
 
-		java -jar PATH_TO_FILE/BMGE.jar -i 16s_aln.fasta -t DNA -g 0.3 -of 16s_g03_filtered.fasta -oh 16s_g03_filtered.html
+		java -jar BMGE.jar -i 16s_aln.fasta -t DNA -g 0.3 -of 16s_g03_filtered.fasta -oh 16s_g03_filtered.html
 		
 * The standard output of BMGE to the Terminal tells you how many sites (characters) remain selected. Note the difference between the last two runs.
 
@@ -165,7 +163,7 @@ As you can see, the alignment of 16S sequences contains a mix of highly variable
 <a name="genbank"></a>
 ## Identification of additional homologous sequences
 
-As mentioned above, the sequence data used in this tutorial are part of the dataset of [Matschiner et al. (2017)](https://academic.oup.com/sysbio/article/66/1/3/2418030). While some of the sequence data used in that study were generated by us, most sequences were taken from publicly available databases such as [GenBank](https://www.ncbi.nlm.nih.gov/genbank/) and [BOLD](http://www.boldsystems.org/index.php) (Barcode of Life Data System, which in some cases holds sequences of the mitochondrial COI gene that are not available on Genbank). The second set of sequences used in this tutorial, which you will find in file [rag1.fasta](data/rag1.fasta) consists of sequences for the nuclear rag1 gene; however, compared to the set of 16S sequences, the three species listed below are not yet represented.
+As mentioned above, the sequence data used in this tutorial are part of the dataset of [Matschiner et al. (2017)](https://academic.oup.com/sysbio/article/66/1/3/2418030). While some of the sequence data used in that study were generated by us, most sequences were taken from publicly available databases such as [GenBank](https://www.ncbi.nlm.nih.gov/genbank/) and [BOLD](http://www.boldsystems.org/index.php) (Barcode of Life Data System, which in some cases holds sequences of the mitochondrial COI gene that are not available on GenBank). The second set of sequences used in this tutorial, which you will find in file [`rag1.fasta`](data/rag1.fasta), consists of sequences for the nuclear rag1 gene; however, compared to the set of 16S sequences, the three species listed below are not yet represented.
 
 <center>
 
@@ -182,14 +180,14 @@ As mentioned above, the sequence data used in this tutorial are part of the data
 
 * Add the three retrieved sequences to file `rag1.fasta`, and rename the sequences, giving them the IDs "Cichlaxtemensi", "Geophagbrasili", and "Herichtcyanogu".
 
-* If anything should go wrong in this part of the tutorial, you can find a complete version of the 16S data that already includes the sequences of the three Neotropical cichlid species in file [`rag1_combined.fasta`](res/rag1_combined.fasta).
+* If anything should go wrong in this part of the tutorial, you can find a complete version of the rag1 dataset that already includes the sequences of the three Neotropical cichlid species in file [`rag1_combined.fasta`](res/rag1_combined.fasta).
 
 <a name="codonbased"></a>
 ## Codon-based manual alignment curation
 
 For protein-coding sequences, it can often be useful to identify the reading frame (i.e. which positions of the alignment correspond to first, second, and third codon positions) and the translation of the nucleotide code into amino-acid sequences. As insertions or deletions ("indels") with lengths that are not multiples of three would disrupt the reading frame and thus cause large changes to the protein structure, these are usually strongly selected against and rarely found in alignments of protein-coding sequences. Similarly, indels observed in protein-coding sequences often begin with a first codon position and end with a third codon position. Thus, in cases where the placement of indels is ambiguous, information about the reading frame can be used to optimize the positioning of these indels.
 
-* Go back to the MAFFT website [https://mafft.cbrc.jp/alignment/server/](https://mafft.cbrc.jp/alignment/server/).
+* Open agein the [website for the online version of MAFFT](https://mafft.cbrc.jp/alignment/server/).
 
 * Upload the file [`rag1.fasta`](data/rag1.fasta), including the three sequences that you added in the previous part of this tutorial, to the MAFFT server. Keep all default options and click the "Submit" button. If you use the command-line version of MAFFT on your own computer, execute the command
 
@@ -216,7 +214,7 @@ For protein-coding sequences, it can often be useful to identify the reading fra
 
 * Also remove the regions with many gaps at the end and the beginning of the alignment. Obviously, these gaps result not from insertions or deletions, but from missing data. At the end of the alignment, trim all positions after (and including) position 2998. At the beginning of the alignment, trim all positions before (and including) position 1629. The alignment should then start with a codon that is "GGT" or "GGC" for most species, and it should end with a codon that is "AAA" or "AAG" for most species. It should also include not a single stop codon anymore. Verify if this is the case by again clicking on the sigma-sign icon at the center of the tool bar.
 
-* Save the alignment in Fasta, Phylip, and Nexus format. Use the names `rag1_filtered.fasta`, `rag1_filtered.phy`, and `rag1_filtered.nex`.
+* Save the alignment in Fasta, Phylip, and Nexus format. Use the names `rag1_filtered.fasta`, `rag1_filtered.phy`, and `rag1_filtered.nex`. These will be used again in tutorial [Substitution Model Selection](../substitution_model_selection/README.md).
 
 <br><hr>
 
