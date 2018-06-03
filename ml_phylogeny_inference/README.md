@@ -16,13 +16,13 @@ As the name indicates, maximum-likelihood phylogenetic inference aims to find th
 * [Assessing node support with bootstrapping](#bootstrap)
 * [Partitioned maximum-likelihood inference](#partition)
 * [Comparing the reliability of different phylogenies](#comparison)
-* [Maximum-likelihood inference of concatenated alignments](#concatenation)
+* [Phylogenetic inference with concatenated alignments](#concatenation)
 
 
 <a name="outline"></a>
 ## Outline
 
-In this tutorial, I will present maximum-likelihood inference with one of the fastest programs developed for this type of analysis, the program [RAxML](https://sco.h-its.org/exelixis/web/software/raxml/index.html) ([Stamatakis 2014](https://academic.oup.com/bioinformatics/article/30/9/1312/238053)). I will demonstrate how the reliability of nodes in the phylogeny can be assessed with bootstrapping ([Felsenstein 1985](https://www.jstor.org/stable/2408678)), how unlinked substitution models can be applied to separate partitions, and how alignments of multiple genes can be concatenated to be jointly used in the same phylogenetic analysis.
+In this tutorial, I will present maximum-likelihood phylogeny inference with one of the fastest programs developed for this type of analysis, the program [RAxML](https://sco.h-its.org/exelixis/web/software/raxml/index.html) ([Stamatakis 2014](https://academic.oup.com/bioinformatics/article/30/9/1312/238053)). I will demonstrate how the reliability of nodes in the phylogeny can be assessed with bootstrapping ([Felsenstein 1985](https://www.jstor.org/stable/2408678)), how unlinked substitution models can be applied to separate partitions, and how alignments of multiple genes can be concatenated to be jointly used in the same phylogenetic analysis.
 
 <a name="dataset"></a>
 ## Dataset
@@ -32,7 +32,7 @@ The data used in this tutorial are the filtered versions of the alignments gener
 <a name="requirements"></a>
 ## Requirements
 
-* **RAxML:** Source code for Mac OS X and Linux, as well as precompiled executables for Windows, can be found on RAxML's github page [https://github.com/stamatak/standard-RAxML](https://github.com/stamatak/standard-RAxML). To install RAxML on any of these systems, download the [latest release](https://github.com/stamatak/standard-RAxML/releases), either in its zip or tar.gz-compressed version. Decompress this file on your machine.<br>
+* **RAxML:** Source code for Mac OS X and Linux, as well as precompiled executables for Windows, can be found on [RAxML's github page](https://github.com/stamatak/standard-RAxML). To install RAxML on any of these systems, download the [latest release](https://github.com/stamatak/standard-RAxML/releases), either in its zip or tar.gz-compressed version. Decompress this file on your machine.<br>
 For installation on Linux, instructions are provided in the `README` file that you will find in the decompressed RAxML package. To compile the parallelized PTHREADS version of RAxML, try running
 
 		make -f Makefile.AVX.PTHREADS.gcc
@@ -57,19 +57,19 @@ For installation on Linux, instructions are provided in the `README` file that y
 		
 	On Windows, just use the newest of the precompiled executables that you will find in a directory named `WindowsExecutables_v8.2.10` or similar, within the decompressed RAxML package.<br>
 
-	The commands given in this tutorial will assume that you compiled the parallelized PTHREADS version of RAxML (rather than the sequential or the MPI version), that you named the file simply `raxml`, and that you placed it somewhere on your computer where your system can find it (i.e. in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))). One way to guarantee this on Mac OS X or Linux is to place the executable in `/usr/local/bin`, for example using (if you compiled the AVX version)
+	The commands given in this tutorial will assume that you compiled the parallelized PTHREADS version of RAxML (rather than the sequential or the MPI version), that you named the file simply `raxml`, and that you placed it somewhere on your computer where your system can find it (i.e. in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))). One way to guarantee this on Mac OS X or Linux is to place the executable in `/usr/local/bin`, for example using (if you compiled the AVX version) this command:
 	
 		mv raxmlHPC-PTHREADS-AVX /usr/local/bin/raxml
 		
-	To verify that the RAxML executable can be found by your system, type
+	To verify that the RAxML executable can be found by your system, type the following command:
 	
 		which raxml
 		
-	If this command outputs a path such as `/usr/local/bin/raxml`, the executable can be found. As another check if RAxML is working as it should, type
+	If this command outputs a path such as `/usr/local/bin/raxml`, the executable can be found. As a second test if RAxML is working as it should, type this:
 	
 		raxml -v
 		
-	and you should see the version number as well as a list of contributing developers. If you do, you're ready to start the tutorial.
+	You should then see the version number as well as a list of contributing developers. If you do, you're ready to use RAxML.
 	
 * **FigTree:** The program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) by Andrew Rambaut is a very intuitive and useful tool for the visualization and (to a limited extent) manipulation of phylogenies encoded in [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) format. Executables for Mac OS X, Linux, and Windows are provided on [http://tree.bio.ed.ac.uk/software/figtree/](http://tree.bio.ed.ac.uk/software/figtree/).
 
@@ -89,19 +89,19 @@ For installation on Linux, instructions are provided in the `README` file that y
 
 We will first generate a simple maximum-likelihood phylogeny only for the filtered 16s sequence alignment.
 
-* To get an impression of the many options available in RAxML, have a look at the impressively long help text of the program:
+* To get an impression of the many options available in RAxML, have a look at the long help text of the program:
 
 		raxml -h
 		
-* Scroll back up to the beginning of the RAxML help text. Close to the top, you'll see that raxml could be started as easily as
+* Scroll back up to the beginning of the RAxML help text. Close to the top, you'll see that RAxML could be started as easily as this:
 
 		raxmlHPC -s sequenceFileName -n outputFileName -m substitutionModel 
-	where "sequenceFileName" and "outputFileName" would have to be replaced with the actual sequence and output file names, and a substitution model would have to be chosen to replace "substitutionModel". Note that in our case, we would also start the program with "raxml", not "raxmlHPC", only because we named it that way.
+	Here, "sequenceFileName" and "outputFileName" would have to be replaced with the actual sequence and output file names, and a substitution model would have to be chosen to replace "substitutionModel". Note that in our case, we would also start the program with `raxml`, not `raxmlHPC`, only because we named it that way.
 
-* So, let's try to run a maximum-likelihood search, first for the 16S sequence data, using the alignment file in Phylip format [`16s_filtered.phy`](data/16s_filtered.phy). We'll start with as little command-line options as possible, and learn along the way which other options we need. I suggest doing so only for the reason that I find this easier than remembering all necessary options before the run. We'll use the GTRGAMMA model (the GTR model with gamma-distributed rate variation, as suggested for the 16S alignment by the model selection done in tutorial [`substitution_model_selection`](../substitution_model_selection/README.md)), and we choose `16s_filtered.out` as part of all result file names:
+* So, let's try to run a maximum-likelihood search, first for the 16S sequence data, using the alignment file in Phylip format [`16s_filtered.phy`](data/16s_filtered.phy). We'll start with as little command-line options as possible, and learn along the way which other options we need. I suggest doing so only for the reason that I find this easier than remembering all necessary options before the run (or reading the long help text each time). We'll use the GTRGAMMA model (the GTR model with gamma-distributed rate variation, as suggested for the 16S alignment by the model selection done in tutorial [`substitution_model_selection`](../substitution_model_selection/README.md)), and we choose `16s_filtered.out` as part of all result-file names:
 
 		raxml -s 16s_filtered.phy -n 16s_filtered.out -m GTRGAMMA 
-* As you'll see, this minimalistic choice of options does not seem to be sufficient, and RAxML asks us to specify a random number seed with the option "-p". Before doing so, make sure to remove the log file (`RAxML_info.16s_filtered.out`) that RAxML just wrote to the current directory:
+* As you'll see, this minimalistic choice of options does not seem to be sufficient, and RAxML asks us to specify a random number seed with the option `-p`. Before doing so, make sure to remove the log file (`RAxML_info.16s_filtered.out`) that RAxML just wrote to the current directory:
 
 		rm RAxML_info.16s_filtered.out
 
@@ -109,13 +109,17 @@ We will first generate a simple maximum-likelihood phylogeny only for the filter
 
 		raxml -s 16s_filtered.phy -n 16s_filtered.out -m GTRGAMMA -p 123
 		
-* RAxML should finish the analysis within a few seconds and present output as shown in the screenshot below. **Question 1:** Are the inferred stationary frequencies of the four nucleotides (here called the "base frequencies") comparable to those inferred with PAUP\* in tutorial [`substitution_model_selection`](../substitution_model_selection/README.md))? [(see answer)](#q1) As you can see from RAxML's output, the best-scoring maximum-likelihood tree was written to file `RAxML_bestTree.16s_filtered.out`.
+* RAxML should finish the analysis within a few seconds and present output as shown in the screenshot below.
+
+	**Question 1:** Are the inferred stationary frequencies of the four nucleotides (here called the "base frequencies") comparable to those inferred with PAUP\* in tutorial [`substitution_model_selection`](../substitution_model_selection/README.md))? [(see answer)](#q1)
+	
+	As you can see from RAxML's output (shown in the screenshot below), the best-scoring maximum-likelihood tree was written to file `RAxML_bestTree.16s_filtered.out`.
 <p align="center"><img src="img/raxml1.png" alt="RAxML" width="600"></p>
 
 <a name="figtree"></a>
 ## Reading and visualizing tree files
 
-In this part of the tutorial, we will explore how phylogenetic trees are encoded in Newick format, the format used by almost all phylogenetic sofware, and we will visualize the maximum-likelihood phylogeny generated with RAxML with the program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/). Fun fact: The Newick format is named after the [Newick's restaurant](http://www.newicks.com) in Dover, New Hampshire, where Joe Felsenstein and other developers of the format ["enjoyed the meal of lobsters"](http://evolution.genetics.washington.edu/phylip/newicktree.html) in 1986. A good explanation of the format and information on its origin can be also be found [here](http://evolution.genetics.washington.edu/phylip/newicktree.html).
+In this part of the tutorial, we will explore how phylogenetic trees are encoded in Newick format, the format used by almost all phylogenetic sofware, and we will visualize the maximum-likelihood phylogeny generated with RAxML with the program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) (fun fact: The Newick format is named after the [Newick's restaurant](http://www.newicks.com) in Dover, New Hampshire, where Joe Felsenstein and other developers of the format ["enjoyed the meal of lobsters"](http://evolution.genetics.washington.edu/phylip/newicktree.html) in 1986). A good explanation of the format and information on its origin can be also be found [here](http://evolution.genetics.washington.edu/phylip/newicktree.html).
 
 * Open the file [`RAxML_bestTree.16s_filtered.out`](res/RAxML_bestTree.16s_filtered.out) in a text editor, or on the command line using for example the `less` command:
 
@@ -145,42 +149,54 @@ In this part of the tutorial, we will explore how phylogenetic trees are encoded
 * Then, with that branch being selected, click on the "Reroot" icon with the yellow arrow in the menu bar. The phylogeny should then look as shown in the next screenshot.
 <p align="center"><img src="img/figtree6.png" alt="FigTree" width="600"></p>
 
-* As a final change, we could sort the taxa according to node order. To do so, click "Decreasing node order" in FigTree's "Tree" menu. This should move "Danioxxrerioxx" to the top of the plot:<p align="center"><img src="img/figtree7.png" alt="FigTree" width="600"></p>It is almost surprising how well this phylogeny resolves the correct relationships among the 41 taxa (which are known rather well from more extensive studies based on large molecular datasets as well as morphology). **Question 2:** Do cichlids appear monophyletic in this phylogeny (to answer this, you may need to look up the [table in the Multiple Sequence Alignment](../multiple_sequence_alignment/README.md) tutorial)? [(see answer)](#q2) **Question 3:** And are Neotropical cichlids (*Cichla temensis*, *Geophagus brasiliensis*, *Herichthys cyanoguttatus*) monophyletic? [(see answer)](#q3)
+* As a final change, we could sort the taxa according to node order. To do so, click "Decreasing node order" in FigTree's "Tree" menu. This should move "Danioxxrerioxx" to the top of the plot:<p align="center"><img src="img/figtree7.png" alt="FigTree" width="600"></p>It is almost surprising how well this phylogeny resolves the correct relationships among the 41 taxa (which are known rather well from more extensive studies based on large molecular datasets as well as morphology).
+
+	**Question 2:** Do cichlids appear monophyletic in this phylogeny (to answer this, you may need to look up the [table in the Multiple Sequence Alignment](../multiple_sequence_alignment/README.md) tutorial)? [(see answer)](#q2) 
+		
+	**Question 3:** And are Neotropical cichlids (*Cichla temensis*, *Geophagus brasiliensis*, *Herichthys cyanoguttatus*) monophyletic? [(see answer)](#q3)
 
 <a name="bootstrap"></a>
 ## Assessing node support with bootstrapping
 
-As we've seen, the RAxML phylogeny of 16S sequences does not perfectly agree with relationships inferred in other studies (e.g. [Matschiner et al. 2017](https://academic.oup.com/sysbio/article/66/1/3/2418030); [Betancur-R. et al. 2017](https://bmcevolbiol.biomedcentral.com/articles/10.1186/s12862-017-0958-3)) or with the taxonomy of teleost fishes. However, so far we have no indication of the reliability of the individual nodes in the phylogeny, therefore we can not assess how strong the evidence of this phylogeny weighs against other findings. To identify which nodes in the phylogeny are more or less trustworthy, we will now perform a bootstrap analysis, again with RAxML.
+As we've seen, the RAxML phylogeny of 16S sequences does not perfectly agree with relationships inferred in other studies (e.g. [Matschiner et al. 2017](https://academic.oup.com/sysbio/article/66/1/3/2418030); [Betancur-R. et al. 2017](https://bmcevolbiol.biomedcentral.com/articles/10.1186/s12862-017-0958-3)) or with the taxonomy of teleost fishes. However, so far, we have no indication of the reliability of the individual nodes in the phylogeny, therefore we can not assess how strong the evidence of this phylogeny weighs against other findings. To identify which nodes in the phylogeny are more or less trustworthy, we will now perform a bootstrap analysis, again with RAxML.
 
 * Have a look once more at the long help text of RAxML to see the available options for bootstrapping:
 
 		raxml -h
 
-* Scroll towards the top of the help text, there you should find the details for the "-f" option with which the RAxML algorithm is selected:<p align="center"><img src="img/raxml2.png" alt="RAxML" width="600"></p>From the help text you'll see that if "-f" is not used as a command-line argument, the default algorithm is used, which is "-f d", the "new rapid hill-climbing" algorithm. To run a bootstrap analysis, another algorithm is required. A particularly convenient option for this is "-f a" which triggers a "rapid Bootstrap analysis and search for the best-scoring ML tree in one program run". It would also be possible to run only bootstrapping; however, then the original alignment would not be used at all for inference, only bootstrapped alignments would be used.
+* Scroll towards the top of the help text, there you should find the details for the "-f" option with which the RAxML algorithm is selected:<p align="center"><img src="img/raxml2.png" alt="RAxML" width="600"></p>From the help text you'll see that if `-f` is not used as a command-line argument, the default algorithm is used, which is `-f d`, the "new rapid hill-climbing" algorithm. To run a bootstrap analysis, another algorithm is required. A particularly convenient option for this is `-f a` which triggers a "rapid Bootstrap analysis and search for the best-scoring ML tree in one program run". It would also be possible to run only bootstrapping; however, then the original alignment would not be used at all for inference, only bootstrapped alignments would be used.
 
-* Thus, try to run RAxML with option "-f a" to use the original alignment for the inference of the maximum-likelihood tree, and bootstrapped alignments to assess node support on this tree. To avoid conflict with previously generated files, use e.g. `16s_filtered_bs.out` as part of all output file names:
+* Thus, try to run RAxML with option `-f a` to use the original alignment for the inference of the maximum-likelihood tree, and bootstrapped alignments to assess node support on this tree. To avoid conflict with previously generated files, use e.g. `16s_filtered_bs.out` as part of all output file names:
 
 		raxml -s 16s_filtered.phy -n 16s_filtered_bs.out -m GTRGAMMA -p 123 -f a
 
-* As you'll see, RAxML now also requires specification of a random number seed for the bootstrapping with option "-x". Try again:
+* As you'll see, RAxML now also requires specification of a random number seed for the bootstrapping with option `-x`. Try again:
 
 		raxml -s 16s_filtered.phy -n 16s_filtered_bs.out -m GTRGAMMA -p 123 -f a -x 456
 		
-* However, RAxML still needs more information for the bootstrapping: The number of bootstrap replicates should be specified with the option "-#" or "-N" (those two are synonymous, and we'll use "-N" here). As the RAxML help text explains, one can either specify a fixed number of replicates, such as "-N 100", or one could let RAxML decide itself how many bootstrap replicates should be run, by using one of the automatic "bootstopping criteria" autoMR, autoMRE, autoMRE\_IGN, or autoFC.<p align="center"><img src="img/raxml3.png" alt="RAxML" width="600"></p>According to the RAxML authors ([Pattengale et al. 2010](https://www.liebertpub.com/doi/abs/10.1089/cmb.2009.0179)), autoMRE performs best and is fast enough for up to a few thousand taxa, so I suggest using this option:
+* However, RAxML still needs more information for the bootstrapping: The number of bootstrap replicates should be specified with the option `-#` or `-N` (those two are synonymous, and we'll use `-N` here). As the RAxML help text (shown below) explains, one can either specify a fixed number of replicates, such as `-N 100`, or one could let RAxML decide itself how many bootstrap replicates should be run, by using one of the automatic "bootstopping criteria" autoMR, autoMRE, autoMRE\_IGN, or autoFC.<p align="center"><img src="img/raxml3.png" alt="RAxML" width="600"></p>According to the RAxML authors ([Pattengale et al. 2010](https://www.liebertpub.com/doi/abs/10.1089/cmb.2009.0179)), autoMRE performs best and is fast enough for up to a few thousand taxa, so I suggest using this option:
 
 		raxml -s 16s_filtered.phy -n 16s_filtered_bs.out -m GTRGAMMA -p 123 -f a -x 456 -N autoMRE
 
-* RAxML should now be running. Have a look at the RAxML output on the screen. **Question 4:** What is the proportion of gaps and undetermined characters in the alignment? [(see answer)](#q4) **Question 5:** How long does RAxML take per bootstrap replicate? [(see answer)](#q5) The analysis might take 10-20 minutes, depending on the speed of your computer. RAxML will then write the phylogenetic tree to file `RAxML_bipartitions.16s_filtered_bs.out`. If you don't want to wait for the analysis to finish, you will find this file here: [`RAxML_bipartitions.16s_filtered_bs.out`](res/RAxML_bipartitions.16s_filtered_bs.out).
+* RAxML should now be running. Have a look at the RAxML output on the screen. 
+	
+	**Question 4:** What is the proportion of gaps and undetermined characters in the alignment? [(see answer)](#q4)
+	
+	**Question 5:** How long does RAxML take per bootstrap replicate? [(see answer)](#q5)
+	
+	The analysis might take 10-20 minutes, depending on the speed of your computer. RAxML will then write the phylogenetic tree to file `RAxML_bipartitions.16s_filtered_bs.out`. If you don't want to wait for the analysis to finish, you will find this file here: [`RAxML_bipartitions.16s_filtered_bs.out`](res/RAxML_bipartitions.16s_filtered_bs.out).
 
 * Open file `RAxML_bipartitions.16s_filtered_bs.out` again in FigTree. After once again increasing the font size for tip labels, removing the scale bar, rooting with zebrafish (*Danio rerio*; "Danioxxrerioxx"), and sorting of taxa according to node order, the phylogeny should look as shown in the below screenshot (note that this is identical to the phylogeny generated before without bootstraps, except that some nodes are rotated differently).
 <p align="center"><img src="img/figtree8.png" alt="RAxML" width="600"></p>
 
-* To see node-support values based on bootstrapping, set a tick in the checkbox for "Node Labels", and select "label" from the "Display" drop-down menu, as shown in the below screenshot. **Question 6:** Can this phylogeny be considered reliable? [(see answer)](#q6)<p align="center"><img src="img/figtree9.png" alt="RAxML" width="600"></p>
+* To see node-support values based on bootstrapping, set a tick in the checkbox for "Node Labels", and select "label" from the "Display" drop-down menu, as shown in the below screenshot.
+
+	**Question 6:** Can this phylogeny be considered reliable? [(see answer)](#q6)<p align="center"><img src="img/figtree9.png" alt="RAxML" width="600"></p>
 
 <a name="partition"></a>
 ## Partitioned maximum-likelihood inference
 
-Given that node support in the phylogeny for 16s sequences turned out to be poor, we'll try now if the rag1 alignment supports a better-supported phylogeny. Because the model selection carried out for the rag1 alignment in tutorial [Substitution Model Selection](../substitution_model_selection/README.md) showed support for the use of separate substitution models for each codon position, we will partition the alignment accordingly.
+Given that node support in the phylogeny for 16s sequences turned out to be poor, we'll try now if the rag1 alignment leads to a better-supported phylogeny. Because the model selection carried out for the rag1 alignment in tutorial [Substitution Model Selection](../substitution_model_selection/README.md) showed support for the use of separate substitution models for each codon position, we will partition the alignment accordingly.
 
 * Recall that for the automated model selection with PAUP\* in tutorial [Substitution Model Selection](../substitution_model_selection/README.md), we had used a Nexus file in which the codon positions were specified in a block near the end of the file. As RAxML uses Phylip files as input which do not allow the specification of such data, RAxML requires a separate file in which information about partitions is provided. The structure of this file, however, is very simple and similar to the block in the Nexus file. To write such a file and implement a partitioning scheme according to codon position, open a text editor, then type the following lines:
 
@@ -189,13 +205,19 @@ Given that node support in the phylogeny for 16s sequences turned out to be poor
 		DNA, codon3 = 3-1368\3 
 	As is probably self-explanatory, "DNA" tells RAxML that these partitions refer to DNA data (rather than amino acid sequences or morphological characters), "codon1", "codon2", and "codon3" are names for the individual partitions (you're free to choose these as you like), and "2-1368\3" for example specifies that each third site, counting from position 2 (thus sites 2, 5, 8,...) should be considered part of this partition. Save the file and name it `partitions.txt`.
 	
-* Run RAxML for the rag1 alignment as before, and specify the name of the file with the partition information with the option "-q". We will once again specify "-m GTRGAMMA" to use the GTR model with gamma-distributed rate variation for each partition, as selected by PAUP\*'s automated model selection in tutorial [Substitution Model Selection](../substitution_model_selection/README.md). Feel free to pick other random number seeds than the ones used here, "-p 123" and "-x 456":
+* Run RAxML for the rag1 alignment as before, and specify the name of the file with the partition information with the option `-q`. We will once again specify `-m GTRGAMMA` to use the GTR model with gamma-distributed rate variation for each partition, as selected by PAUP\*'s automated model selection in tutorial [Substitution Model Selection](../substitution_model_selection/README.md). Feel free to pick other random number seeds than the ones used here, `-p 123` and `-x 456`:
 
 		raxml -s rag1_filtered.phy -n rag1_filtered_bs.out -m GTRGAMMA -p 123 -f a -x 456 -N autoMRE -q partitions.txt
 
-* Have a look at the reported proportion of gaps and completely undetermined characters and note that RAxML recognized that we specified three partitions. **Question 7:** How long does RAxML need now for each bootstrap? [(see answer)](#q7) This analysis might take up to an hour, so feel free to cancel it if you don't want to wait that long. You'll find the tree file resulting from this analysis here: [`RAxML_bipartitions.rag1_filtered_bs.out`](res/RAxML_bipartitions.rag1_filtered_bs.out).
+* Have a look at the reported proportion of gaps and completely undetermined characters and note that RAxML recognized that we specified three partitions.
 
-* Open the file `RAxML_bipartitions.rag1_filtered_bs.out` in FigTree. After once again rooting and sorting the phylogeny, the phylogeny should look as shown in the below screenshot. **Question 8:** Does the rag1 phylogeny look more reliable than the 16S phylogeny? [(see answer)](#q8) <p align="center"><img src="img/figtree10.png" alt="RAxML" width="600"></p>
+	**Question 7:** How long does RAxML need now for each bootstrap? [(see answer)](#q7)
+		
+	This analysis might take up to an hour, so feel free to cancel it if you don't want to wait that long. You'll find the tree file resulting from this analysis here: [`RAxML_bipartitions.rag1_filtered_bs.out`](res/RAxML_bipartitions.rag1_filtered_bs.out).
+
+* Open the file `RAxML_bipartitions.rag1_filtered_bs.out` in FigTree. After once again rooting and sorting the phylogeny, the phylogeny should look as shown in the below screenshot.
+
+	**Question 8:** Does the rag1 phylogeny look more reliable than the 16S phylogeny? [(see answer)](#q8) <p align="center"><img src="img/figtree10.png" alt="RAxML" width="600"></p>
 
 
 <a name="comparison"></a>
@@ -209,7 +231,7 @@ We have now used bootstrapping to assess node support in two different phylogeni
 		
 	**Question 9:** How many topological rearrangements separate the 16s and rag1 trees? [(see answer)](#q9)
 
-* To compare the overall support of the two trees, we can use the Python script [`get_mean_node_support.py`](src/get_mean_node_support.py) to calculate the mean bootstrap support for both trees:
+* To compare the overall support of the two trees, we can calculate the mean bootstrap support for both trees with the Python script [`get_mean_node_support.py`](src/get_mean_node_support.py):
 
 		python3 get_mean_node_support.py RAxML_bipartitions.16s_filtered_bs.out
 		python3 get_mean_node_support.py RAxML_bipartitions.rag1_filtered_bs.out
@@ -226,14 +248,14 @@ The comparison of phylogenies based on the short 16s alignment and the longer ra
 
 		ruby concatenate.rb -h
 		
-	You'll see that multiple input files can be specified with the option "-i", and that one output file should be specified with option "-o". In addition, you can select one out of three output file formats. Because we plan to use the concatenated alignment with RAxML, choose to write the output in Phylip format:
+	You'll see that multiple input files can be specified with the option `-i`, and that one output file should be specified with option `-o`. In addition, you can select one out of three output file formats with the option `-f`. Because we plan to use the concatenated alignment with RAxML, choose `-f phylip` to write the output in Phylip format:
 
 		ruby concatenate.rb -i 16s_filtered.nex rag1_filtered.nex -o concatenated.phy -f phylip
 
 * Open the file `concatenated.phy` in AliView and note the length of the concatenated alignment. You should be able to see the position where the two original alignments have been stitched together at position 1368/1369, as shown in the next screenshot.
 <p align="center"><img src="img/aliview1.png" alt="RAxML" width="600"></p>
 
-* To analyse the concatenated alignment again with RAxML, we'll have to adjust the partitions file by adding the 16s part of the alignment as a fourth partition. To do this, open the file `partitions.txt` again in a text editor and add a fourth line at the bottom, so that the file then contains the following lines:
+* To analyze the concatenated alignment again with RAxML, we'll have to adjust the partitions file by adding the 16s part of the alignment as a fourth partition. To do this, open the file `partitions.txt` again in a text editor and add a fourth line at the bottom, so that the file then contains the following lines:
 
 		DNA, codon1 = 1-1368\3
 		DNA, codon2 = 2-1368\3
@@ -241,7 +263,7 @@ The comparison of phylogenies based on the short 16s alignment and the longer ra
 		DNA, 16s = 1369-1854 
 	Note that we don't add the "\3" to the end of the last line because all positions, not only every third position, between sites 1369 and 1845 are part of the 16s partition.
 
-* Run RAxML for the concatenated alignment as before, using the GTR model with gamma-distributed rate variation for each of the four partitions. Again, feel free to pick other random number seeds than the ones used here, "-p 123" and "-x 567":
+* Run RAxML for the concatenated alignment as before, using the GTR model with gamma-distributed rate variation for each of the four partitions. Again, feel free to pick other random-number seeds than the ones used here, `-p 123` and `-x 567`:
 
 		raxml -s concatenated.phy -n concatenated_bs.out -m GTRGAMMA -p 123 -f a -x 456 -N autoMRE -q partitions.txt
 
@@ -249,7 +271,7 @@ The comparison of phylogenies based on the short 16s alignment and the longer ra
 	
 * Open file `RAxML_bipartitions.concatenated_bs.out` again in FigTree and find out if the support values now appear better than they did in the phylogeny based only on the rag1 gene.<p align="center"><img src="img/figtree11.png" alt="RAxML" width="600"></p>
 
-* Also quantify again the overall node support using the Python script [`get_mean_node_support.py`](src/get_mean_node_support.py):
+* Also quantify again the overall node support with the Python script [`get_mean_node_support.py`](src/get_mean_node_support.py), using the following command:
 
 		python3 get_mean_node_support.py RAxML_bipartitions.concatenated_bs.out 
 	**Question 10:** How good is the overall support for this phylogeny compared to that of the phylogeny based only on the rag1 gene? [(see answer)](#q10) 
