@@ -106,7 +106,9 @@ We'll start by aligning sequences of the mitochondrial 16S gene with the program
 
 * In the third gray box in the "Advanced settings" section, which has the title "Parameters", you could change the scoring matrix. For amino-acid sequences you could choose any of the [BLOSUM](https://en.wikipedia.org/wiki/BLOSUM) matrices which are equivalent to [PAM matrices](https://en.wikipedia.org/wiki/Point_accepted_mutation). For nucleotide sequences, one can choose among "1PAM / K=2", "20PAM / K=2", and "200PAM / K=2". It's unclear to me why they list PAM matrices here also for nucleotide sequences and this is also not explained in their paper or the manual, but at least the MAFFT [manual](https://mafft.cbrc.jp/alignment/software/algorithms/algorithms.html) makes it clear that the K (kappa) parameter represents the ratio of scores for transitions and transversions. For now, keep all default options. Click the "Submit" button.
 
-* After a few seconds, the alignment should be ready, and a new page will open that shows the alignment in HTML format. **Question 1:** Can you find out which of the MAFFT alignment algorithms (FFT-NS-1, FFT-NS-2, G-INS-1, FFT-NS-i, E-INS-i, L-INS-i, G-INS-i, or Q-INS-i) has been used? [(see answer)](#q1)
+* After a few seconds, the alignment should be ready, and a new page will open that shows the alignment in HTML format.
+	
+	**Question 1:** Can you find out which of the MAFFT alignment algorithms (FFT-NS-1, FFT-NS-2, G-INS-1, FFT-NS-i, E-INS-i, L-INS-i, G-INS-i, or Q-INS-i) has been used? [(see answer)](#q1)
 
 * Download the alignment in Fasta format to your computer. To do so, right-click the link to "Fasta format" at the very top of the page. Name the file `16s_aln.fasta`.
 
@@ -118,16 +120,22 @@ We'll start by aligning sequences of the mitochondrial 16S gene with the program
 
 * To get an overview of the alignment, zoom in and out using the `+` and `-` keys on your keyboard (you may also have to hold the shift key).
 
-* Without closing the AliView window, open the file `16s_op2_aln.fasta` in a second AliView window. Compare the total alignment lengths shown in the status bar at the bottom right. **Question 2:** Which alignment is longer? [(see answer)](#q2)
+* Without closing the AliView window, open the file `16s_op2_aln.fasta` in a second AliView window. Compare the total alignment lengths shown in the status bar at the bottom right. 
+	
+	**Question 2:** Which alignment is longer? [(see answer)](#q2)
 
-* In both AliView windows, scroll to the region between positions 1250 and 1350. **Question 3:** What main difference between the alignments do you notice? [(see answer)](#q3)
+* In both AliView windows, scroll to the region between positions 1250 and 1350.
+	
+	**Question 3:** What main difference between the alignments do you notice? [(see answer)](#q3)
 
 * Close the window for file `16s_op2_aln.fasta`.
 
 * In the window for `16s_aln.fasta`, identify a poorly aligned region (e.g. around positions 1020 to 1040) and try to realign it. To do so, select the region by clicking in the ruler at the top of the alignment as shown in the below screenshot.
 <p align="center"><img src="img/aliview1.png" alt="AliView" width="600"></p>
 
-* With the poorly aligned region selected, click on "Realign selected block" in AliView's "Align" menu. **Question 4:** Does the alignment in this region look better now? [(see answer)](#q4)
+* With the poorly aligned region selected, click on "Realign selected block" in AliView's "Align" menu.
+	
+	**Question 4:** Does the alignment in this region look better now? [(see answer)](#q4)
 
 <a name="bmge"></a>
 ## Automated alignment filtering with BMGE
@@ -204,7 +212,9 @@ For protein-coding sequences, it can often be useful to identify the reading fra
 * Click the sigma-sign icon in the center of the tool bar to count stop codons, as in the screenshot shown below.
 <p align="center"><img src="img/aliview2.png" alt="AliView" width="600"></p>
 
-* Change the reading frame using the box to the right of the sigma-sign icon and also count stop codons for the second and the third reading frame. Note how the overall color pattern of the alignment changes when you select different reading frames. **Question 5:** Does one reading frame appear more conserved than the other two? [(see answer)](#q5) Use this reading frame from now on.
+* Change the reading frame using the box to the right of the sigma-sign icon and also count stop codons for the second and the third reading frame. Note how the overall color pattern of the alignment changes when you select different reading frames.
+
+	**Question 5:** Does one reading frame appear more conserved than the other two? [(see answer)](#q5) Use this reading frame from now on.
 
 * Notice how the reading frame is interrupted between positions 1980 and 2000 by two insertions in the sequence of *Muraenolepis marmorata*. This means that both insertions would have had to evolve at the same time, otherwise the change of the reading frame would have affected the entire rest of the protein in *Muraenolepis marmorata*, for the time between the first and the second insertion event. A more likely explanation may be that only a single insertion occurred and that the other is an artifact resulting from misalignment.
 
