@@ -155,6 +155,12 @@ In this part of the tutorial, we are going to calculate the <i>D</i> and <i>f</i
 
 		spc1=XXXXXX; spc2=neocan; spc3=telvit; spc4=astbur
 
+* Use these commands to revert to an older version of the `genomics_general` repository because the newest version does not seem to work as it should:
+
+		cd genomics_general
+		git checkout 4f0e66fe9f11d3b768a492141dd7bb51d82d6b4b
+		cd ..
+
 * Then, use script `freq.py` from Simon Martin's repository to calculate allele frequencies of the four species, using the following command:
 
 		python genomics_general/freq.py -g NC_031969.f5.sub1.geno.gz -p ${spc1} -p ${spc2} -p ${spc3} -p ${spc4} --popsFile samples.txt --target derived | grep -v nan | gzip > NC_031969.f5.sub1.pops1.tsv.gz
