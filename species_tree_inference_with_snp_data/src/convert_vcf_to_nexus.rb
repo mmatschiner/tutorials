@@ -32,7 +32,7 @@ vcf_file.each do |l|
       end
       ids_found = true
     end
-  elsif ids_found
+  elsif ids_found and l.strip != ""
     line_ary = l.split
     lg = line_ary[0]
     if previous_lg == ""

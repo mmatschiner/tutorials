@@ -132,7 +132,7 @@ We are going to estimate the relationships among the five *Neolamprlogus* specie
 
 	Write this text to a new file named `speciesnetwork_sum.xml`. With the above XML code, we specify that file `speciesnetwork.trees` should be used as input, that output summarizing the species networks should be written to a new file named `speciesnetwork_sum.trees`, and that the first 1,000 networks (= 10%) from file `speciesnetwork.trees` should be discarded as burnin.
 	
-* Open BEAST2 and load the file `speciesnetwork_sum.xml` written in the last step. Then click "Run". This BEAST2 analysis should finish within a few seconds.
+* Use the command-line version of BEAST2 to execute the file `speciesnetwork_sum.xml` written in the last step (if you would use the GUI version instead, you might need to specify the absolute path to the input and output tree files). This BEAST2 analysis should finish within a few seconds.
 
 * Then, also load the new file [`speciesnetwork_sum.trees`](res/speciesnetwork_sum.trees) in IcyTree, and make sure that the first network is shown by typing "1" in the field between the arrows at the bottom left of the window, as in the next screenshot.<p align="center"><img src="img/safari5.png" alt="Safari" width="600"></p>
 
