@@ -364,7 +364,7 @@ After having inferred recombination breakpoints with Saguaro, we can now cut the
 
 As the length of each block, we here use 50 kb, assuming that this length is a good compromise between increasing probability of undetected recombination with longer blocks and decreasing phylogenetic signal with shorter blocks. For a more thorough analysis, however, it might be worth testing this assumption with blocks of different sizes.
 
-* To cut the breakpoint-free parts of the alignment into individual alignment blocks, we can use the Ruby script `generate_alignments.rb`. This script was specifically written to read output by Saguaro as well as the input file(s) used in the Saguaro analysis. It expects four command-line arguments; these are
+* To cut the breakpoint-free parts of the alignment into individual alignment blocks, we can use the Ruby script [`generate_alignments.rb`](src/generate_alignments.rb). This script was specifically written to read output by Saguaro as well as the input file(s) used in the Saguaro analysis. It expects four command-line arguments; these are
 	* the name of the `LocalTrees.out` output file of Saguaro,
 	* the name of a directory in which the alignment files used for the Saguaro analysis are located,
 	* the name of a new directory to which all output files will be written,
