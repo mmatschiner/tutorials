@@ -353,15 +353,14 @@
         <stateNode id="rateCategories.c:enc_1st" spec="parameter.IntegerParameter" dimension="82">1</stateNode>
         <parameter id="diversificationRateFBD.t:enc_1st" lower="0.0" name="stateNode">0.06</parameter>
         <parameter id="turnoverFBD.t:enc_1st" lower="0.0" name="stateNode" upper="1.0">0.1</parameter>
-        <parameter id="samplingProportionFBD.t:enc_1st" lower="0.0" name="stateNode" upper="1.0">0.01</parameter>
+        <parameter id="samplingProportionFBD.t:enc_1st" lower="0.0" name="stateNode" upper="1.0">0.6</parameter>
     </state>
 
-    <init spec="beast.util.TreeParser" id="NewickTree.t:enc_1st"
+	<init spec="beast.util.TreeParser" id="NewickTree.t:enc_1st"
         initial="@Tree.t:enc_1st"
         IsLabelledNewick="true"
-        newick="(((((((((((((((Oreochromis_niloticus_0.00:47,Mahengechromis_spp_45.51:1.49):3,(Heterochromis_sp_29.6:0.4,Heterochromis_multidensA_0.00:30):20):10,((Cichla_temensisA_0.00:20,Palaeocichla_longirostrum_16.94:3.06):30,(Heros_appendictulatusA_0.00:45,Plesioheros_chauliodus_41.07:3.93):5):10):10,Etroplus_maculatusA_0.00:70):30,(Oryzias_latipes_0.00:60,Rhamphexocoetus_volans_49.33:10.67):40):10,((Trachinotus_carolinusA_0.00:60,Trachicaranx_tersus_55.85:4.15):10,((Channa_striataA_0.00:50,Osphronemus_goramy_48.5:1.5):10,Monopterus_albusA_0.00:60):10):40):10,(Gasterosteus_acuC_0.00:100,Cretatriacanthus_guidottii_98.75:1.25):20):10,(Astrapogon_stellatusA_0.00:40,Gobius_gracilis_32.36:7.64):90):10,((Aulostomus_chinensisA_0.00:60,Prosolenostomus_lessinii_49.12:10.88):20,(Thunnus_albacaresA_0.00:70,Eutrichiurides_opiensis_63.1:6.9):10):60):10,(Porichthys_notatusA_0.00:40,Louckaichthys_novosadi_32.29:7.71):10):10,(Diplacanthopoma_brunneaA_0.00:60,Eolamprogrammus_senectus_57.14:2.86):100):10,(Sargocentron_cornutumA_0.00:100,Caproberyx_pharsus_98.0:2):70):10,(Rondeletia_loricataA_0.00:100,Monocentris_japonicaA_0.00:100):80):10,(Polymixia_japonicaA_0.00:100,Homonotichthys_rotundus_94.64:5.36):90):10,(((((Gadus_morhua_0.00:65,Protacodus_sp_60.69:4.31):5,Stylephorus_chordatusB_0.00:70):10,(Zenopsis_conchiferaB_0.00:75,Cretazeus_rinaldii_71.55:3.45):5):10,(Percopsis_omiscomaycusA_0.00:70,Mcconichthys_longipinnis_64.85:5.15):20):10,Regalecus_Glesne_0.00:100):100)">
-        <taxa id="SH3_2nd" spec="FilteredAlignment" data="@Near_et_al_red_fossils" filter="5243-5945\3"/>
-    </init>
+        taxa="@enc_1st"
+        newick="(((((((((((((((Oreochromis_niloticus_0.00:47,Mahengechromis_spp_45.51:1.49):3,(Heterochromis_sp_29.6:0.4,Heterochromis_multidensA_0.00:30):20):10,((Cichla_temensisA_0.00:20,Palaeocichla_longirostrum_16.94:3.06):30,(Heros_appendictulatusA_0.00:45,Plesioheros_chauliodus_41.07:3.93):5):10):10,Etroplus_maculatusA_0.00:70):30,(Oryzias_latipes_0.00:60,Rhamphexocoetus_volans_49.33:10.67):40):10,((Trachinotus_carolinusA_0.00:60,Trachicaranx_tersus_55.85:4.15):10,((Channa_striataA_0.00:50,Osphronemus_goramy_48.5:1.5):10,Monopterus_albusA_0.00:60):10):40):10,(Gasterosteus_acuC_0.00:100,Cretatriacanthus_guidottii_98.75:1.25):20):10,(Astrapogon_stellatusA_0.00:40,Gobius_gracilis_32.36:7.64):90):10,((Aulostomus_chinensisA_0.00:60,Prosolenostomus_lessinii_49.12:10.88):20,(Thunnus_albacaresA_0.00:70,Eutrichiurides_opiensis_63.1:6.9):10):60):10,(Porichthys_notatusA_0.00:40,Louckaichthys_novosadi_32.29:7.71):10):10,(Diplacanthopoma_brunneaA_0.00:60,Eolamprogrammus_senectus_57.14:2.86):100):10,(Sargocentron_cornutumA_0.00:100,Caproberyx_pharsus_98.0:2):70):10,(Rondeletia_loricataA_0.00:100,Monocentris_japonicaA_0.00:100):80):10,(Polymixia_japonicaA_0.00:100,Homonotichthys_rotundus_94.64:5.36):90):10,(((((Gadus_morhua_0.00:65,Protacodus_sp_60.69:4.31):5,Stylephorus_chordatusB_0.00:70):10,(Zenopsis_conchiferaB_0.00:75,Cretazeus_rinaldii_71.55:3.45):5):10,(Percopsis_omiscomaycusA_0.00:70,Mcconichthys_longipinnis_64.85:5.15):20):10,Regalecus_Glesne_0.00:100):100)"/>
 
     <distribution id="posterior" spec="util.CompoundDistribution">
         <distribution id="prior" spec="util.CompoundDistribution">
@@ -1005,7 +1004,7 @@
                 <Uniform id="Uniform.92" lower="0.041" name="distr" upper="0.081"/>
             </prior>
             <prior id="samplingProportionPriorFBD.t:enc_1st" name="distribution" x="@samplingProportionFBD.t:enc_1st">
-                <Uniform id="Uniform.94" lower="0.0066" name="distr" upper="0.01806"/>
+                <Uniform id="Uniform.96" lower="0.2" name="distr" upper="0.95"/>
             </prior>
             <prior id="turnoverPriorFBD.t:enc_1st" name="distribution" x="@turnoverFBD.t:enc_1st">
                 <Uniform id="Uniform.93" lower="0.0011" name="distr" upper="0.37"/>
@@ -1101,7 +1100,8 @@
                 <data id="SH3_1st" spec="FilteredAlignment" data="@Near_et_al_red_fossils" filter="5242-5944\3"/>
                 <siteModel id="BEASTModelTest.s:SH3_1st" spec="BEASTModelTestSiteModel" gammaCategoryCount="4" hasGammaRates="@hasGammaRates.s:SH3_1st" hasInvariantSites="@hasInvariableSites.s:SH3_1st" mutationRate="@BMT_mutationRate.s:SH3_1st" proportionInvariant="@BMT_ProportionInvariable.s:SH3_1st" shape="@BMT_gammaShape.s:SH3_1st" substModel="@RevJump.s:SH3_1st"/>
             </distribution>
-            <distribution id="treeLikelihood.SH3_2nd" spec="ThreadedTreeLikelihood" branchRateModel="@RelaxedClock.c:enc_1st" data="@SH3_2nd" tree="@Tree.t:enc_1st">
+            <distribution id="treeLikelihood.SH3_2nd" spec="ThreadedTreeLikelihood" branchRateModel="@RelaxedClock.c:enc_1st" tree="@Tree.t:enc_1st">
+                <data id="SH3_2nd" spec="FilteredAlignment" data="@Near_et_al_red_fossils" filter="5243-5945\3"/>
                 <siteModel id="BEASTModelTest.s:SH3_2nd" spec="BEASTModelTestSiteModel" gammaCategoryCount="4" hasGammaRates="@hasGammaRates.s:SH3_2nd" hasInvariantSites="@hasInvariableSites.s:SH3_2nd" mutationRate="@BMT_mutationRate.s:SH3_2nd" proportionInvariant="@BMT_ProportionInvariable.s:SH3_2nd" shape="@BMT_gammaShape.s:SH3_2nd" substModel="@RevJump.s:SH3_2nd"/>
             </distribution>
             <distribution id="treeLikelihood.SH3_3rd" spec="ThreadedTreeLikelihood" branchRateModel="@RelaxedClock.c:enc_1st" tree="@Tree.t:enc_1st">
@@ -1801,37 +1801,37 @@
         <log idref="posterior"/>
         <log idref="likelihood"/>
         <log idref="prior"/>
-        <log idref="treeLikelihood.SH3_2nd"/>
-        <log idref="treeLikelihood.enc_3rd"/>
-        <log idref="treeLikelihood.ZIC_2nd"/>
-        <log idref="treeLikelihood.ZIC_3rd"/>
         <log idref="treeLikelihood.enc_1st"/>
         <log id="TreeHeight.t:enc_1st" spec="beast.evolution.tree.TreeHeightLogger" tree="@Tree.t:enc_1st"/>
-        <log idref="treeLikelihood.glyt_3rd"/>
-        <log idref="treeLikelihood.plag_1st"/>
-        <log idref="treeLikelihood.SH3_3rd"/>
-        <log idref="treeLikelihood.glyt_1st"/>
-        <log idref="treeLikelihood.ptr_3rd"/>
-        <log idref="treeLikelihood.myh_2nd"/>
-        <log idref="treeLikelihood.RAG1_3rd"/>
         <log idref="treeLikelihood.enc_2nd"/>
-        <log idref="treeLikelihood.plag_2nd"/>
-        <log idref="treeLikelihood.SREB_2nd"/>
-        <log idref="treeLikelihood.SREB_1st"/>
-        <log idref="treeLikelihood.RAG1_1st"/>
-        <log idref="treeLikelihood.myh_1st"/>
-        <log idref="treeLikelihood.SH3_1st"/>
-        <log idref="treeLikelihood.RAG1_2nd"/>
-        <log idref="treeLikelihood.ptr_1st"/>
-        <log idref="treeLikelihood.SREB_3rd"/>
-        <log idref="treeLikelihood.myh_3rd"/>
-        <log idref="treeLikelihood.plag_3rd"/>
-        <log idref="treeLikelihood.glyt_2nd"/>
+        <log idref="treeLikelihood.glyt_1st"/>
         <log idref="treeLikelihood.TBR_2nd"/>
+        <log idref="treeLikelihood.glyt_2nd"/>
+        <log idref="treeLikelihood.SREB_3rd"/>
+        <log idref="treeLikelihood.glyt_3rd"/>
+        <log idref="treeLikelihood.SREB_1st"/>
         <log idref="treeLikelihood.ZIC_1st"/>
+        <log idref="treeLikelihood.ZIC_2nd"/>
+        <log idref="treeLikelihood.plag_3rd"/>
+        <log idref="treeLikelihood.SH3_2nd"/>
+        <log idref="treeLikelihood.SH3_1st"/>
+        <log idref="treeLikelihood.plag_1st"/>
         <log idref="treeLikelihood.TBR_1st"/>
+        <log idref="treeLikelihood.ZIC_3rd"/>
+        <log idref="treeLikelihood.SH3_3rd"/>
         <log idref="treeLikelihood.ptr_2nd"/>
+        <log idref="treeLikelihood.myh_1st"/>
         <log idref="treeLikelihood.TBR_3rd"/>
+        <log idref="treeLikelihood.RAG1_3rd"/>
+        <log idref="treeLikelihood.enc_3rd"/>
+        <log idref="treeLikelihood.ptr_1st"/>
+        <log idref="treeLikelihood.RAG1_2nd"/>
+        <log idref="treeLikelihood.plag_2nd"/>
+        <log idref="treeLikelihood.myh_2nd"/>
+        <log idref="treeLikelihood.myh_3rd"/>
+        <log idref="treeLikelihood.ptr_3rd"/>
+        <log idref="treeLikelihood.RAG1_1st"/>
+        <log idref="treeLikelihood.SREB_2nd"/>
         <log idref="RevJump.s:enc_1st"/>
         <log idref="BMT_ModelIndicator.s:enc_1st"/>
         <log idref="BMT_Rates.s:enc_1st"/>
