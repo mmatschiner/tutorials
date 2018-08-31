@@ -122,8 +122,8 @@ File.open(vcf_file_name) do |f|
                     end
                 end
                 if site_is_fixed_enough
-                    fixedness_count += 1
                     if parent1_allele != parent2_allele
+                        fixedness_count += 1
                         string = "#{chromosome}\t#{position}\t#{parent1_alleles[0]}\t#{parent2_alleles[0]}"
                         parent1_indices.each do |x|
                             gt = line_ary[x].split(":")[0]
