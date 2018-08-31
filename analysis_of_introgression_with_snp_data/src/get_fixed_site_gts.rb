@@ -38,6 +38,8 @@ output_table_file = File.open(output_table_file_name,"a")
 parent1_indices = []
 parent2_indices = []
 hybrid_indices = []
+complete_count = 0
+fixedness_count = 0
 in_data = false
 File.open(vcf_file_name) do |f|
     f.each_line do |l|
@@ -94,6 +96,7 @@ File.open(vcf_file_name) do |f|
             site_is_complete_enough = false if parent1_alleles.size < 2*parent1_indices.size*required_completeness_in_parents
             site_is_complete_enough = false if parent2_alleles.size < 2*parent2_indices.size*required_completeness_in_parents
             if site_is_complete_enough
+                complete_count += 1
                 site_is_fixed_enough = false
                 if parent1_alleles.uniq.size == 1 and parent2_alleles.uniq.size == 1
                     site_is_fixed_enough = true
@@ -115,10 +118,11 @@ File.open(vcf_file_name) do |f|
                         parent2_allele = parent2_uniq_alleles1
                     end
                     if parent1_allele != nil and parent2_allele != nil
-                        site_is_fixed_enough
+                        site_is_fixed_enough = true
                     end
                 end
                 if site_is_fixed_enough
+                    fixedness_count += 1
                     if parent1_allele != parent2_allele
                         string = "#{chromosome}\t#{position}\t#{parent1_alleles[0]}\t#{parent2_alleles[0]}"
                         parent1_indices.each do |x|
@@ -140,4 +144,12 @@ File.open(vcf_file_name) do |f|
             end
         end
     end
+end
+
+# Feedback.
+puts "Found #{complete_count} sites with sufficient completeness (at least #{required_completeness_in_parents})."
+if ARGV[6] == nil
+    puts "Found #{fixedness_count} sites with complete fixation of different alleles in the parental populations."
+else
+    puts "Found #{fixedness_count} sites with sufficient fixation of different alleles in the parental populations (at least #{required_fixedness_in_parents})."
 end
