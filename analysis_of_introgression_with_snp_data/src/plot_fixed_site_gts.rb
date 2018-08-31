@@ -104,15 +104,15 @@ puts "Found #{n_sites} positions with the required completeness."
 top_margin = 10
 bottom_margin = 10
 left_margin = 10
-left_text_block_width = 40
+left_text_block_width = 50
 right_margin = 10
 dim_x = 800
 dim_y = 600
 line_color = "5b5b5b"
 color1 = "ef2746"
 color2 = "27abd0"
-font_size = 12
-font_correction_y = 7
+font_size = 6
+font_correction_y = 1.5
 height = ((dim_y - top_margin - bottom_margin) / n_specimens.to_f) / 2.0
 width = (dim_x - left_margin - left_text_block_width - right_margin) / n_sites.to_f
 
@@ -126,82 +126,89 @@ svgstring << "\n"
 n_specimens.times do |y|
 	top_left_y = top_margin + y * (2 * height)
 	# Draw blocks for the first alleles of this specimen.
-	prev_allele = "m"
-	prev_allele_first_site = 0
+	this_allele_first_site = 0
+	top_left_x = left_margin + left_text_block_width
 	n_sites.times do |x|
-		top_left_x = left_margin + left_text_block_width + prev_allele_first_site * width
-		this_allele = specimen_allele1[y][x]
-		unless this_allele == prev_allele
-			prev_allele_last_site = x-1
-			top_right_x = left_margin + left_text_block_width + prev_allele_last_site * width
-			if prev_allele == "p1"
-				svgstring << "<rect fill=\"##{color1}\" x=\"#{top_left_x.round(3)}\" y=\"#{top_left_y.round(4)}\" width=\"#{(top_right_x-top_left_x+width).round(4)}\" height=\"#{height.round(3)}\" />\n"
-			elsif prev_allele == "p2"
-				svgstring << "<rect fill=\"##{color2}\" x=\"#{top_left_x.round(3)}\" y=\"#{top_left_y.round(4)}\" width=\"#{(top_right_x-top_left_x+width).round(4)}\" height=\"#{height.round(3)}\" />\n"
-			end
-		end
-		if new_scaffold[x]
-			prev_allele_last_site = x-1
-			top_right_x = left_margin + left_text_block_width + prev_allele_last_site * width
-			if prev_allele == "p1"
-				svgstring << "<rect fill=\"##{color1}\" x=\"#{top_left_x.round(3)}\" y=\"#{top_left_y.round(4)}\" width=\"#{(top_right_x-top_left_x+width).round(4)}\" height=\"#{height.round(3)}\" />\n"
-			elsif prev_allele == "p2"
-				svgstring << "<rect fill=\"##{color2}\" x=\"#{top_left_x.round(3)}\" y=\"#{top_left_y.round(4)}\" width=\"#{(top_right_x-top_left_x+width).round(4)}\" height=\"#{height.round(3)}\" />\n"
-			end
-			prev_allele = "m"
-			prev_allele_first_site = 0
-		elsif x == n_sites-1
-			top_right_x = dim_x-right_margin
-			if this_allele == "p1"
-				svgstring << "<rect fill=\"##{color1}\" x=\"#{top_left_x.round(3)}\" y=\"#{top_left_y.round(4)}\" width=\"#{(top_right_x-top_left_x+width).round(4)}\" height=\"#{height.round(3)}\" />\n"
-			elsif this_allele == "p2"
-				svgstring << "<rect fill=\"##{color2}\" x=\"#{top_left_x.round(3)}\" y=\"#{top_left_y.round(4)}\" width=\"#{(top_right_x-top_left_x+width).round(4)}\" height=\"#{height.round(3)}\" />\n"
-			end
-
+		if x < 1
+			prev_allele = nil
 		else
-			prev_allele_first_site = x unless this_allele == prev_allele
-			prev_allele = this_allele
+			prev_allele = specimen_allele1[y][x-1]
+		end
+		this_allele = specimen_allele1[y][x]
+		if x > n_sites-2
+			next_allele = nil
+		else
+			next_allele = specimen_allele1[y][x+1]
+		end
+		this_allele_is_a_first = false
+		this_allele_is_a_last = false
+		this_allele_is_a_first = true if prev_allele == nil or prev_allele != this_allele
+		this_allele_is_a_last = true if next_allele == nil or this_allele != next_allele
+		if this_allele_is_a_first and this_allele_is_a_last
+			this_allele_first_site = x
+			top_left_x = left_margin + left_text_block_width + this_allele_first_site * width
+			this_allele_last_site = x
+			top_right_x = left_margin + left_text_block_width + (this_allele_last_site+1) * width
+			if this_allele == "p1"
+				svgstring << "<rect fill=\"##{color1}\" x=\"#{top_left_x.round(3)}\" y=\"#{top_left_y.round(4)}\" width=\"#{(top_right_x-top_left_x).round(4)}\" height=\"#{height.round(3)}\" />\n"
+			elsif this_allele == "p2"
+				svgstring << "<rect fill=\"##{color2}\" x=\"#{top_left_x.round(3)}\" y=\"#{top_left_y.round(4)}\" width=\"#{(top_right_x-top_left_x).round(4)}\" height=\"#{height.round(3)}\" />\n"
+			end
+		elsif this_allele_is_a_first
+			this_allele_first_site = x
+			top_left_x = left_margin + left_text_block_width + this_allele_first_site * width
+		elsif this_allele_is_a_last
+			this_allele_last_site = x
+			top_right_x = left_margin + left_text_block_width + (this_allele_last_site+1) * width
+			if this_allele == "p1"
+				svgstring << "<rect fill=\"##{color1}\" x=\"#{top_left_x.round(3)}\" y=\"#{top_left_y.round(4)}\" width=\"#{(top_right_x-top_left_x).round(4)}\" height=\"#{height.round(3)}\" />\n"
+			elsif this_allele == "p2"
+				svgstring << "<rect fill=\"##{color2}\" x=\"#{top_left_x.round(3)}\" y=\"#{top_left_y.round(4)}\" width=\"#{(top_right_x-top_left_x).round(4)}\" height=\"#{height.round(3)}\" />\n"
+			end
 		end
 	end
 	# Draw blocks for the second alleles of this specimen.
-	prev_allele = "m"
-	prev_allele_first_site = 0
-
+	this_allele_first_site = 0
+	top_left_x = left_margin + left_text_block_width
 	n_sites.times do |x|
-		top_left_x = left_margin + left_text_block_width + prev_allele_first_site * width
+		if x < 1
+			prev_allele = nil
+		else
+			prev_allele = specimen_allele2[y][x-1]
+		end
 		this_allele = specimen_allele2[y][x]
-		unless this_allele == prev_allele
-			prev_allele_last_site = x-1
-			top_right_x = left_margin + left_text_block_width + prev_allele_last_site * width
-			if prev_allele == "p1"
-				svgstring << "<rect fill=\"##{color1}\" x=\"#{top_left_x.round(3)}\" y=\"#{(top_left_y+height).round(4)}\" width=\"#{(top_right_x-top_left_x+width).round(4)}\" height=\"#{height.round(3)}\" />\n"
-			elsif prev_allele == "p2"
-				svgstring << "<rect fill=\"##{color2}\" x=\"#{top_left_x.round(3)}\" y=\"#{(top_left_y+height).round(4)}\" width=\"#{(top_right_x-top_left_x+width).round(4)}\" height=\"#{height.round(3)}\" />\n"
+		if x > n_sites-2
+			next_allele = nil
+		else
+			next_allele = specimen_allele2[y][x+1]
+		end
+		this_allele_is_a_first = false
+		this_allele_is_a_last = false
+		this_allele_is_a_first = true if prev_allele == nil or prev_allele != this_allele
+		this_allele_is_a_last = true if next_allele == nil or this_allele != next_allele
+		if this_allele_is_a_first and this_allele_is_a_last
+			this_allele_first_site = x
+			top_left_x = left_margin + left_text_block_width + this_allele_first_site * width
+			this_allele_last_site = x
+			top_right_x = left_margin + left_text_block_width + (this_allele_last_site+1) * width
+			if this_allele == "p1"
+				svgstring << "<rect fill=\"##{color1}\" x=\"#{top_left_x.round(3)}\" y=\"#{(top_left_y+height).round(4)}\" width=\"#{(top_right_x-top_left_x).round(4)}\" height=\"#{height.round(3)}\" />\n"
+			elsif this_allele == "p2"
+				svgstring << "<rect fill=\"##{color2}\" x=\"#{top_left_x.round(3)}\" y=\"#{(top_left_y+height).round(4)}\" width=\"#{(top_right_x-top_left_x).round(4)}\" height=\"#{height.round(3)}\" />\n"
+			end
+		elsif this_allele_is_a_first
+			this_allele_first_site = x
+			top_left_x = left_margin + left_text_block_width + this_allele_first_site * width
+		elsif this_allele_is_a_last
+			this_allele_last_site = x
+			top_right_x = left_margin + left_text_block_width + (this_allele_last_site+1) * width
+			if this_allele == "p1"
+				svgstring << "<rect fill=\"##{color1}\" x=\"#{top_left_x.round(3)}\" y=\"#{(top_left_y+height).round(4)}\" width=\"#{(top_right_x-top_left_x).round(4)}\" height=\"#{height.round(3)}\" />\n"
+			elsif this_allele == "p2"
+				svgstring << "<rect fill=\"##{color2}\" x=\"#{top_left_x.round(3)}\" y=\"#{(top_left_y+height).round(4)}\" width=\"#{(top_right_x-top_left_x).round(4)}\" height=\"#{height.round(3)}\" />\n"
 			end
 		end
-		if new_scaffold[x]
-			prev_allele_last_site = x-1
-			top_right_x = left_margin + left_text_block_width + prev_allele_last_site * width
-			if prev_allele == "p1"
-				svgstring << "<rect fill=\"##{color1}\" x=\"#{top_left_x.round(3)}\" y=\"#{(top_left_y+height).round(4)}\" width=\"#{(top_right_x-top_left_x+width).round(4)}\" height=\"#{height.round(3)}\" />\n"
-			elsif prev_allele == "p2"
-				svgstring << "<rect fill=\"##{color2}\" x=\"#{top_left_x.round(3)}\" y=\"#{(top_left_y+height).round(4)}\" width=\"#{(top_right_x-top_left_x+width).round(4)}\" height=\"#{height.round(3)}\" />\n"
-			end
-			prev_allele = "m"
-			prev_allele_first_site = 0
-		elsif x == n_sites-1
-			top_right_x = dim_x-right_margin
-			if this_allele == "p1"
-				svgstring << "<rect fill=\"##{color1}\" x=\"#{top_left_x.round(3)}\" y=\"#{(top_left_y+height).round(4)}\" width=\"#{(top_right_x-top_left_x+width).round(4)}\" height=\"#{height.round(3)}\" />\n"
-			elsif this_allele == "p2"
-				svgstring << "<rect fill=\"##{color2}\" x=\"#{top_left_x.round(3)}\" y=\"#{(top_left_y+height).round(4)}\" width=\"#{(top_right_x-top_left_x+width).round(4)}\" height=\"#{height.round(3)}\" />\n"
-			end
-
-		else
-			prev_allele_first_site = x unless this_allele == prev_allele
-			prev_allele = this_allele
-		end	end
-
+	end
 
 		# if specimen_presence_for_parent1_allele[y][x]
 		# 	if specimen_presence_for_parent2_allele[y][x]

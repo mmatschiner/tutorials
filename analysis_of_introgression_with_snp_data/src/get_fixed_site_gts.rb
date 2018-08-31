@@ -8,8 +8,8 @@
 vcf_file_name = ARGV[0]
 output_table_file_name = ARGV[1]
 parent1_ids = ARGV[2].split(",")
-parent2_ids = ARGV[3].split(",")
-hybrid_ids = ARGV[4].split(",")
+hybrid_ids = ARGV[3].split(",")
+parent2_ids = ARGV[4].split(",")
 required_completeness_in_parents = ARGV[5].to_f
 if ARGV[6] == nil
     required_fixedness_in_parents = 1.0
