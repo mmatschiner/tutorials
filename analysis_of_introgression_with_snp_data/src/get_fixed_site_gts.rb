@@ -67,6 +67,7 @@ File.open(vcf_file_name) do |f|
                 if gt.include?("/")
                     gt1 = gt.split("/")[0]
                     gt2 = gt.split("/")[1]
+                    gt1, gt2 = gt2, gt1 if gt1 > gt2
                 elsif gt.include?("|")
                     gt1 = gt.split("|")[0]
                     gt2 = gt.split("|")[1]
@@ -82,6 +83,7 @@ File.open(vcf_file_name) do |f|
                 if gt.include?("/")
                     gt1 = gt.split("/")[0]
                     gt2 = gt.split("/")[1]
+                    gt1, gt2 = gt2, gt1 if gt1 > gt2
                 elsif gt.include?("|")
                     gt1 = gt.split("|")[0]
                     gt2 =gt.split("|")[1]
