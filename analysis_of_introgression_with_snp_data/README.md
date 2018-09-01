@@ -463,7 +463,7 @@ A very simple alternative way of investigating patterns of ancestry in potential
 
 	We'll use `NC_031969.f5.sub1.phased.masked.vcf` as the input and name the output file `pops1.fixed.txt`. Assuming that the parental species are *Altolamprologus fasciatus* ("altfas") and *Telmatochromis vittatus* ("telvit") and the hybrid species is *Neolamprologus cancellatus* ("neocan"), we'll specify the sample IDs for these species with the strings "AUE7,AXD5", "JBD5,JBD6", and "LJC9,LJD1". Finally, we'll filter for sites without missing data by specifying "1.0" as the sixth argument. Thus, run the script `NC_031969.f5.sub1.phased.masked.vcf` with the following command:
 
-		ruby get_fixed_site_gts.rb NC_031969.f5.sub1.phased.masked.vcf pops1.fixed.txt AUE7,AXD5 JBD5,JBD6 LJC9,LJD1 1.0
+		ruby get_fixed_site_gts.rb NC_031969.f5.sub1.phased.masked.vcf pops1.fixed.txt AUE7,AXD5 LJC9,LJD1 JBD5,JBD6 1.0
 
 * The second script, [`plot_fixed_site_gts.rb`](src/plot_fixed_site_gts.rb), expects four arguments, which are
 	* the name of the file written by script [`get_fixed_site_gts.rb`](src/get_fixed_site_gts.rb),
