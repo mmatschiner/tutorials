@@ -106,6 +106,33 @@ lines[1..-1].each do |l|
 	end
 end
 
+# Feedback, report number of homo- and heterozygous sites per specimen.
+output_string = "\n"
+output_string << "specimen".ljust(20)
+output_string << "n_hom(p1)".rjust(12)
+output_string << "n_het".rjust(12)
+output_string << "n_hom(p2)".rjust(12)
+output_string << "\n"
+n_specimens.times do |x|
+	n_hom_p1 = 0
+	n_het = 0
+	n_hom_p2 = 0
+	specimen_allele1[x].size.times do |pos|
+		if specimen_allele1[x][pos] == "p1" and specimen_allele2[x][pos] == "p1"
+			n_hom_p1 += 1
+		elsif specimen_allele1[x][pos] == "p2" and specimen_allele2[x][pos] == "p2"
+			n_hom_p2 += 1
+		elsif specimen_allele1[x][pos] == "p1" and specimen_allele2[x][pos] == "p2"
+			n_het += 1
+		elsif specimen_allele1[x][pos] == "p2" and specimen_allele2[x][pos] == "p1"
+			n_het += 1
+		end
+	end
+	output_string << "#{specimen_ids[x].ljust(20)}#{n_hom_p1.to_s.rjust(12)}#{n_het.to_s.rjust(12)}#{n_hom_p2.to_s.rjust(12)}\n"
+end
+output_string << "\n"
+puts output_string
+
 # Get the number of sites included in the plot.
 n_sites = specimen_allele1[0].size
 
