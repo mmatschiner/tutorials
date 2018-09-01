@@ -56,24 +56,36 @@ lines[1..-1].each do |l|
 					puts "ERROR: Expected alleles to be separated eiter by '/' or '|' but found #{alleles_this_pos[x]}!"
 					exit
 				end
-				if alleles_this_pos_this_specimen[0] == parent1_allele
+				if alleles_this_pos_this_specimen[0] == parent1_allele and alleles_this_pos_this_specimen[1] == parent1_allele
 					specimen_allele1[x] << "p1"
-				elsif alleles_this_pos_this_specimen[0] == parent2_allele
-					specimen_allele1[x] << "p2"
-				elsif alleles_this_pos_this_specimen[0] == "."
-					specimen_allele1[x] << "m"
-				else
-					puts "WARNING: Expected either one of the parental alleles #{parent1_allele} and #{parent2_allele} or missing data coded with '.' but found #{alleles_this_pos_this_specimen[0]}."
-					specimen_allele1[x] << "m"
-				end
-				if alleles_this_pos_this_specimen[1] == parent1_allele
 					specimen_allele2[x] << "p1"
-				elsif alleles_this_pos_this_specimen[1] == parent2_allele
+				elsif alleles_this_pos_this_specimen[0] == parent1_allele and alleles_this_pos_this_specimen[1] == parent2_allele
+					specimen_allele1[x] << "p2"
+					specimen_allele2[x] << "p1"
+				elsif alleles_this_pos_this_specimen[0] == parent1_allele and alleles_this_pos_this_specimen[1] == "."
+					specimen_allele1[x] << "p1"
+					specimen_allele2[x] << "m"
+				elsif alleles_this_pos_this_specimen[0] == parent2_allele and alleles_this_pos_this_specimen[1] == parent1_allele
+					specimen_allele1[x] << "p2"
+					specimen_allele2[x] << "p1"
+				elsif alleles_this_pos_this_specimen[0] == parent2_allele and alleles_this_pos_this_specimen[1] == parent2_allele
+					specimen_allele1[x] << "p2"
 					specimen_allele2[x] << "p2"
-				elsif alleles_this_pos_this_specimen[1] == "."
+				elsif alleles_this_pos_this_specimen[0] == parent2_allele and alleles_this_pos_this_specimen[1] == "."
+					specimen_allele1[x] << "p2"
+					specimen_allele2[x] << "m"
+				elsif alleles_this_pos_this_specimen[0] == "." and alleles_this_pos_this_specimen[1] == parent1_allele
+					specimen_allele1[x] << "p1"
+					specimen_allele2[x] << "m"
+				elsif alleles_this_pos_this_specimen[0] == "." and alleles_this_pos_this_specimen[1] == parent2_allele
+					specimen_allele1[x] << "p2"
+					specimen_allele2[x] << "m"
+				elsif alleles_this_pos_this_specimen[0] == "." and alleles_this_pos_this_specimen[1] == "."
+					specimen_allele1[x] << "m"
 					specimen_allele2[x] << "m"
 				else
-					puts "WARNING: Expected either one of the parental alleles #{parent1_allele} and #{parent2_allele} or missing data coded with '.' but found #{alleles_this_pos_this_specimen[1]}."
+					puts "WARNING: Expected either one of the parental alleles #{parent1_allele} and #{parent2_allele} or missing data coded with '.' but found #{alleles_this_pos_this_specimen[0]} and #{alleles_this_pos_this_specimen[1]}."
+					specimen_allele1[x] << "m"
 					specimen_allele2[x] << "m"
 				end
 			end
