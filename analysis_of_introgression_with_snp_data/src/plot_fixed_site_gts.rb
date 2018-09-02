@@ -112,6 +112,7 @@ output_string << "specimen".ljust(20)
 output_string << "n_hom(p1)".rjust(12)
 output_string << "n_het".rjust(12)
 output_string << "n_hom(p2)".rjust(12)
+output_string << "p_het".rjust(12)
 output_string << "\n"
 n_specimens.times do |x|
 	n_hom_p1 = 0
@@ -128,7 +129,13 @@ n_specimens.times do |x|
 			n_het += 1
 		end
 	end
-	output_string << "#{specimen_ids[x].ljust(20)}#{n_hom_p1.to_s.rjust(12)}#{n_het.to_s.rjust(12)}#{n_hom_p2.to_s.rjust(12)}\n"
+	if n_het+n_hom_p1+n_hom_p2 == 0
+		p_het = "NA"
+		output_string << "#{specimen_ids[x].ljust(20)}#{n_hom_p1.to_s.rjust(12)}#{n_het.to_s.rjust(12)}#{n_hom_p2.to_s.rjust(12)}#{p_het.rjust(12)}\n"
+	else
+		p_het = n_het/(n_het+n_hom_p1+n_hom_p2).to_f
+		output_string << "#{specimen_ids[x].ljust(20)}#{n_hom_p1.to_s.rjust(12)}#{n_het.to_s.rjust(12)}#{n_hom_p2.to_s.rjust(12)}#{('%.3f' % p_het).rjust(12)}\n"
+	end
 end
 output_string << "\n"
 puts output_string
