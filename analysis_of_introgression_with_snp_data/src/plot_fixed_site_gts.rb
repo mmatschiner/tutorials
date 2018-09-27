@@ -40,7 +40,7 @@ lines[1..-1].each do |l|
 	alleles_this_pos = line_ary[4..-1]
 	# Make sure the number of alleles at this position is identical to that of specimen ids.
 	unless alleles_this_pos.size == n_specimens
-		puts "ERROR: The number of alleles found at position #{position} does not match the number of specimens #{n_specimens}!"
+		puts "ERROR: The number of alleles found at position #{position} of linkage group #{scaffold} (#{alleles_this_pos.size}) does not match the number of specimens (#{n_specimens})!"
 		exit
 	end
 	# Check if the completeness at this position is sufficient.
