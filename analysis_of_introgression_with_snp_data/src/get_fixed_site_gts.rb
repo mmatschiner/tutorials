@@ -47,6 +47,14 @@ File.open(vcf_file_name) do |f|
             in_data = true
             header = l
             header_ary = header.split
+            # Make sure that all specimens listed as parents or hybrids are in fact in the vcf.
+            (parent1_ids+parent2_ids+hybrid_ids).each do |i|
+                unless header_ary.include?(i)
+                    puts "ERROR: The vcf file #{vcf_file_name} does not include specimen #{i}"
+                    exit
+                end
+            end
+            # Get the indices of parent and hybrid specimens.
             header_ary.size.times do |x|
                 if parent1_ids.include?(header_ary[x])
                     parent1_indices << x
