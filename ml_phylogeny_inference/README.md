@@ -161,8 +161,7 @@ As we've seen, the IQ-TREE phylogeny of 16S sequences does not perfectly agree w
 
 	**Question 4:** Is the likelihood now reported in the screen output identical to the previously reported likelihood? [(see answer)](#q4)
 
-* To see node-support values based on bootstrapping, set a tick in the checkbox for "Node Labels", and select "label" from the "Display" drop-down menu, as shown in the below screenshot.
-<p align="center"><img src="img/figtree8.png" alt="RAxML" width="600"></p>
+* To see node-support values based on bootstrapping, set a tick in the checkbox for "Node Labels", and select "label" from the "Display" drop-down menu, as shown in the below screenshot.<p align="center"><img src="img/figtree8.png" alt="RAxML" width="600"></p>
 
 	**Question 5:** Can this phylogeny be considered reliable? [(see answer)](#q6)
 
