@@ -89,7 +89,7 @@ We will first generate a simple maximum-likelihood phylogeny only for the filter
 		iqtree -s 16s_filtered.nex 
 	As you'll see, this minimalistic choice of options in fact seems to be sufficient. IQ-TREE should finish the analysis within 10-30 seconds and present output as shown in the screenshot below.
 <p align="center"><img src="img/iqtree1.png" alt="IQTREE" width="600"></p>
-If you read the top section of the output, you'll see that IQ-TREE has apparently automatically determined the number of CPUs available on your machine and indicates that you could use them all by specifying `-nt AUTO`. You'll also see that IQ-TREE has correctly identified the Nexus format of the sequence alignment, and that it reports the proportion of missing data in each sequence.
+	If you read the top section of the output, you'll see that IQ-TREE has apparently automatically determined the number of CPUs available on your machine and indicates that you could use them all by specifying `-nt AUTO`. You'll also see that IQ-TREE has correctly identified the Nexus format of the sequence alignment, and that it reports the proportion of missing data in each sequence.
 
 * Then, scroll down a little to this section:
 <p align="center"><img src="img/iqtree2.png" alt="IQTREE" width="600"></p>
