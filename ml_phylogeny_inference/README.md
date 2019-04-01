@@ -88,20 +88,17 @@ We will first generate a simple maximum-likelihood phylogeny only for the filter
 
 		iqtree -s 16s_filtered.nex 
 	As you'll see, this minimalistic choice of options in fact seems to be sufficient. IQ-TREE should finish the analysis within 10-30 seconds and present output as shown in the screenshot below.
-<p align="center"><img src="img/iqtree1.png" alt="IQTREE" width="600"></p>
-	If you read the top section of the output, you'll see that IQ-TREE has apparently automatically determined the number of CPUs available on your machine and indicates that you could use them all by specifying `-nt AUTO`. You'll also see that IQ-TREE has correctly identified the Nexus format of the sequence alignment, and that it reports the proportion of missing data in each sequence.
+<p align="center"><img src="img/iqtree1.png" alt="IQTREE" width="600"></p>If you read the top section of the output, you'll see that IQ-TREE has apparently automatically determined the number of CPUs available on your machine and indicates that you could use them all by specifying `-nt AUTO`. You'll also see that IQ-TREE has correctly identified the Nexus format of the sequence alignment, and that it reports the proportion of missing data in each sequence.
 
 * Then, scroll down a little to this section:
-<p align="center"><img src="img/iqtree2.png" alt="IQTREE" width="600"></p>
-	Here, you'll see that IQ-TREE has apparently automatically performed a test for the substitution model that best fits the sequence alignment (see tutorial [`substitution_model_selection`](../substitution_model_selection/README.md) for more information on the choice of substitution models). This means that the default setting of IQ-TREE is equivalent to the `-m MFP` option described in the help text ([Kalyaanamoorthy et al. 2017](https://www.nature.com/articles/nmeth.4285)). Alternatively, other substitution models could be specified, for example with `-m GTR`, but there is no need to do that; it is very convenient that IQ-TREE does the model selection for us.
+<p align="center"><img src="img/iqtree2.png" alt="IQTREE" width="600"></p>Here, you'll see that IQ-TREE has apparently automatically performed a test for the substitution model that best fits the sequence alignment (see tutorial [`substitution_model_selection`](../substitution_model_selection/README.md) for more information on the choice of substitution models). This means that the default setting of IQ-TREE is equivalent to the `-m MFP` option described in the help text ([Kalyaanamoorthy et al. 2017](https://www.nature.com/articles/nmeth.4285)). Alternatively, other substitution models could be specified, for example with `-m GTR`, but there is no need to do that; it is very convenient that IQ-TREE does the model selection for us.
 
 	**Question 1:** Which model has been chosen by IQ-TREE, and based on which criterion? [(see answer)](#q1)
 	
 * Scroll to the end of the IQ-TREE output. There, you'll find parameter estimates for the selected substitution model, the maximum-likelihood value (given as logarithm after "BEST SCORE FOUND"), information on the run time, and the names of output files. Write down the maximum-likelihood value.
 
 * The best-scoring maximum-likelihood tree was written to file `16s_filtered.nex.treefile`:
-<p align="center"><img src="img/iqtree3.png" alt="IQTREE" width="600"></p>
-Apparently, all output file names were automatically chosen based on the name of the input file. We could have changed this using the `-pre` option if we wanted to.
+<p align="center"><img src="img/iqtree3.png" alt="IQTREE" width="600"></p>Apparently, all output file names were automatically chosen based on the name of the input file. We could have changed this using the `-pre` option if we wanted to.
 
 <a name="figtree"></a>
 ## Reading and visualizing tree files
