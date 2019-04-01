@@ -11,7 +11,8 @@ As the name indicates, maximum-likelihood phylogenetic inference aims to find th
 * [Outline](#outline)
 * [Dataset](#dataset)
 * [Requirements](#requirements)
-* [Maximum-likelihood phylogenetic inference with RAxML](#raxml)
+* [Visualizing sequence alignments](#aliview)
+* [Maximum-likelihood phylogenetic inference with IQ-TREE](#iqtree)
 * [Reading and visualizing tree files](#figtree)
 * [Assessing node support with bootstrapping](#bootstrap)
 * [Partitioned maximum-likelihood inference](#partition)
@@ -22,112 +23,98 @@ As the name indicates, maximum-likelihood phylogenetic inference aims to find th
 <a name="outline"></a>
 ## Outline
 
-In this tutorial, I will present maximum-likelihood phylogeny inference with one of the fastest programs developed for this type of analysis, the program [RAxML](https://sco.h-its.org/exelixis/web/software/raxml/index.html) ([Stamatakis 2014](https://academic.oup.com/bioinformatics/article/30/9/1312/238053)). I will demonstrate how the reliability of nodes in the phylogeny can be assessed with bootstrapping ([Felsenstein 1985](https://www.jstor.org/stable/2408678)), how unlinked substitution models can be applied to separate partitions, and how alignments of multiple genes can be concatenated to be jointly used in the same phylogenetic analysis.
+In this tutorial, I will present maximum-likelihood phylogeny inference with one of the fastest programs developed for this type of analysis, the program [IQ-TREE](http://www.iqtree.org) ([Nguyen et al. 2015](https://academic.oup.com/mbe/article/32/1/268/2925592)). I will demonstrate how the reliability of nodes in the phylogeny can be assessed with bootstrapping ([Felsenstein 1985](https://www.jstor.org/stable/2408678), [Hoang et al. 2017](https://academic.oup.com/mbe/article/35/2/518/4565479)), how unlinked substitution models can be applied to separate partitions, and how alignments of multiple genes can be concatenated to be jointly used in the same phylogenetic analysis.
 
 <a name="dataset"></a>
 ## Dataset
 
-The data used in this tutorial are the filtered versions of the alignments generated for 16s and rag1 sequences in tutorial [Multiple Sequence Alignment](../multiple_sequence_alignment/README.md). These alignments contain sequence data for 41 teleost fish species and are 486 and 1,368 bp long, respectively. More information on the origin of the dataset can be found in the [Multiple Sequence Alignment](../multiple_sequence_alignment/README.md) tutorial. RAxML requires input files in Phylip format, thus we will use the files [`16s_filtered.phy`](data/16s_filtered.phy) and [`rag1_filtered.phy`](data/rag1_filtered.phy) for RAxML analyses, but one of the scripts used in this tutorial requires Nexus format, thus we will then also use files [`16s_filtered.nex`](data/16s_filtered.nex) and [`rag1_filtered.nex`](data/rag1_filtered.nex).
+The data used in this tutorial are the filtered versions of the alignments generated for 16S and *RAG1* sequences in tutorial [Multiple Sequence Alignment](../multiple_sequence_alignment/README.md). These alignments contain sequence data for 41 teleost fish species and are 486 and 1,368 bp long, respectively. More information on the origin of the dataset can be found in the [Multiple Sequence Alignment](../multiple_sequence_alignment/README.md) tutorial. IQ-TREE allows various file formats (including Phylip, Fasta, and Nexus), but one of the scripts used in this tutorial requires Nexus format, thus we will use the files [`16s_filtered.nex`](data/16s_filtered.nex) and [`rag1_filtered.nex`](data/rag1_filtered.nex).
 
 <a name="requirements"></a>
 ## Requirements
 
-* **RAxML:** Source code for Mac OS X and Linux, as well as precompiled executables for Windows, can be found on [RAxML's github page](https://github.com/stamatak/standard-RAxML). To install RAxML on any of these systems, download the [latest release](https://github.com/stamatak/standard-RAxML/releases), either in its zip or tar.gz-compressed version. Decompress this file on your machine.<br>
-For installation on Linux, instructions are provided in the `README` file that you will find in the decompressed RAxML package. To compile the parallelized PTHREADS version of RAxML, try running
+<!-- XXX remove this paragraph later XXX--->
+* **AliView:** To visualize sequence alignments, the software [AliView](http://www.ormbunkar.se/aliview/) ([Larsson 2014](https://academic.oup.com/bioinformatics/article/30/22/3276/2391211)) is recommended. The installation of AliView is described at [http://www.ormbunkar.se/aliview/](http://www.ormbunkar.se/aliview/) and should be possible on all operating systems.
 
-		make -f Makefile.AVX.PTHREADS.gcc
-
-	If this should not work because your computer does not support [AVX](https://en.wikipedia.org/wiki/Advanced_Vector_Extensions), you could try
+* **IQ-TREE:** Source code for Mac OS X and Linux, as well as precompiled executables for Windows, can be found on [IQ-TREE's download page](http://www.iqtree.org/#download). To install IQ-TREE on any of these systems, download the version for your operating system, and decompress this file on your machine if necessary. In the decompressed directory, you'll find a subdirectory named `bin` and inside of this subdirectory should be a file named `iqtree` or `iqtree.exe`. To easily access this executable from the command line, place it somewhere on your computer where your system can find it (i.e. in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))).One way to guarantee this on Mac OS X or Linux is to place the executable in `/usr/local/bin`, for example using this command:
 	
-		make -f Makefile.SSE3.PTHREADS.gcc
-
-	If this also fails because your computer also doesn't support [SSE](https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions), then you should nevertheless be able to compile the slower standard version with
-	
-		make -f Makefile.PTHREADS.gcc
-
-	On Mac OS X, you'll have to use the versions of the `Makefile` that end in `.mac`. This is not described in RAxML's `README` file. So to compile the sequential version, you'll have to run
-	
-		make -f Makefile.AVX.PTHREADS.mac
+		mv iqtree /usr/local/bin
 		
-	or
+	(on Windows, just use `move` instead of `mv`).
+	To verify that the IQ-TREE executable can be found by your system, type the following command:
 	
-		make -f Makefile.SSE3.PTHREADS.mac
+		which iqtree
 		
-	(no Mac version without AVX or SSE3 seems to be included in the latest releases).
+	(on Windows, `where` instead of `which` should do the same). If this command outputs a path such as `/usr/local/bin/iqtree`, the executable can be found. As a second test if IQ-TREE is working as it should, type this:
+	
+		iqtree -version
 		
-	On Windows, just use the newest of the precompiled executables that you will find in a directory named `WindowsExecutables_v8.2.10` or similar, within the decompressed RAxML package.<br>
+	You should then see the version number as well as a list of contributing developers. If you do, you're ready to use IQ-TREE.
+	
+* **FigTree:** The program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) by Andrew Rambaut is a very intuitive and useful tool for the visualization and (to a limited extent) manipulation of phylogenies encoded in [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) format. Executables for Mac OS X, Linux, and Windows are provided on [https://github.com/rambaut/figtree/releases](https://github.com/rambaut/figtree/releases).
 
-	The commands given in this tutorial will assume that you compiled the parallelized PTHREADS version of RAxML (rather than the sequential or the MPI version), that you named the file simply `raxml`, and that you placed it somewhere on your computer where your system can find it (i.e. in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))). One way to guarantee this on Mac OS X or Linux is to place the executable in `/usr/local/bin`, for example using (if you compiled the AVX version) this command:
-	
-		mv raxmlHPC-PTHREADS-AVX /usr/local/bin/raxml
-		
-	To verify that the RAxML executable can be found by your system, type the following command:
-	
-		which raxml
-		
-	If this command outputs a path such as `/usr/local/bin/raxml`, the executable can be found. As a second test if RAxML is working as it should, type this:
-	
-		raxml -v
-		
-	You should then see the version number as well as a list of contributing developers. If you do, you're ready to use RAxML.
-	
-* **FigTree:** The program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) by Andrew Rambaut is a very intuitive and useful tool for the visualization and (to a limited extent) manipulation of phylogenies encoded in [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) format. Executables for Mac OS X, Linux, and Windows are provided on [http://tree.bio.ed.ac.uk/software/figtree/](http://tree.bio.ed.ac.uk/software/figtree/).
 
-* **Python library ete3:** The [ete toolkit](http://etetoolkit.org) ([Huerta-Cepas et al. 2016](https://academic.oup.com/mbe/article/33/6/1635/2579822)) will be required to compare phylogenetic trees with the [Robinson-Foulds distance](https://en.wikipedia.org/wiki/Robinson–Foulds_metric) ([Robinson and Foulds 1981](https://www.sciencedirect.com/science/article/pii/0025556481900432?via%3Dihub)). Instructions for the installation of the ete toolkit on Mac OS X and Linux are provided on the [ete download webpage](http://etetoolkit.org/download/); however, the easiest way to install the ete3 toolkit might be with the pip package manager for Python, using the following command:
+<!-- XXX remove this section later XXX--->
+<a name="aliview"></a>
+## Visualizing sequence alignments
 
-		python -m pip install --user ete3
-		
-	To ensure that the installation worked, you could execute the following command:
-	
-		python -c 'import ete3'
-		
-	If no error message is given, the ete3 library is correctly installed and ready to be used.
+To get an impression of the data used in this tutorial, we will visualize the alignent files in AliView.
+
+* Download the files [`16s_filtered.nex`](data/16s_filtered.nex) and [`rag1_filtered.nex`](data/rag1_filtered.nex) and open them both with the program AliView. With the 16S alignment, the AliView window should look as shown in the screenshot below: <p align="center"><img src="img/aliview1.png" alt="AliView" width="600"></p>
+
+* Scroll to the end of the aligment to see how variable the sequences are and how many of them are partially missing.
+
+* Do the same for the *RAG1* alignment.
+
+* In contrast to 16S, *RAG1* is protein coding. To illustrate the translation of codon triplets to amino acids, click on the fourth icon from the left in AliView menu bar. AliView should then color code triplets as shown below: <p align="center"><img src="img/aliview2.png" alt="AliView" width="600"></p>
+
 
 	
-<a name="raxml"></a>
-## Maximum-likelihood phylogenetic inference with RAxML
+<a name="iqtree"></a>
+## Maximum-likelihood phylogenetic inference with IQ-TREE
 
-We will first generate a simple maximum-likelihood phylogeny only for the filtered 16s sequence alignment.
+We will first generate a simple maximum-likelihood phylogeny only for the filtered 16S sequence alignment.
 
-* To get an impression of the many options available in RAxML, have a look at the long help text of the program:
+* To get an impression of the many options available in IQ-TREE, have a look at the long help text of the program:
 
-		raxml -h
+		iqtree -h
 		
-* Scroll back up to the beginning of the RAxML help text. Close to the top, you'll see that RAxML could be started as easily as this:
+* Scroll back up to the beginning of the IQ-TREE help text. Close to the top, you'll see that IQ-TREE could be started as easily as this:
 
-		raxmlHPC -s sequenceFileName -n outputFileName -m substitutionModel 
-	Here, "sequenceFileName" and "outputFileName" would have to be replaced with the actual sequence and output file names, and a substitution model would have to be chosen to replace "substitutionModel". Note that in our case, we would also start the program with `raxml`, not `raxmlHPC`, only because we named it that way.
+		iqtree -s alignment 
+	Here, "alignment" and would have to be replaced with the actual file name of the alignment.
 
-* So, let's try to run a maximum-likelihood search, first for the 16S sequence data, using the alignment file in Phylip format [`16s_filtered.phy`](data/16s_filtered.phy). We'll start with as little command-line options as possible, and learn along the way which other options we need. I suggest doing so only for the reason that I find this easier than remembering all necessary options before the run (or reading the long help text each time). We'll use the GTRGAMMA model (the GTR model with gamma-distributed rate variation, as suggested for the 16S alignment by the model selection done in tutorial [`substitution_model_selection`](../substitution_model_selection/README.md)), and we choose `16s_filtered.out` as part of all result-file names:
+* So, let's try to run a maximum-likelihood search, first for the 16S sequence data, using the alignment file [`16s_filtered.nex`](data/16s_filtered.nex):
 
-		raxml -s 16s_filtered.phy -n 16s_filtered.out -m GTRGAMMA 
-* As you'll see, this minimalistic choice of options does not seem to be sufficient, and RAxML asks us to specify a random number seed with the option `-p`. Before doing so, make sure to remove the log file (`RAxML_info.16s_filtered.out`) that RAxML just wrote to the current directory:
+		iqtree -s 16s_filtered.nex 
+As you'll see, this minimalistic choice of options in fact seems to be sufficient. IQ-TREE should finish the analysis within 10-30 seconds and present output as shown in the screenshot below.
+<p align="center"><img src="img/iqtree1.png" alt="IQTREE" width="600"></p>
+If you read the top section of the output, you'll see that IQ-TREE has apparently automatically determined the number of CPUs available on your maching and indicates that you could use them all by specifying `-nt AUTO`. You'll also see that IQ-TREE has correctly identified the Nexus format of the sequence alignment, and that it reports the proportion of missing data in each sequence.
 
-		rm RAxML_info.16s_filtered.out
+* Then, scroll down a little to this section:
+<p align="center"><img src="img/iqtree2.png" alt="IQTREE" width="600"></p>
+Here, you'll see that IQ-TREE has apparently automatically performed a test for the substitution model that best fits the sequence alignment (see tutorial [`substitution_model_selection`](../substitution_model_selection/README.md) for more information on the choice of substitution models). This means that the default setting of IQ-TREE is equivalent to the `-m MFP` option described in the help text ([Kalyaanamoorthy et al. 2017](https://www.nature.com/articles/nmeth.4285)). Alternatively, other substitution models could be specified, for example with `-m GTR`, but there is no need to do that; it is very convenient that IQ-TREE does the model selection for us.
 
-	Then, try running RAxML again, this time with a random number seed:
-
-		raxml -s 16s_filtered.phy -n 16s_filtered.out -m GTRGAMMA -p 123
-		
-* RAxML should finish the analysis within a few seconds and present output as shown in the screenshot below.
-
-	**Question 1:** Are the inferred stationary frequencies of the four nucleotides (here called the "base frequencies") comparable to those inferred with PAUP\* in tutorial [`substitution_model_selection`](../substitution_model_selection/README.md))? [(see answer)](#q1)
+	**Question 1:** Which model has been chosen by IQ-TREE, and based on which criterion? [(see answer)](#q1)
 	
-	As you can see from RAxML's output (shown in the screenshot below), the best-scoring maximum-likelihood tree was written to file `RAxML_bestTree.16s_filtered.out`.
-<p align="center"><img src="img/raxml1.png" alt="RAxML" width="600"></p>
+* Scroll to the end of the IQ-TREE output. There, you'll find parameter estimates for the selected substitution model, the maximum-likelihood value (given as logarithm after "BEST SCORE FOUND"), information on the run time, and the names of output files. Write down the maximum-likelihood value.
+
+* The best-scoring maximum-likelihood tree was written to file `16s_filtered.nex.treefile`:
+<p align="center"><img src="img/iqtree3.png" alt="IQTREE" width="600"></p>
+Apparently, all output file names were automatically chosen based on the name of the input file. We could have changed this using the `-pre` option if we wanted to.
 
 <a name="figtree"></a>
 ## Reading and visualizing tree files
 
-In this part of the tutorial, we will explore how phylogenetic trees are encoded in Newick format, the format used by almost all phylogenetic sofware, and we will visualize the maximum-likelihood phylogeny generated with RAxML with the program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) (fun fact: The Newick format is named after the [Newick's restaurant](http://www.newicks.com) in Dover, New Hampshire, where Joe Felsenstein and other developers of the format ["enjoyed the meal of lobsters"](http://evolution.genetics.washington.edu/phylip/newicktree.html) in 1986). A good explanation of the format and information on its origin can be also be found [here](http://evolution.genetics.washington.edu/phylip/newicktree.html).
+In this part of the tutorial, we will explore how phylogenetic trees are encoded in Newick format, the format used by almost all phylogenetic sofware, and we will visualize the maximum-likelihood phylogeny generated with IQ-TREE with the program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) (fun fact: The Newick format is named after the [Newick's restaurant](http://www.newicks.com) in Dover, New Hampshire, where Joe Felsenstein and other developers of the format ["enjoyed the meal of lobsters"](http://evolution.genetics.washington.edu/phylip/newicktree.html) in 1986). A good explanation of the format and information on its origin can be also be found [here](http://evolution.genetics.washington.edu/phylip/newicktree.html).
 
-* Open the file [`RAxML_bestTree.16s_filtered.out`](res/RAxML_bestTree.16s_filtered.out) in a text editor, or on the command line using for example the `less` command:
+* Open the file [`16s_filtered.nex.treefile`](res/16s_filtered.nex.treefile) in a text editor, or on the command line using for example the `less` command:
 
-		less RAxML_bestTree.16s_filtered.out
+		less 16s_filtered.nex.treefile
 
-	You'll see a long string containing the taxon IDs, each of which is followed by a codon and a number, and together with these, the taxon IDs are embedded in parentheses. As an example, a short (and simplified) segment of the string is this:
+	You'll see a long string containing the taxon IDs, each of which is followed by a colon and a number, and together with these, the taxon IDs are embedded in parentheses. As an example, a short (and simplified) segment of the string is this:
 	
-		(Mugilxxcephalu:0.16,(Synbranmarmora:0.29,Ambassispcxxxx:0.05):0.01)
+		((Ambassispcxxxx:0.04,Synbranmarmora:0.24):0.02,Mugilxxcephalu:0.13)
 
 * Open the program FigTree, copy the above short part of the tree string, and paste it into the new FigTree window. You'll see a phylogeny of the three taxa *Mugil cephalus* ("Mugilxxcephalu"), *Synbranchus marmoratus* ("Synbranmarmora"), and *Ambassis* sp. ("Ambassispcxxxx"), as shown in the screenshot below.
 <p align="center"><img src="img/figtree1.png" alt="FigTree" width="600"></p>
@@ -135,13 +122,13 @@ In this part of the tutorial, we will explore how phylogenetic trees are encoded
 * For better visualization, increase the font size for tip labels in the panel at the left (click on the triangle to the left of "Tip Labels" to open it), and untick the checkbox next to "Scale Bar", as shown in the next screenshot.
 <p align="center"><img src="img/figtree2.png" alt="FigTree" width="600"></p>
 
-* Also tick the checkbox next to "Branch Labels" to display the branch lengths as in the next screenshot. Note that the label of the branch leading to *Mugil cephalus* ("Mugilxxcephalu") is not displayed due to a minor bug; it is hidden by the menu bar at the top. However, you'll recognize that the other branch lengths correspond to the numbers specified in the tree string after the colons:
+* Also tick the checkbox next to "Branch Labels" to display the branch lengths as in the next screenshot. You'll recognize that the branch lengths correspond to the numbers specified in the tree string after the colons:
  
-		(Mugilxxcephalu:0.16,(Synbranmarmora:0.29,Ambassispcxxxx:0.05):0.01
+		((Ambassispcxxxx:0.04,Synbranmarmora:0.24):0.02,Mugilxxcephalu:0.13)
 		
-	<p align="center"><img src="img/figtree3.png" alt="FigTree" width="600"></p>By comparing the tree string and the visualization, you'll see that the parentheses encode the relationships among taxa. For example, the pair of parentheses around `Synbranmarmora:0.29,Ambassispcxxxx:0.05` specifies that the taxon names listed inside of it form one monophyletic clade. Thus, *Synbranchus marmoratus* ("Synbranmarmora") and *Ambassis* sp. ("Ambassispcxxxx") are defined as sister taxa that are closer to each other than either of them is to *Mugil cephalus* ("Mugilxxcephalu").
+	<p align="center"><img src="img/figtree3.png" alt="FigTree" width="600"></p>By comparing the tree string and the visualization, you'll see that the parentheses encode the relationships among taxa. For example, the pair of parentheses around `Ambassispcxxxx:0.04,Synbranmarmora:0.24` specifies that the taxon names listed inside of it form one monophyletic clade. Thus, *Synbranchus marmoratus* ("Synbranmarmora") and *Ambassis* sp. ("Ambassispcxxxx") are defined as sister taxa that are closer to each other than either of them is to *Mugil cephalus* ("Mugilxxcephalu").
 	
-* Next, open the complete phylogeny generated by RAxML (file [`RAxML_bestTree.16s_filtered.out`](res/RAxML_bestTree.16s_filtered.out)) in FigTree. It should look as shown in the below screenshot.<p align="center"><img src="img/figtree4.png" alt="FigTree" width="600"></p>The way the phylogeny is rooted in the above screenshot is arbitrary, because we so far did not specify how the rooting should be done either in the RAxML analysis or in the visualization with FigTree. So this phylogeny provides no evidence that *Acantharchus pomotis* ("Acanthpomotis") is the sister to all the other teleost fishes (only that is is first among these in the alphabet).
+* Next, open the complete phylogeny generated by IQ-TREE (file [`16s_filtered.nex.treefile`](res/16s_filtered.nex.treefile)) in FigTree. It should look more or less as shown in the below screenshot.<p align="center"><img src="img/figtree4.png" alt="FigTree" width="600"></p>The way the phylogeny is rooted in the above screenshot is arbitrary, because we so far did not specify how the rooting should be done either in the IQ-TREE analysis or in the visualization with FigTree. So this phylogeny provides no evidence that *Acantharchus pomotis* ("Acanthpomotis") is the sister to all the other teleost fishes (only that is is first among these in the alphabet).
 
 * To correct the rooting of the phylogeny, we can specify an outgroup. From the taxonomy of the species included in this dataset, we know that zebrafish (*Danio rerio*; "Danioxxrerioxx") is a member of the clade named "Otomorpha" whereas all other species belong to the clade named "Euteleosteomorpha" ([Betancur-R. et al. 2017](https://bmcevolbiol.biomedcentral.com/articles/10.1186/s12862-017-0958-3)). Thus, the correct root of the phylogeny must lie between zebrafish and the other taxa. To specify zebrafish as an outgroup, click on the branch leading to "Danioxxrerioxx", as shown in the next screenshot.
 <p align="center"><img src="img/figtree5.png" alt="FigTree" width="600"></p>
@@ -151,130 +138,118 @@ In this part of the tutorial, we will explore how phylogenetic trees are encoded
 
 * As a final change, we could sort the taxa according to node order. To do so, click "Decreasing node order" in FigTree's "Tree" menu. This should move "Danioxxrerioxx" to the top of the plot:<p align="center"><img src="img/figtree7.png" alt="FigTree" width="600"></p>It is almost surprising how well this phylogeny resolves the correct relationships among the 41 taxa (which are known rather well from more extensive studies based on large molecular datasets as well as morphology).
 
-	**Question 2:** Do cichlids appear monophyletic in this phylogeny (to answer this, you may need to look up the [table in the Multiple Sequence Alignment](../multiple_sequence_alignment/README.md) tutorial)? [(see answer)](#q2) 
+	**Question 2:** Do cichlid fishes appear monophyletic in this phylogeny (to answer this, you may need to look up the [table in the Multiple Sequence Alignment](../multiple_sequence_alignment/README.md) tutorial)? [(see answer)](#q2) 
 		
 	**Question 3:** And are Neotropical cichlids (*Cichla temensis*, *Geophagus brasiliensis*, *Herichthys cyanoguttatus*) monophyletic? [(see answer)](#q3)
 
 <a name="bootstrap"></a>
 ## Assessing node support with bootstrapping
 
-As we've seen, the RAxML phylogeny of 16S sequences does not perfectly agree with relationships inferred in other studies (e.g. [Matschiner et al. 2017](https://academic.oup.com/sysbio/article/66/1/3/2418030); [Betancur-R. et al. 2017](https://bmcevolbiol.biomedcentral.com/articles/10.1186/s12862-017-0958-3)) or with the taxonomy of teleost fishes. However, so far, we have no indication of the reliability of the individual nodes in the phylogeny, therefore we can not assess how strong the evidence of this phylogeny weighs against other findings. To identify which nodes in the phylogeny are more or less trustworthy, we will now perform a bootstrap analysis, again with RAxML.
+As we've seen, the IQ-TREE phylogeny of 16S sequences does not perfectly agree with relationships inferred in other studies (e.g. [Matschiner et al. 2017](https://academic.oup.com/sysbio/article/66/1/3/2418030); [Betancur-R. et al. 2017](https://bmcevolbiol.biomedcentral.com/articles/10.1186/s12862-017-0958-3)) or with the taxonomy of teleost fishes. However, so far, we have no indication of the reliability of the individual nodes in the phylogeny, therefore we can not assess how strong the evidence of this phylogeny weighs against other findings. To identify which nodes in the phylogeny are more or less trustworthy, we will now perform a bootstrap analysis, again with IQ-TREE.
 
-* Have a look once more at the long help text of RAxML to see the available options for bootstrapping:
+* Have a look once more at the long help text of IQ-TREE to see the available options for bootstrapping:
 
-		raxml -h
+		iqtree -h
 
-* Scroll towards the top of the help text, there you should find the details for the "-f" option with which the RAxML algorithm is selected:<p align="center"><img src="img/raxml2.png" alt="RAxML" width="600"></p>From the help text you'll see that if `-f` is not used as a command-line argument, the default algorithm is used, which is `-f d`, the "new rapid hill-climbing" algorithm. To run a bootstrap analysis, another algorithm is required. A particularly convenient option for this is `-f a` which triggers a "rapid Bootstrap analysis and search for the best-scoring ML tree in one program run". It would also be possible to run only bootstrapping; however, then the original alignment would not be used at all for inference, only bootstrapped alignments would be used.
+* Scroll towards the top of the help text, there you should find two sections titled "ULTRAFAST BOOTSTRAP" and "STANDARD NON-PARAMETRIC BOOTSTRAP". We'll pick the `-bb` option to perform the ultrafast bootstrap procedure of [Hoang et al. 2017](https://academic.oup.com/mbe/article/35/2/518/4565479). As specified in the help text, a minimum of 1,000 replicates is recommended, but IQ-TREE will automatically reduce this number if it detects that the resulting node-support values are stable also after a lower number of replicates. Note that the ultrafast bootstrap procedure is actually a convenient combination of analyses of bootstrapped alignments and the original alignment so that support values are based on the bootstrapped alignments and used to annotate the phylogeny based on the original alignment.
 
-* Thus, try to run RAxML with option `-f a` to use the original alignment for the inference of the maximum-likelihood tree, and bootstrapped alignments to assess node support on this tree. To avoid conflict with previously generated files, use e.g. `16s_filtered_bs.out` as part of all output file names:
+* Thus, try to run IQ-TREE with option `-bb 1000` to use the original alignment for the inference of the maximum-likelihood tree, and bootstrapped alignments to assess node support on this tree:
 
-		raxml -s 16s_filtered.phy -n 16s_filtered_bs.out -m GTRGAMMA -p 123 -f a
+		iqtree -s 16s_filtered.nex -bb 1000
 
-* As you'll see, RAxML now also requires specification of a random number seed for the bootstrapping with option `-x`. Try again:
+* Unless you've removed your previous result files, you'll see an error message indicating that IQ-TREE recognizes the previous result files and is hesitant to overwrite these. To fix this, we can specify a prefix to use different output-file names, with the `-pre` option:
 
-		raxml -s 16s_filtered.phy -n 16s_filtered_bs.out -m GTRGAMMA -p 123 -f a -x 456
+		iqtree -s 16s_filtered.nex -bb 1000 -pre 16s_filtered.bs.nex
 		
-* However, RAxML still needs more information for the bootstrapping: The number of bootstrap replicates should be specified with the option `-#` or `-N` (those two are synonymous, and we'll use `-N` here). As the RAxML help text (shown below) explains, one can either specify a fixed number of replicates, such as `-N 100`, or one could let RAxML decide itself how many bootstrap replicates should be run, by using one of the automatic "bootstopping criteria" autoMR, autoMRE, autoMRE\_IGN, or autoFC.<p align="center"><img src="img/raxml3.png" alt="RAxML" width="600"></p>According to the RAxML authors ([Pattengale et al. 2010](https://www.liebertpub.com/doi/abs/10.1089/cmb.2009.0179)), autoMRE performs best and is fast enough for up to a few thousand taxa, so I suggest using this option:
+	The analysis should not take much longer than the previous one. IQ-TREE will then write the phylogenetic tree to file `16s_filtered.bs.nex.treefile`.
 
-		raxml -s 16s_filtered.phy -n 16s_filtered_bs.out -m GTRGAMMA -p 123 -f a -x 456 -N autoMRE
+* Open file [`16s_filtered.bs.nex.treefile`](res/16s_filtered.bs.nex.treefile) in FigTree. Once again increase the font size for tip labels, remove the scale bar, root with zebrafish (*Danio rerio*; "Danioxxrerioxx"), and sort all taxa according to node order. In principle, the phylogeny should now look exactly as the one without bootstraps generated earlier, given that the maximum-likelihood inference should be independent of the additional bootstrap procedure. However, due to stochastic variation in the inference, it is possible that IQ-TREE does not always find the actual maximum-likelihood phylogeny, but instead one with a slightly lower likelihood.
 
-* RAxML should now be running. Have a look at the RAxML output on the screen. 
-	
-	**Question 4:** What is the proportion of gaps and undetermined characters in the alignment? [(see answer)](#q4)
-	
-	**Question 5:** How long does RAxML take per bootstrap replicate? [(see answer)](#q5)
-	
-	The analysis might take 10-20 minutes, depending on the speed of your computer. RAxML will then write the phylogenetic tree to file `RAxML_bipartitions.16s_filtered_bs.out`. If you don't want to wait for the analysis to finish, you will find this file here: [`RAxML_bipartitions.16s_filtered_bs.out`](res/RAxML_bipartitions.16s_filtered_bs.out).
-
-* Open file `RAxML_bipartitions.16s_filtered_bs.out` again in FigTree. After once again increasing the font size for tip labels, removing the scale bar, rooting with zebrafish (*Danio rerio*; "Danioxxrerioxx"), and sorting of taxa according to node order, the phylogeny should look as shown in the below screenshot (note that this is identical to the phylogeny generated before without bootstraps, except that some nodes are rotated differently).
-<p align="center"><img src="img/figtree8.png" alt="RAxML" width="600"></p>
+	**Question 4:** Is the likelihood now reported in the screen output identical to the previously reported likelihood? [(see answer)](#q4)
 
 * To see node-support values based on bootstrapping, set a tick in the checkbox for "Node Labels", and select "label" from the "Display" drop-down menu, as shown in the below screenshot.
+<p align="center"><img src="img/figtree8.png" alt="RAxML" width="600"></p>
 
-	**Question 6:** Can this phylogeny be considered reliable? [(see answer)](#q6)<p align="center"><img src="img/figtree9.png" alt="RAxML" width="600"></p>
+	**Question 5:** Can this phylogeny be considered reliable? [(see answer)](#q6)
 
 <a name="partition"></a>
 ## Partitioned maximum-likelihood inference
 
-Given that node support in the phylogeny for 16s sequences turned out to be poor, we'll try now if the rag1 alignment leads to a better-supported phylogeny. Because the model selection carried out for the rag1 alignment in tutorial [Substitution Model Selection](../substitution_model_selection/README.md) showed support for the use of separate substitution models for each codon position, we will partition the alignment accordingly.
+Given that node support in the phylogeny for 16S sequences turned out to be poor, we'll try now if the *RAG1* alignment leads to a better-supported phylogeny. Because the model selection carried out for the *RAG1* alignment in tutorial [Substitution Model Selection](../substitution_model_selection/README.md) showed support for the use of separate substitution models for each codon position, we will partition the alignment accordingly.
 
-* Recall that for the automated model selection with PAUP\* in tutorial [Substitution Model Selection](../substitution_model_selection/README.md), we had used a Nexus file in which the codon positions were specified in a block near the end of the file. As RAxML uses Phylip files as input which do not allow the specification of such data, RAxML requires a separate file in which information about partitions is provided. The structure of this file, however, is very simple and similar to the block in the Nexus file. To write such a file and implement a partitioning scheme according to codon position, open a text editor, then type the following lines:
+* Recall that for the automated model selection with PAUP\* in tutorial [Substitution Model Selection](../substitution_model_selection/README.md), we had used a Nexus file in which the codon positions were specified in a block near the end of the file. We are now going to use a similar block; however, because IQ-TREE expects this block not in the alignment file but in a separate file, we will first write this file. To do so, open a text editor, then type the following lines:
 
-		DNA, codon1 = 1-1368\3
-		DNA, codon2 = 2-1368\3
-		DNA, codon3 = 3-1368\3 
-	As is probably self-explanatory, "DNA" tells RAxML that these partitions refer to DNA data (rather than amino acid sequences or morphological characters), "codon1", "codon2", and "codon3" are names for the individual partitions (you're free to choose these as you like), and "2-1368\3" for example specifies that each third site, counting from position 2 (thus sites 2, 5, 8,...) should be considered part of this partition. Save the file and name it `partitions.txt`.
+		#NEXUS
+		BEGIN SETS;
+			CHARSET codon1 = 1-1368\3;
+			CHARSET codon2 = 2-1368\3;
+			CHARSET codon3 = 3-1368\3;
+		END; 
+	In this block, which is also written in the flexible Nexus format, "codon1", "codon2", and "codon3" are names for the individual partitions (you're free to choose these as you like), and "2-1368\3" for example specifies that each third site, counting from position 2 (thus sites 2, 5, 8,...) should be considered part of this partition. Save the file and name it `partitions.txt`.
 	
-* Run RAxML for the rag1 alignment as before, and specify the name of the file with the partition information with the option `-q`. We will once again specify `-m GTRGAMMA` to use the GTR model with gamma-distributed rate variation for each partition, as selected by PAUP\*'s automated model selection in tutorial [Substitution Model Selection](../substitution_model_selection/README.md). Feel free to pick other random number seeds than the ones used here, `-p 123` and `-x 456`:
+* Run IQ-TREE for the *RAG1* alignment as before, and specify the name of the file with the partition information with the option `-spp` (with this option, relative branch lengths will be identical between partitions, but overall substitution rates may differ). The substitution model will again be chosen by IQ-TREE, this time independently for each partition. And as before, we are going to use 1,000 ultrafast bootstrap replicates, and we'll specify a prefix for the output files:
 
-		raxml -s rag1_filtered.phy -n rag1_filtered_bs.out -m GTRGAMMA -p 123 -f a -x 456 -N autoMRE -q partitions.txt
+		iqtree -s rag1_filtered.nex -spp partitions.txt -bb 1000 -pre rag1_filtered.bs.nex
 
-* Have a look at the reported proportion of gaps and completely undetermined characters and note that RAxML recognized that we specified three partitions.
+* Have a look through the screen output written by IQ-TREE.
 
-	**Question 7:** How long does RAxML need now for each bootstrap? [(see answer)](#q7)
+	**Question 6:** Which models were now selected by IQ-TREE for the three partitions? [(see answer)](#q6)
 		
-	This analysis might take up to an hour, so feel free to cancel it if you don't want to wait that long. You'll find the tree file resulting from this analysis here: [`RAxML_bipartitions.rag1_filtered_bs.out`](res/RAxML_bipartitions.rag1_filtered_bs.out).
+* IQ-TREE should have written the resulting maximum-likelihood phylogeny with bootstrap support values to file `rag1_filtered.bs.nex.treefile`. Open the file [`rag1_filtered.bs.nex.treefile`](res/rag1_filtered.bs.nex.treefile) in FigTree. After once again rooting and sorting the phylogeny, the phylogeny should look as shown in the below screenshot.<p align="center"><img src="img/figtree9.png" alt="RAxML" width="600"></p>
 
-* Open the file `RAxML_bipartitions.rag1_filtered_bs.out` in FigTree. After once again rooting and sorting the phylogeny, the phylogeny should look as shown in the below screenshot.
-
-	**Question 8:** Does the rag1 phylogeny look more reliable than the 16S phylogeny? [(see answer)](#q8) <p align="center"><img src="img/figtree10.png" alt="RAxML" width="600"></p>
+	**Question 7:** Does the *RAG1* phylogeny look more reliable than the 16S phylogeny? [(see answer)](#q7)
 
 
 <a name="comparison"></a>
 ## Comparing the reliability of different phylogenies
 
-We have now used bootstrapping to assess node support in two different phylogenies, the phylogeny for the 16s alignment and that of the rag1 alignment. We have visually inspected the two phylogenies, but we have not yet quantified the difference between them or the overall support that each of them has.
+We have now used bootstrapping to assess node support in two different phylogenies, the phylogeny for the 16S alignment and that of the *RAG1* alignment. We have visually inspected the two phylogenies, but we have not yet quantified the difference between them or the overall support that each of them has.
 
-* As a measure of the distance between two trees, the [Robinson-Foulds distance](https://en.wikipedia.org/wiki/Robinson–Foulds_metric) ([Robinson and Foulds 1981](https://www.sciencedirect.com/science/article/pii/0025556481900432?via%3Dihub)) is commonly used. This measure is defined as the number of topological rearrangements that are required to convert one of the trees into the other. It can be calculated with the Python script [`get_rf_distance.py`](src/get_rf_distance.py) using this command:
+* As a measure of the distance between two trees, the [Robinson-Foulds distance](https://en.wikipedia.org/wiki/Robinson–Foulds_metric) ([Robinson and Foulds 1981](https://www.sciencedirect.com/science/article/pii/0025556481900432?via%3Dihub)) is commonly used. This measure is defined as the number of topological rearrangements that are required to convert one of the trees into the other. It can be calculated with IQ-TREE, specifying one of the trees with option `-t` and the other with `-rf`:
 
-		python get_rf_distance.py RAxML_bipartitions.16s_filtered_bs.out RAxML_bipartitions.rag1_filtered_bs.out
+		iqtree -t 16s_filtered.bs.nex.treefile -rf rag1_filtered.bs.nex.treefile
 		
-	**Question 9:** How many topological rearrangements separate the 16s and rag1 trees? [(see answer)](#q9)
+	IQ-TREE should then write the output to a new file named `16s_filtered.bs.nex.treefile.rfdist`. Open this file in a text editor or with the `less` command.
+		
+	**Question 8:** How many topological rearrangements separate the 16S and *RAG1* trees? [(see answer)](#q8)
 
 * To compare the overall support of the two trees, we can calculate the mean bootstrap support for both trees with the Python script [`get_mean_node_support.py`](src/get_mean_node_support.py):
 
-		python3 get_mean_node_support.py RAxML_bipartitions.16s_filtered_bs.out
-		python3 get_mean_node_support.py RAxML_bipartitions.rag1_filtered_bs.out
+		python3 get_mean_node_support.py 16s_filtered.bs.nex.treefile
+		python3 get_mean_node_support.py rag1_filtered.bs.nex.treefile 
 
-	You'll see that the rag1 phylogeny has a much higher mean node support (64.9) than the 16s phylogeny (18.8).
+	You'll probably see that the *RAG1* phylogeny has a much higher mean node support (84.9) than the 16S phylogeny (68.6).
 
 
 <a name="concatenation"></a>
 ## Phylogenetic inference with concatenated alignments
 
-The comparison of phylogenies based on the short 16s alignment and the longer rag1 alignment showed that the overall node support can substantially be improved with increased size of the dataset. It is thus usually beneficial to use the information from several alignments jointly in one and the same phylogenetic analysis. This can be done in various ways, the simplest of which (and the only one possible in RAxML) is concatenation of the alignments, meaning that sequences of the different genes are, for each taxon, pasted together as if they come from just one single gene. While concatenation generally increases the support values of phylogenies, it should be noted that this practice implicitly assumes that all genes share the same evolutionary history, and that bias may result if this assumption is violated (which is common, particularly if closely related species are investigated). This effect has been demonstrated in several studies (e.g. [Kubatko and Degnan 2007](https://academic.oup.com/sysbio/article/56/1/17/1658327); [Ogilvie et al. 2017](https://academic.oup.com/mbe/article/34/8/2101/3738283)). However, given that the dataset used here, with sequences from 41 teleost species, includes few taxa that are very closely related to each other, the assumption that the 16s and rag1 gene share the same evolutionary history (at least the same true topology) may be justified in this case.
+The comparison of phylogenies based on the short 16S alignment and the longer *RAG1* alignment showed that the overall node support can substantially be improved with increased size of the dataset. It is thus usually beneficial to use the information from several alignments jointly in one and the same phylogenetic analysis. This can be done in various ways, the simplest of which is to modify the partition file so that partitions from different files are read and used in the same analysis. Note that IQ-TREE will assume in this analysis that all partitions, and thus the 16S and *RAG1* genes share the same true evolutionary history, and that bias may result if this assumption is violated (which is common, particularly if closely related species are investigated). This effect has been demonstrated in several studies (e.g. [Kubatko and Degnan 2007](https://academic.oup.com/sysbio/article/56/1/17/1658327); [Ogilvie et al. 2017](https://academic.oup.com/mbe/article/34/8/2101/3738283)). However, given that the dataset used here, with sequences from 41 teleost species, includes few taxa that are very closely related to each other, the assumption that the 16S and *RAG1* genes share the same evolutionary history (at least the same true topology) may be justified in this case.
 
-* To concatenate the two alignments, you can use the Ruby script [`concatenate.rb`](src/concatenate.rb). First, have a look at the help text of this script:
+* To use the 16S gene and all *RAG1* codon positions as different partitions in the same analysis, open the file `partitions.txt` that you wrote earlier, and replace the content with the following block:
 
-		ruby concatenate.rb -h
+		#NEXUS
+		BEGIN SETS;
+			CHARSET 16S = 16s_filtered.nex: *;
+			CHARSET rag1_codon1 = rag1_filtered.nex: 1-1368\3;
+			CHARSET rag1_codon2 = rag1_filtered.nex: 2-1368\3;
+			CHARSET rag1_codon3 = rag1_filtered.nex: 3-1368\3;
+		END;
 		
-	You'll see that multiple input files can be specified with the option `-i`, and that one output file should be specified with option `-o`. In addition, you can select one out of three output file formats with the option `-f`. Because we plan to use the concatenated alignment with RAxML, choose `-f phylip` to write the output in Phylip format:
-
-		ruby concatenate.rb -i 16s_filtered.nex rag1_filtered.nex -o concatenated.phy -f phylip
-
-* Open the file `concatenated.phy` in AliView and note the length of the concatenated alignment. You should be able to see the position where the two original alignments have been stitched together at position 1368/1369, as shown in the next screenshot.
-<p align="center"><img src="img/aliview1.png" alt="RAxML" width="600"></p>
-
-* To analyze the concatenated alignment again with RAxML, we'll have to adjust the partitions file by adding the 16s part of the alignment as a fourth partition. To do this, open the file `partitions.txt` again in a text editor and add a fourth line at the bottom, so that the file then contains the following lines:
-
-		DNA, codon1 = 1-1368\3
-		DNA, codon2 = 2-1368\3
-		DNA, codon3 = 3-1368\3
-		DNA, 16s = 1369-1854 
-	Note that we don't add the "\3" to the end of the last line because all positions, not only every third position, between sites 1369 and 1845 are part of the 16s partition.
-
-* Run RAxML for the concatenated alignment as before, using the GTR model with gamma-distributed rate variation for each of the four partitions. Again, feel free to pick other random-number seeds than the ones used here, `-p 123` and `-x 567`:
-
-		raxml -s concatenated.phy -n concatenated_bs.out -m GTRGAMMA -p 123 -f a -x 456 -N autoMRE -q partitions.txt
-
-	This analysis might again take around an hour or longer, so you may not want to wait until it is complete. If so, you can find the resulting phylogeny in file [`RAxML_bipartitions.concatenated_bs.out`](res/RAxML_bipartitions. concatenated_bs.out).
+	The asterisk on the line for 16S specifies that all sites of that alignment should be used in partition "16S".
 	
-* Open file `RAxML_bipartitions.concatenated_bs.out` again in FigTree and find out if the support values now appear better than they did in the phylogeny based only on the rag1 gene.<p align="center"><img src="img/figtree11.png" alt="RAxML" width="600"></p>
+* Run IQ-TREE with all partitions jointly, specifying the file `partitions.txt` again as before:
+	
+		iqtree -spp partitions.txt -bb 1000 -pre concatenated.bs.nex
 
-* Also quantify again the overall node support with the Python script [`get_mean_node_support.py`](src/get_mean_node_support.py), using the following command:
+	Note that this time, the option `-s` to specify an alignment file is no longer needed. This analysis should write the resulting phylogeny with bootstrap-support values to a new file called `concatenated.bs.nex.treefile`.
+	
+* Open file [`concatenated.bs.nex.treefile`](res/concatenated.bs.nex.treefile) in FigTree and find out if the support values now appear better than they did in the phylogeny based on the *RAG1* gene alone. The phylogeny should look more or less as shown in the next screenshot.<p align="center"><img src="img/figtree10.png" alt="RAxML" width="600"></p>
 
-		python3 get_mean_node_support.py RAxML_bipartitions.concatenated_bs.out 
-	**Question 10:** How good is the overall support for this phylogeny compared to that of the phylogeny based only on the rag1 gene? [(see answer)](#q10) 
+* Also quantify again the overall node support with the Python script [`get_mean_node_support.py`](src/get_mean_node_support.py):
+
+		python3 get_mean_node_support.py concatenated.bs.nex.treefile 
+	**Question 9:** How good is the overall support for this phylogeny compared to that of the phylogeny based only on the *RAG1* gene? [(see answer)](#q9) 
 
 <br><hr>
 
@@ -284,11 +259,11 @@ The comparison of phylogenies based on the short 16s alignment and the longer ra
 
 <a name="q1"></a>
 
-* **Question 1:** In the model selection done with PAUP\*, the estimates for the stationary frequencies under the GTR model with gamma-distrbuted rate variation were 0.314 (A), 0.232 (C), 0.211 (G), and 0.242 (T). In contrast, these frequencies were estimated by RAxML as 0.275 (A), 0.252 (C), 0.244 (G), and 0.230 (T). Thus, these estimates differ actually quite a lot. The reason for these differences could be the relatively small alignment size leading to stochastic variation, or the fact that the phylogeny was assumed in the model selection analysis with PAUP\*, but was co-estimated with the model parameters by RAxML.
+* **Question 1:** The "TIM2e+I+G4" model was chosen, according to the "Bayesian information criterion" (BIC) ([Schwarz 1978](https://projecteuclid.org/euclid.aos/1176344136)). The "+I" and "+G4" parts of the model name indicate that it includes a parameter for the proportion of completely invariable alignment sites and another parameter defining the shape of a Gamma distribution to approximate among-site rate variation. The TIM2e model assumes that the rates of A/C and A/T transversions (and their reverse) are equal, and also that the rates of C/G and G/T transversions (and their reverse) are equal. More information on all substitution models used by IQ-TREE can be found on [http://www.iqtree.org/doc/Substitution-Models](http://www.iqtree.org/doc/Substitution-Models).
 
 <a name="q2"></a>
 
-* **Question 2:** No, cichlids are not monophyletic in this phylogeny even though many of them cluster together. But e.g. the placement of the killifish *Aplocheilus panchax* ("Aplochepanchax") as the sister species to the Malagasy cichlid *Ptychochromis grandidieri* ("Ptychocgrandid") shows that cichlids do not appear as monophyletic in this phylogeny (in contrast to results from much more extensive studies that clearly show that cichlids are in fact a monophyletic group; [Matschiner et al. 2017](https://academic.oup.com/sysbio/article/66/1/3/2418030); [Betancur-R. et al. 2017](https://bmcevolbiol.biomedcentral.com/articles/10.1186/s12862-017-0958-3)).
+* **Question 2:** The dataset includes No, cichlids are not monophyletic in this phylogeny even though many of them cluster together. But e.g. the placement of the killifish *Aplocheilus panchax* ("Aplochepanchax") as the sister species to the Malagasy cichlid *Ptychochromis grandidieri* ("Ptychocgrandid") shows that cichlids do not appear as monophyletic in this phylogeny (in contrast to results from much more extensive studies that clearly show that cichlids are in fact a monophyletic group; [Matschiner et al. 2017](https://academic.oup.com/sysbio/article/66/1/3/2418030); [Betancur-R. et al. 2017](https://bmcevolbiol.biomedcentral.com/articles/10.1186/s12862-017-0958-3)).
 
 <a name="q3"></a>
 
@@ -296,28 +271,24 @@ The comparison of phylogenies based on the short 16s alignment and the longer ra
 
 <a name="q4"></a>
 
-* **Question 4:** RAxML reports that 1.61% of the characters in the 16s alignment are undetermined.
+* **Question 4:** The likelihood may or may not be identical. If it is different from the previously inferred likelihood, it is worth comparing the parameter estimates for the substitution model between the two analyses. In my analysis, all parameter estimates differed slightly, indicating that this relatively small dataset may not be informative enough to estimate all parameters reliably.
 
 <a name="q5"></a>
 
-* **Question 5:** On my MacBook Pro, about 0.2 seconds are required per bootstrap replicate. This may differ on other machines, and it may depend on whether you compiled the AVX, SSE3, or standard version of RAxML.
+* **Question 5:** The bootstrap support values indicate that most nodes of the phylogeny are not particularly reliable. Only few nodes are supported with moderately strong values above 90 (meaning that more than 90% of the bootstrap replicates included this node), and some nodes are supported even with support values below 50. This overall low support for this phylogeny is not surprising given that it was built from a short alignment of a single marker. One of the most strongly supported nodes is the monophyly of Neotropical cichlid fishes, combining *Cichla temensis*, *Geophagus brasiliensis*, and *Herichthys cyanoguttatus*.
 
 <a name="q6"></a>
 
-* **Question 6:** The bootstrap support values indicate that most nodes of the phylogeny are not reliable at all. Only few nodes are supported with even moderate support values, such as a support value of 71 for the monophyly of the three Neotropical cichlid fishes. Some node values are even as low as 0, meaning that none of the phylogenies built from bootstrapped alignments recovered this clade found in the phylogeny based on the original alignment. However, the low support for this phylogeny is not surprising given that it was built from a short alignment of a single marker.
+* **Question 6:** IQ-TREE should have selected "TPM2+F+I+G4" as the best-fitting model for the first codon position (partition "codon1"), "K3P+I+G4" for the second codon position (partition "codon2"), and "TPM2u+F+R3" for the third codon position (partition "codon3"). More information about these models can be found at [http://www.iqtree.org/doc/Substitution-Models](http://www.iqtree.org/doc/Substitution-Models). If the lines reporting the models are separated or followed by warnings about log-likelihoods, these may indicate that in some cases, the best likelihoods were not found. In such cases, rerunning the analysis may solve the issue, but that is not needed for this tutorial.
 
 <a name="q7"></a>
 
-* **Question 7:** Each bootstrap replicate now takes about 0.7 seconds on my MacBook Pro.
+* **Question 7:** The *RAG1* phylogeny indeed seems to be more reliable than the 16S phylogeny, which may not be surprising given the longer length of the *RAG1* alignment. Some nodes are even supported with the maximum bootstrap support of 100, such as the monophyly of the six representatives of African cichlid fishes (*Tylochromis polylepis*, *Oreochromis niloticus*, *Ectodus descampsii*, *Neolamprologus brichardi*, *Maylandia zebra*, and *Pundamilia nyererei*).
 
 <a name="q8"></a>
 
-* **Question 8:** The rag1 phylogeny indeed seems to be more reliable than the 16s phylogeny, which would not be surprising given the longer length of the rag1 alignment. Some nodes are even supported with the maximum bootstrap support of 100, such as the monophyly of the six representatives of African cichlid fishes (*Tylochromis polylepis*, *Oreochromis niloticus*, *Ectodus descampsii*, *Neolamprologus brichardi*, *Maylandia zebra*, and *Pundamilia nyererei*).
+* **Question 8:** In my analysis, 62 topological rearrangements were required to convert one of the two trees into the other. This number might be slightly different if, due to stochastic variation, different trees were identified as maximum-likelihood trees.
 
 <a name="q9"></a>
 
-* **Question 9:** 66 topological rearrangements are required to convert one of the two trees into the other.
-
-<a name="q10"></a>
-
-* **Question 10:** Against our expectation, the overall node support is slightly lower for the phylogeny based on the concatenated alignment compared to that based on the rag1 alignment only (62.9 compared to 64.9). This could be due to stochastic effects or it could indicate conflict between the two alignments, which could arise if the evolutionary histories of the two genes would in fact differ even though few species in these phylogenies are very closely related to each other.
+* **Question 9:** The overall node support should be slightly higher in the joint analysis of 16S and *RAG1*, compared to that based on the *RAG1* alignment only (85.3 compared to 84.9). This could be due to stochastic effects or it could indicate that the increased size of the dataset in fact improves the phylogenetic resolution. Note that most phylogenies published these days are based on far larger datasets than the ones used here, assuming that the additional information in fact improves the analysis (this sounds obvious, but has actually been discussed controversially in recent years - the issue will be dealt with in more detail in other tutorials; e.g. in [Maximum-Likelihood Species-Tree Inference](../ml_species_tree_inference/README.md)).
