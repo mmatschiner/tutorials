@@ -28,7 +28,7 @@ In this tutorial, I will present maximum-likelihood phylogeny inference with one
 <a name="dataset"></a>
 ## Dataset
 
-The data used in this tutorial are the filtered versions of the alignments generated for 16S and *RAG1* sequences in tutorial [Multiple Sequence Alignment](../multiple_sequence_alignment/README.md). These alignments contain sequence data for 41 teleost fish species and are 486 and 1,368 bp long, respectively. More information on the origin of the dataset can be found in the [Multiple Sequence Alignment](../multiple_sequence_alignment/README.md) tutorial. IQ-TREE allows various file formats (including Phylip, Fasta, and Nexus), but one of the scripts used in this tutorial requires Nexus format, thus we will use the files [`16s_filtered.nex`](data/16s_filtered.nex) and [`rag1_filtered.nex`](data/rag1_filtered.nex).
+The data used in this tutorial are the filtered versions of the alignments generated for 16S and *RAG1* sequences in tutorial [Multiple Sequence Alignment](../multiple_sequence_alignment/README.md). These alignments contain sequence data for 41 teleost fish species and are 486 and 1,368 bp long, respectively. More information on the origin of the dataset can be found in the [Multiple Sequence Alignment](../multiple_sequence_alignment/README.md) tutorial. While IQ-TREE also allows other file formats (including Phylip and Fasta), we will here use the alignment files in Nexus format, [`16s_filtered.nex`](data/16s_filtered.nex) and [`rag1_filtered.nex`](data/rag1_filtered.nex).
 
 <a name="requirements"></a>
 ## Requirements
@@ -36,7 +36,7 @@ The data used in this tutorial are the filtered versions of the alignments gener
 <!-- XXX remove this paragraph later XXX--->
 * **AliView:** To visualize sequence alignments, the software [AliView](http://www.ormbunkar.se/aliview/) ([Larsson 2014](https://academic.oup.com/bioinformatics/article/30/22/3276/2391211)) is recommended. The installation of AliView is described at [http://www.ormbunkar.se/aliview/](http://www.ormbunkar.se/aliview/) and should be possible on all operating systems.
 
-* **IQ-TREE:** Source code for Mac OS X and Linux, as well as precompiled executables for Windows, can be found on [IQ-TREE's download page](http://www.iqtree.org/#download). To install IQ-TREE on any of these systems, download the version for your operating system, and decompress this file on your machine if necessary. In the decompressed directory, you'll find a subdirectory named `bin` and inside of this subdirectory should be a file named `iqtree` or `iqtree.exe`. To easily access this executable from the command line, place it somewhere on your computer where your system can find it (i.e. in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))).One way to guarantee this on Mac OS X or Linux is to place the executable in `/usr/local/bin`, for example using this command:
+* **IQ-TREE:** Source code for Mac OS X and Linux, as well as precompiled executables for Windows, can be found on [IQ-TREE's download page](http://www.iqtree.org/#download). To install IQ-TREE on any of these systems, download the version for your operating system, and decompress this file on your machine if necessary. In the decompressed directory, you'll find a subdirectory named `bin` and inside of this subdirectory should be a file named `iqtree` or `iqtree.exe`. To easily access this executable from the command line, place it somewhere on your computer where your system can find it (i.e. in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))). One way to guarantee this on Mac OS X or Linux is to place the executable in `/usr/local/bin`, for example using this command:
 	
 		mv iqtree /usr/local/bin
 		
@@ -58,7 +58,7 @@ The data used in this tutorial are the filtered versions of the alignments gener
 <a name="aliview"></a>
 ## Visualizing sequence alignments
 
-To get an impression of the data used in this tutorial, we will visualize the alignent files in AliView.
+To get an impression of the data used in this tutorial, we will visualize the alignment files in AliView.
 
 * Download the files [`16s_filtered.nex`](data/16s_filtered.nex) and [`rag1_filtered.nex`](data/rag1_filtered.nex) and open them both with the program AliView. With the 16S alignment, the AliView window should look as shown in the screenshot below: <p align="center"><img src="img/aliview1.png" alt="AliView" width="600"></p>
 
@@ -82,18 +82,18 @@ We will first generate a simple maximum-likelihood phylogeny only for the filter
 * Scroll back up to the beginning of the IQ-TREE help text. Close to the top, you'll see that IQ-TREE could be started as easily as this:
 
 		iqtree -s alignment 
-	Here, "alignment" and would have to be replaced with the actual file name of the alignment.
+	Here, "alignment" would need to be replaced with the actual file name of the alignment.
 
 * So, let's try to run a maximum-likelihood search, first for the 16S sequence data, using the alignment file [`16s_filtered.nex`](data/16s_filtered.nex):
 
 		iqtree -s 16s_filtered.nex 
 As you'll see, this minimalistic choice of options in fact seems to be sufficient. IQ-TREE should finish the analysis within 10-30 seconds and present output as shown in the screenshot below.
 <p align="center"><img src="img/iqtree1.png" alt="IQTREE" width="600"></p>
-If you read the top section of the output, you'll see that IQ-TREE has apparently automatically determined the number of CPUs available on your maching and indicates that you could use them all by specifying `-nt AUTO`. You'll also see that IQ-TREE has correctly identified the Nexus format of the sequence alignment, and that it reports the proportion of missing data in each sequence.
+If you read the top section of the output, you'll see that IQ-TREE has apparently automatically determined the number of CPUs available on your machine and indicates that you could use them all by specifying `-nt AUTO`. You'll also see that IQ-TREE has correctly identified the Nexus format of the sequence alignment, and that it reports the proportion of missing data in each sequence.
 
 * Then, scroll down a little to this section:
 <p align="center"><img src="img/iqtree2.png" alt="IQTREE" width="600"></p>
-Here, you'll see that IQ-TREE has apparently automatically performed a test for the substitution model that best fits the sequence alignment (see tutorial [`substitution_model_selection`](../substitution_model_selection/README.md) for more information on the choice of substitution models). This means that the default setting of IQ-TREE is equivalent to the `-m MFP` option described in the help text ([Kalyaanamoorthy et al. 2017](https://www.nature.com/articles/nmeth.4285)). Alternatively, other substitution models could be specified, for example with `-m GTR`, but there is no need to do that; it is very convenient that IQ-TREE does the model selection for us.
+Here, you'll see that IQ-TREE has apparently automatically performed a test for the substitution model that best fits the sequence alignment (see tutorial [`substitution_model_selection`](https://github.com/mmatschiner/tutorials/blob/master/substitution_model_selection/README.md) for more information on the choice of substitution models). This means that the default setting of IQ-TREE is equivalent to the `-m MFP` option described in the help text ([Kalyaanamoorthy et al. 2017](https://www.nature.com/articles/nmeth.4285)). Alternatively, other substitution models could be specified, for example with `-m GTR`, but there is no need to do that; it is very convenient that IQ-TREE does the model selection for us.
 
 	**Question 1:** Which model has been chosen by IQ-TREE, and based on which criterion? [(see answer)](#q1)
 	
