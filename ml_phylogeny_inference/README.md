@@ -95,8 +95,7 @@ We will first generate a simple maximum-likelihood phylogeny only for the filter
 	
 * Scroll to the end of the IQ-TREE output. There, you'll find parameter estimates for the selected substitution model, the maximum-likelihood value (given as logarithm after "BEST SCORE FOUND"), information on the run time, and the names of output files. Write down the maximum-likelihood value.
 
-* The best-scoring maximum-likelihood tree was written to file `16s_filtered.nex.treefile`:
-<p align="center"><img src="img/iqtree3.png" alt="IQTREE" width="600"></p>Apparently, all output file names were automatically chosen based on the name of the input file. We could have changed this using the `-pre` option if we wanted to.
+* The best-scoring maximum-likelihood tree was written to file `16s_filtered.nex.treefile`:<p align="center"><img src="img/iqtree3.png" alt="IQTREE" width="600"></p>Apparently, all output file names were automatically chosen based on the name of the input file. We could have changed this using the `-pre` option if we wanted to.
 
 <a name="figtree"></a>
 ## Reading and visualizing tree files
