@@ -35,9 +35,9 @@ The data used in this tutorial are the filtered versions of the alignments gener
 
 * **BEAST2:** The BEAST2 package, including BEAUti, BEAST2 itself, TreeAnnotator, and other tools can be downloaded from the BEAST2 website [https://www.beast2.org](https://www.beast2.org). As all these programs are written in Java, compilation is not required, and all programs should work on Mac OS X, Linux, and Windows. I recommend downloading the program versions that include the Java Runtime Environment, which may prevent conflicts with Java versions that may already be installed on your machine.<br>
 
-* **Tracer:** Just like BEAST2, Tracer is written in Java and should work on your system without problems. The program can be downloaded for Mac OS X, Linux, or Windows from [http://tree.bio.ed.ac.uk/software/tracer/](http://tree.bio.ed.ac.uk/software/tracer/). The file with the extension `.dmg` is for Mac OS X, the one with the extension `.tgz` is for Linux, and the Windows version is the file ending in `.zip`.
+* **Tracer:** Just like BEAST2, Tracer is written in Java and should work on your system without problems. The program can be downloaded for Mac OS X, Linux, or Windows from [https://github.com/beast-dev/tracer/releases](https://github.com/beast-dev/tracer/releases). The file with the extension `.dmg` is for Mac OS X, the one with the extension `.tgz` is for Linux, and the Windows version is the file ending in `.zip`.
 
-* **FigTree:** If you followed tutorial [Maximum-Likelihood Phylogenetic Inference](../ml_phylogeny_inference/README.md), you should already have [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) installed. If not, you will find executables for Mac OS X, Linux, and Windows on [http://tree.bio.ed.ac.uk/software/figtree/](http://tree.bio.ed.ac.uk/software/figtree/).
+* **FigTree:** If you followed tutorial [Maximum-Likelihood Phylogenetic Inference](../ml_phylogeny_inference/README.md), you should already have [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) installed. If not, you will find executables for Mac OS X, Linux, and Windows on [https://github.com/rambaut/figtree/releases](https://github.com/rambaut/figtree/releases).
 
 
 <a name="beast2"></a>

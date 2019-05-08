@@ -36,7 +36,7 @@ The data used in this tutorial are the filtered versions of the alignments gener
 <!-- XXX remove this paragraph later XXX--->
 * **AliView:** To visualize sequence alignments, the software [AliView](http://www.ormbunkar.se/aliview/) ([Larsson 2014](https://academic.oup.com/bioinformatics/article/30/22/3276/2391211)) is recommended. The installation of AliView is described at [http://www.ormbunkar.se/aliview/](http://www.ormbunkar.se/aliview/) and should be possible on all operating systems.
 
-* **IQ-TREE:** Source code for Mac OS X and Linux, as well as precompiled executables for Windows, can be found on [IQ-TREE's download page](http://www.iqtree.org/#download). To install IQ-TREE on any of these systems, download the version for your operating system, and decompress this file on your machine if necessary. In the decompressed directory, you'll find a subdirectory named `bin` and inside of this subdirectory should be a file named `iqtree` or `iqtree.exe`. To easily access this executable from the command line, place it somewhere on your computer where your system can find it (i.e. in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))). One way to guarantee this on Mac OS X or Linux is to place the executable in `/usr/local/bin`, for example using this command:
+* **IQ-TREE:** Source code for Mac OS X and Linux, as well as precompiled executables for Windows, can be found on [http://www.iqtree.org/#download](http://www.iqtree.org/#download). To install IQ-TREE on any of these systems, download the version for your operating system, and decompress this file on your machine if necessary. In the decompressed directory, you'll find a subdirectory named `bin` and inside of this subdirectory should be a file named `iqtree` or `iqtree.exe`. To easily access this executable from the command line, place it somewhere on your computer where your system can find it (i.e. in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))). One way to guarantee this on Mac OS X or Linux is to place the executable in `/usr/local/bin`, for example using this command:
 	
 		mv iqtree /usr/local/bin
 		
@@ -163,7 +163,7 @@ As we've seen, the IQ-TREE phylogeny of 16S sequences does not perfectly agree w
 
 * To see node-support values based on bootstrapping, set a tick in the checkbox for "Node Labels", and select "label" from the "Display" drop-down menu, as shown in the below screenshot.<p align="center"><img src="img/figtree8.png" alt="RAxML" width="600"></p>
 
-	**Question 5:** Can this phylogeny be considered reliable? [(see answer)](#q6)
+	**Question 5:** Can this phylogeny be considered reliable? [(see answer)](#q5)
 
 <a name="partition"></a>
 ## Partitioned maximum-likelihood inference
@@ -188,7 +188,7 @@ Given that node support in the phylogeny for 16S sequences turned out to be poor
 
 	**Question 6:** Which models were now selected by IQ-TREE for the three partitions? [(see answer)](#q6)
 		
-* IQ-TREE should have written the resulting maximum-likelihood phylogeny with bootstrap support values to file `rag1_filtered.bs.nex.treefile`. Open the file [`rag1_filtered.bs.nex.treefile`](res/rag1_filtered.bs.nex.treefile) in FigTree. After once again rooting and sorting the phylogeny, the phylogeny should look as shown in the below screenshot.<p align="center"><img src="img/figtree9.png" alt="RAxML" width="600"></p>
+* IQ-TREE should have written the resulting maximum-likelihood phylogeny with bootstrap support values to file [`rag1_filtered.bs.nex.treefile`](res/rag1_filtered.bs.nex.treefile). Open this file in FigTree. After once again rooting and sorting the phylogeny, the phylogeny should look as shown in the below screenshot.<p align="center"><img src="img/figtree9.png" alt="RAxML" width="600"></p>
 
 	**Question 7:** Does the *RAG1* phylogeny look more reliable than the 16S phylogeny? [(see answer)](#q7)
 
@@ -211,7 +211,7 @@ We have now used bootstrapping to assess node support in two different phylogeni
 		python3 get_mean_node_support.py 16s_filtered.bs.nex.treefile
 		python3 get_mean_node_support.py rag1_filtered.bs.nex.treefile 
 
-	You'll probably see that the *RAG1* phylogeny has a much higher mean node support (84.9) than the 16S phylogeny (68.6).
+	You'll probably see that the *RAG1* phylogeny has a much higher mean node support (84.9 in my analysis) than the 16S phylogeny (68.6 in my analysis).
 
 
 <a name="concatenation"></a>
@@ -229,7 +229,7 @@ The comparison of phylogenies based on the short 16S alignment and the longer *R
 			CHARSET rag1_codon3 = rag1_filtered.nex: 3-1368\3;
 		END;
 		
-	The asterisk on the line for 16S specifies that all sites of that alignment should be used in partition "16S".
+	The asterisk on the line for 16S specifies that all sites of that alignment should be included in partition "16S".
 	
 * Run IQ-TREE with all partitions jointly, specifying the file `partitions.txt` again as before:
 	

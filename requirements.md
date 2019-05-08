@@ -9,35 +9,14 @@ A list of the installations required for the tutorials
 
 * **Ruby 2.x:** The [Ruby](https://www.ruby-lang.org/en/) programming language should also be installed by default on all Mac OS X and Linux Installations. To check the version of your Ruby installation, type `ruby --version` in a Terminal window. This should output a version number to the screen. If the version number is greater than 2.0, your installation is recent enough for the scripts used in the tutorials. If you should have an older Ruby version, please update it following the instructions on the [Ruby website](https://www.ruby-lang.org/en/).
 
-* **Python 2.7:** The [Python](https://www.python.org) programming language should also be already installed on your machine if you're a Mac OS X or Linux system. To check if this is the case, type `python --version` in a Terminal window. If the version number given on the screen is 2.7.x, your installation of Python 2 is ready to use in the tutorials. If not, please download the latest version of Python 2 from the [Python website](https://www.python.org/downloads/).
-
-* **Python 3.x:** Unfortunately Python 2 and Python 3 have diverged to the extent that scripts written in Python 2 can not be run with Python 3 and vice versa. Thus, Python 3 needs to be installed separately, in addition to Python 2, if it is not already installed on your machine. To check whether you already have a working installation of Python 3, type `python3 --version` in a Terminal window. If this shows a version number greater than 3.x, your Python 3 installation is ready to run the tutorials. If not, you should download the latest version of Python 3 from the [Python website](https://www.python.org/downloads/).
+* **Python 3.x:** The [Python](https://www.python.org) programming language should also be already installed on your machine if you're a Mac OS X or Linux system. To check if this is the case, type `python3 --version` in a Terminal window. If this shows a version number (which should be greater than 3.x), your Python 3 installation is ready to run the tutorials. If not, try whether `python --version` results in a version number greater than 3.x. If this is not the case, you should download the latest version of Python 3 from the [Python website](https://www.python.org/downloads/).
 
 * **R:** If you previously installed the [R programming language](https://www.r-project.org) on your computer, make sure that you can access it through the command line by typing `R --version`. If R does not appear to be properly installed, you will find installation instructions on the [website of the R project](https://www.r-project.org).
 
 
 ## Libraries
 
-* **Libraries for Python 2.7:** The [ete toolkit](http://etetoolkit.org) ([Huerta-Cepas et al. 2016](https://academic.oup.com/mbe/article/33/6/1635/2579822)) will be required for comparisons between phylogenetic trees and for topology-weighting analyses with [TWISST](https://github.com/simonhmartin/twisst) ([Martin and van Belleghem 2017](http://www.genetics.org/content/206/1/429)). Instructions for the installation of the ete toolkit on Mac OS X and Linux are provided on the [ete download webpage](http://etetoolkit.org/download/); however, the easiest way to install the ete3 toolkit might be with the pip package manager for Python, using the following command:
-
-		python -m pip install --user ete3
-		
-	To ensure that the installation worked, you could execute the following command:
-	
-		python -c 'import ete3'
-		
-	If no error message is given, the ete3 library is correctly installed and ready to be used.
-
-	A second Python library that will be required not only for analyses with TWISST but also in other tutorials is the [numpy](http://www.numpy.org) library. It can be installed in a similar way with the following command:
-	
-		python -m pip install --user numpy
-		
-	Again, the installation can be tested with this command:
-	
-		python -c 'import numpy'
-
-		
-* **Libraries for Python 3.x:** Libraries for Python v.3.x need to be installed separately. The required libraries are [numpy](http://www.numpy.org), [scipy](https://www.scipy.org), [msprime](https://msprime.readthedocs.io/en/stable/index.html) [(Kelleher et al. 2016)](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004842), and [dendropy](https://www.dendropy.org) ([Sukumaran and Holder 2010](https://academic.oup.com/bioinformatics/article/26/12/1569/287181)). These can be installed with pip for Python 3, using the following commands:
+* **Libraries for Python 3.x:** Some libraries for Python v.3.x may need to be installed separately. The required libraries are [numpy](http://www.numpy.org), [scipy](https://www.scipy.org), [msprime](https://msprime.readthedocs.io/en/stable/index.html) [(Kelleher et al. 2016)](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004842), and [dendropy](https://www.dendropy.org) ([Sukumaran and Holder 2010](https://academic.oup.com/bioinformatics/article/26/12/1569/287181)). These can be installed with pip for Python 3, using the following commands:
 
 		python3 -m pip install --user numpy
 		python3 -m pip install --user scipy
@@ -75,44 +54,7 @@ A list of the installations required for the tutorials
 
 * **PAUP\*:** Installation instructions and precompiled versions of [PAUP\*](http://paup.phylosolutions.com) are available on [http://phylosolutions.com/paup-test/](http://phylosolutions.com/paup-test/). Until recently, PAUP* could only be purchased from Sinauer Associates for around 100 USD. Since 2015, Dave Swofford distributes updated versions of PAUP* 4.0 for free as trial versions on [http://phylosolutions.com/paup-test/](http://phylosolutions.com/paup-test/). These trial versions expire after a few months, so if you would want to use PAUP* also in the future, you might have to re-download it then. While the tutorial instructions will assume that you have installed the GUI version of PAUP* for Mac OS X or Windows, it can also be followed with the command-line version of PAUP\*.
 
-* **RAxML:** Source code for Mac OS X and Linux, as well as precompiled executables for Windows, can be found on RAxML's github page [https://github.com/stamatak/standard-RAxML](https://github.com/stamatak/standard-RAxML). To install RAxML on any of these systems, download the [latest release](https://github.com/stamatak/standard-RAxML/releases), either in its zip or tar.gz-compressed version. Decompress this file on your machine.<br>
-For installation on Linux, instructions are provided in the `README` file that you will find in the decompressed RAxML package. To compile the parallelized PTHREADS version of RAxML, try running
-
-		make -f Makefile.AVX.PTHREADS.gcc
-
-	If this should not work because your computer does not support [AVX](https://en.wikipedia.org/wiki/Advanced_Vector_Extensions), you could try
-	
-		make -f Makefile.SSE3.PTHREADS.gcc
-
-	If this also fails because your computer also doesn't support [SSE](https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions), then you should nevertheless be able to compile the slower standard version with
-	
-		make -f Makefile.PTHREADS.gcc
-
-	On Mac OS X, you'll have to use the versions of the `Makefile` that end in `.mac`. This is not described in RAxML's `README` file. So to compile the sequential version, you'll have to run
-	
-		make -f Makefile.AVX.PTHREADS.mac
-		
-	or
-	
-		make -f Makefile.SSE3.PTHREADS.mac
-		
-	(no Mac version without AVX or SSE3 seems to be included in the latest releases).
-		
-	On Windows, just use the newest of the precompiled executables that you will find in a directory named `WindowsExecutables_v8.2.10` or similar, within the decompressed RAxML package.<br>
-
-	The tutorial instructions will assume that you compiled the parallelized PTHREADS version of RAxML (rather than the sequential or the MPI version), that you named the file simply `raxml`, and that you placed it somewhere on your computer where your system can find it (i.e. in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))). One way to guarantee this on Mac OS X or Linux is to place the executable in `/usr/local/bin`, for example using (if you compiled the AVX version)
-	
-		mv raxmlHPC-PTHREADS-AVX /usr/local/bin/raxml
-		
-	To verify that the RAxML executable can be found by your system, type
-	
-		which raxml
-		
-	If this command outputs a path such as `/usr/local/bin/raxml`, the executable can be found. As another check if RAxML is working as it should, type
-	
-		raxml -v
-		
-	and you should see the version number as well as a list of contributing developers. If you do, you're ready to start the tutorial.
+* **IQ-TREE:** The IQ-TREE version 1.7 (currently available only as beta) or greater will be required as earlier versions did not allow the calculations of gene and site concordance factors. The latest versions of IQ-TREE for Mac OS X, Linux, or Windows can be found on [https://github.com/Cibiv/IQ-TREE/releases](https://github.com/Cibiv/IQ-TREE/releases). To install IQ-TREE on any of these systems, download the version for your operating system, and decompress this file on your machine if necessary. In the decompressed directory, you'll find a subdirectory named `bin` and inside of this subdirectory should be a file named `iqtree` or `iqtree.exe`.
 	
 * **FigTree:** The program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) by Andrew Rambaut is a very intuitive and useful tool for the visualization and (to a limited extent) manipulation of phylogenies encoded in [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) format. Executables for Mac OS X, Linux, and Windows are provided on [http://tree.bio.ed.ac.uk/software/figtree/](http://tree.bio.ed.ac.uk/software/figtree/).
 
@@ -124,7 +66,7 @@ For installation on Linux, instructions are provided in the `README` file that y
 
 * **PAML:** [PAML (Phylogenetic Analysis by Maximum Likelihood)](http://abacus.gene.ucl.ac.uk/software/paml.html) is a package of tools for phylogenetic inference developed by Ziheng Yang and colleagues ([Yang 2007](https://academic.oup.com/mbe/article/24/8/1586/1103731)). Of this package we are going to use a single tool, the program codeml, which allows rapid calculation of the [dN/dS ratio](https://en.wikipedia.org/wiki/Ka/Ks_ratio) from pairwise sequence comparisons. Downloads and installation instructions for Mac OS X, Linux, and Windows are provided on the [PAML webpage](http://abacus.gene.ucl.ac.uk/software/paml.html#download). Make sure to skip the section titled "PAML-X: A GUI for PAML" and follow the instructions in section "UNIX/Linux and Mac OSX" if you use Mac OS X or Linux, or the instructions in section "PAML for Windows 9x/NT/2000/XP/Vista/7" if you use Windows.
 
-* **ASTRAL:** The program [ASTRAL](https://github.com/smirarab/ASTRAL) ([Zhang et al. 2017](https://link.springer.com/chapter/10.1007%2F978-3-319-67979-2_4)) allows efficient and accurate estimation of the species tree based on a set of gene trees. The latest release of ASTRAL can be obtained from [https://github.com/smirarab/ASTRAL/releases](https://github.com/smirarab/ASTRAL/releases). Click on the link for "Source code (zip)" to download the full release including the source code as well as the compiled program as a Java jar file. Within the downloaded directory you'll find a zip file with the program name and its version number. Uncompress this file and open the uncompressed directory, there you should find the ASTRAL jar file, named `astral.5.5.6.jar` or similar. Rename this file so that it is simply named `astral.jar` and place it in a convenient location on your computer.
+* **ASTRAL:** The program [ASTRAL](https://github.com/smirarab/ASTRAL) ([Zhang et al. 2017](https://link.springer.com/chapter/10.1007%2F978-3-319-67979-2_4)) allows efficient and accurate estimation of the species tree based on a set of gene trees. The latest release of ASTRAL can be obtained from [https://github.com/smirarab/ASTRAL/releases](https://github.com/smirarab/ASTRAL/releases). Click on the link for "Source code (zip)" to download the full release including the source code as well as the compiled program as a Java jar file. Within the downloaded directory you'll find a zip file with the program name and its version number. Uncompress this file and open the uncompressed directory, there you should find the ASTRAL jar file, named `astral.5.6.1.jar` or similar. Rename this file so that it is simply named `astral.jar` and place it in a convenient location on your computer.
 
 * **aTRAM2:** The software aTRAM2 itself is easy to install as it is written in Python3. The installation is described on the [aTRAM github repository](https://github.com/juliema/aTRAM), but you can skip the part in those instructions about the virtual environment, and simply use the two commands below to download the latest version of aTRAM2 and install required Python libraries:
 
@@ -142,9 +84,6 @@ For installation on Linux, instructions are provided in the `README` file that y
 
 * **bcftools:** [bcftools](http://www.htslib.org/doc/bcftools.html) ([Li 2011](https://academic.oup.com/bioinformatics/article/27/21/2987/217423)) is a fast and versatile tool for the manipulation and filtering of variant data in VCF format. Downloads and instructions for installation on Mac OS X and Linux are available at the [HTSlib download webpage](http://www.htslib.org/download/). Installation on Windows is apparently not possible. If you should fail to install bcftools, you could skip the respective tutorial part and continue with ready-made files afterwards.
 
-* **vcftools:** Similar to bcftools, [vcftools](https://vcftools.github.io/downloads.html) ([Danecek et al. 2011](https://academic.oup.com/bioinformatics/article/27/15/2156/402296)) is a program for the manipulation of files in VCF format. vcftools is generally slower than bcftools and is increasingly being replaced by it. Nevertheless, some functions that are available in vcftools have not yet been implemented in bcftools. Download files and installation instructions can be found at the [vcftools download webpage](https://vcftools.github.io/downloads.html). Like the bcftools installation, installing vcftools is not absolutely required because you could skip the tutorial parts using it.
-
-* **Phi Test:** [Phy Test](http://www.maths.otago.ac.nz/~dbryant/software.html) ([Bruen et al. 2006](http://www.genetics.org/content/172/4/2665)) implements a statistical test for the presence of recombination in a sequence alignment. Source code is available from [David Bryant's software webpage](http://www.maths.otago.ac.nz/~dbryant/software.html). Note that in order to compile it on a Mac, you may have to replace `CXX = gcc` with `CXX = clang` on the third line of the file `Makefile` (but try the compilation without this change first).
-
-* **Saguaro:** [Saguaro](http://saguarogw.sourceforge.net) ([Zamani et al. 2013](http://bmcgenomics.biomedcentral.com/articles/10.1186/1471-2164-14-347)) implements a hidden-Markov model for the detection of recombination breakpoints in chromosome-length alignments. Installation instructions can be found at [Saguaro's webpage](http://saguarogw.sourceforge.net), and the download is available from the associated [Sourceforge repository](https://sourceforge.net/p/saguarogw/code/HEAD/tree/) (click "Download Snapshot" to download). Note that Saguaro runs on Linux, and while in principle the installation should also be possible on a Mac, this does not seem to be easy and is not supported by the authors. The installation is not possible on Windows. If you have access to a Linux server with a Saguaro installation, but you would like to run the rest of the tutorial on your own machine, you can do so by transferring input and ouput files of Saguaro via scp between your machine and the Linux server. To check whether the Saguaro installation succeeded, just type `Saguaro` on the command line. If you should fail to install Saguaro, you can skip the tutorial part with the Saguaro analysis and continue with ready-made Saguaro result files afterwards.
-
+* **Dsuite:** The [Dsuite](https://github.com/millanek/Dsuite) program allows the fast calculation of the *D*-statistic from SNP data in VCF format. The program is particularly useful because it automatically calculates the *D*-statistic either for all possible species quartets or for subsets of quartets that are compatible with a user-provided species tree. Instructions for download and installation on Mac OS X and Linux are provided on [https://github.com/millanek/Dsuite](https://github.com/millanek/Dsuite). Installation on Windows is not supported, but Windows users could use ready-made output files (which will be provided) to learn how to plot and analyze the Dsuite output.
+ 
+* **Relate:** The software [Relate](https://myersgroup.github.io/relate/index.html) estimates genome-wide sets of genealogies and is apparently extremely fast in doing so. The software has only recently been released, and whether or not it will be covered in a tutorial is not certain yet. Downloads for Mac OS X and Linux are provided on [https://myersgroup.github.io/relate/index.html](https://myersgroup.github.io/relate/index.html), installation on Windows is apparently not supported. After downloading and decompressing the file containing the software, a collection of compiled programs (named `Relate`, `RelateMutationRate` etc.) can be found in the `bin` subdirectory inside of the decompressed directory.
