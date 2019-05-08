@@ -144,9 +144,9 @@ In this part of the tutorial, we are going to prepare the XML input file for SNA
 
 * To "run SNAPP", we actually run BEAST2, either using the GUI or the command-line version. In both cases, we can speed up the analysis by using multiple CPUs, as SNAPP analyses are highly parallelizable. Thus, if you have four CPUs available on your machine and use all of them for the SNAPP analysis, this analysis should take only about a fourth of the time that would be required with a single CPU. If you should run SNAPP analyses on a server, you might even be able to use tens of CPUs simultaneously, which would shorten SNAPP's run times tremendously. To start the analysis for example on four CPUs with the GUI version of BEAST2, select "4" from the drop-down menu next to "Thread pool size" as shown in the next screenshot.<p align="center"><img src="img/beast1.png" alt="BEAST" width="500"></p>If you would use the command-line version of BEAST instead, you could start the analysis with four CPUs using the following command:
 
-		/Applications/Beast/2.5.0/bin/beast -threads 4 snapp.xml  
+		/Applications/Beast/2.5.2/bin/beast -threads 4 snapp.xml  
 
-	(if BEAST2 installation is not in `/Applications/Beast/2.5.0` on your machine, you'll have to replace this part of the command with the actual path to your BEAST2 installation).
+	(if BEAST2 installation is not in `/Applications/Beast/2.5.2` on your machine, you'll have to replace this part of the command with the actual path to your BEAST2 installation).
 	
 	Depending on the number of CPUs that you have available for SNAPP this analysis will probably take between 2-3 hours (with four CPUs) and 10-12 hours (with a single CPU). If you do not want to wait this long before continuing the tutorial, you can find the results of my analysis in files [`snapp.log`](res/snapp.log) and [`snapp.trees`](res/snapp.trees).
 	

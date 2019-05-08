@@ -171,15 +171,10 @@ For comparison only, we are also going to repeat the above analysis not with the
 
 * Then, use "Save As" in BEAUti's "File" menu to save the settings to a file named `concatenated.xml`.
  
-* If the analysis with the GUI version of BEAST2 is still running for the analysis with the multi-species-coalescent model you can again (as described in tutorial [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.md)) the command-line version of BEAST2 to analyze the file [`concatenated.xml`](res/concatenated.xml). Assuming that your BEAST2 installation is `/Applications/BEAST\ 2.5.0`, use one of the two following commands to start the analysis:
+* If the analysis with the GUI version of BEAST2 is still running for the analysis with the multi-species-coalescent model you can again (as described in tutorial [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.md)) the command-line version of BEAST2 to analyze the file [`concatenated.xml`](res/concatenated.xml). Assuming that your BEAST2 installation is `/Applications/BEAST\ 2.5.2`, use the two following command to start the analysis:
 
-		/Applications/BEAST\ 2.5.0/bin/beast concatenated.xml
+		/Applications/BEAST\ 2.5.2/bin/beast concatenated.xml
 		
-	or
-	
-		export JAVA_HOME=/Applications/BEAST\ 2.5.0/jre1.8.0_161
-		/Applications/BEAST\ 2.5.0/jre1.8.0_161/bin/java -jar /Applications/BEAST\ 2.5.0/lib/beast.jar concatenated.xml
-
 Depending on the chosen number of MCMC iterations, this analysis is likely to run for a duration between 45 minutes (with a chain length of 20 million) and 5 hours (with a chain length of 100 million).
 
 <a name="comparison"></a>
@@ -203,11 +198,11 @@ We are now going to compare the time-calibrated species trees estimated with the
 
 * If you display the "posterior" instead of the node ages as the node labels in both trees, you'll see that generally the support values are higher when based on concatenation. **Question 5:** Given these differences, which phylogeny do you consider more reliable? [(see answer)](#q5)
 
-* To visualize the variation among the gene trees, we'll also generate maximum-clade-credibility summary trees for each of the twelve gene trees. We could do so again using the GUI verson of TreeAnnotator, but it will be faster to do so with the command-line version of the program instead. If your BEAST2 installation should be located in `/Applications/Beast/2.5.0`, you should be able to use the following command to run TreeAnnotator for all gene trees; if not, you will have to adjust the path given in this command:
+* To visualize the variation among the gene trees, we'll also generate maximum-clade-credibility summary trees for each of the twelve gene trees. We could do so again using the GUI verson of TreeAnnotator, but it will be faster to do so with the command-line version of the program instead. If your BEAST2 installation is located in `/Applications/Beast/2.5.2`, you should be able to use the following command to run TreeAnnotator for all gene trees; if not, you will have to adjust the path given in this command:
 
 		for i in starbeast_ENSDARG*.trees
 		do
-			/Applications/Beast/2.5.0/bin/treeannotator -burnin 10 -heights mean ${i} ${i%.trees}.tre
+			/Applications/Beast/2.5.2/bin/treeannotator -burnin 10 -heights mean ${i} ${i%.trees}.tre
 		done
 
 * You should then have twelve summary-tree files ending in `.tre`. To see if this is the case, you could do a quick check with

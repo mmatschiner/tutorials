@@ -88,9 +88,9 @@ We are going to estimate the relationships among the five *Neolamprlogus* specie
 
 * Then, continue to the "MCMC" tab. There, you may keep all default values for the MCMC chain length as well as log frequencies and file names. Save the file by clicking "Save" in BEAUti's "File" menu, and name it `speciesnetwork.xml`.
 
-* Then, use either the GUI version or the command-line version of BEAST2 to start the analysis of the XML file [`speciesnetwork.xml`](res/speciesnetwork.xml). To start the analysis with the command-line version of BEAST2, you could use the following command if your BEAST2 installation is in directory `/Applications/Beast/2.5.0` (if not, replace this path with the actual path to your BEAST2 installation):
+* Then, use either the GUI version or the command-line version of BEAST2 to start the analysis of the XML file [`speciesnetwork.xml`](res/speciesnetwork.xml). To start the analysis with the command-line version of BEAST2, you could use the following command if your BEAST2 installation is in directory `/Applications/Beast/2.5.2` (if not, replace this path with the actual path to your BEAST2 installation):
 
-		/Applications/Beast/2.5.0/bin/beast speciesnetwork.xml
+		/Applications/Beast/2.5.2/bin/beast speciesnetwork.xml
 
 	To run the full MCMC chain length of 50 million iterations, this analysis is going to take about 10 hours of run time. Thus, unless you have the chance to run this analysis overnight, you might want to stop it at some point and continue the rest of the tutorial with the results of my completed analysis. The result files that you will need to continue the tutorial are [`speciesnetwork.log`](res/speciesnetwork.log), [`speciesnetwork.trees`](res/speciesnetwork.trees), and the 68 tree files for the individual gene trees. You can find these in the compressed directory [`speciesnetwork_genetrees.tgz`](res/speciesnetwork_genetrees.tgz).
 	
@@ -144,11 +144,11 @@ We are going to estimate the relationships among the five *Neolamprlogus* specie
 
 * Click the arrow symbol `>` in the bottom left to browse through the next network topologies with decreasing posterior probabilities. You may notice that the "bubbles" observed with file `speciesnetwork.trees` are not present in the set of unique networks of file `speciesnetwork_sum.trees`. This is because those "bubbles" were ignored in the summary analysis with BEAST2. If instead they had been taken into account, the posterior probabilities of the unique networks would be even lower. **Question 2:** Despite the low posterior probability of each unique topology, what can we learn from these results? [(see answer)](#q2)
 
-* Finally, we can also visualize the set of gene trees to get a feeling for how concordant or discordant they are. In contrast to the species networks, the  posterior distributions of gene trees can be summarized in the form of maximum-clade-credibility trees with TreeAnnotator. To do so for all 68 gene trees, use the following set of commands (make sure to replace `/Applications/Beast/2.5.0` with the actual path to your BEAST2 installation if it should be in another directory):
+* Finally, we can also visualize the set of gene trees to get a feeling for how concordant or discordant they are. In contrast to the species networks, the  posterior distributions of gene trees can be summarized in the form of maximum-clade-credibility trees with TreeAnnotator. To do so for all 68 gene trees, use the following set of commands (make sure to replace `/Applications/Beast/2.5.2` with the actual path to your BEAST2 installation if it should be in another directory):
 
 		for i in ENSDARG*.trees
 		do
-			/Applications/Beast/2.5.0/bin/treeannotator -burnin 10 -heights mean ${i} ${i%.trees}.tre
+			/Applications/Beast/2.5.2/bin/treeannotator -burnin 10 -heights mean ${i} ${i%.trees}.tre
 		done
 
 * The above step should have generated 68 files named `ENSDARG*.tre` that contain the maximum-clade-credibility gene trees. To combine these into a single file, we can (as in tutorial [Bayesian Species-Tree Inference](../bayesian_species_tree_inference/README.md)) use the Python script [`logcombiner.py`](src/logcombiner.py) with the following commands:
