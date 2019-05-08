@@ -33,9 +33,6 @@ The data used in this tutorial are the filtered versions of the alignments gener
 <a name="requirements"></a>
 ## Requirements
 
-<!-- XXX remove this paragraph later XXX--->
-* **AliView:** To visualize sequence alignments, the software [AliView](http://www.ormbunkar.se/aliview/) ([Larsson 2014](https://academic.oup.com/bioinformatics/article/30/22/3276/2391211)) is recommended. The installation of AliView is described at [http://www.ormbunkar.se/aliview/](http://www.ormbunkar.se/aliview/) and should be possible on all operating systems.
-
 * **IQ-TREE:** Source code for Mac OS X and Linux, as well as precompiled executables for Windows, can be found on [http://www.iqtree.org/#download](http://www.iqtree.org/#download). To install IQ-TREE on any of these systems, download the version for your operating system, and decompress this file on your machine if necessary. In the decompressed directory, you'll find a subdirectory named `bin` and inside of this subdirectory should be a file named `iqtree` or `iqtree.exe`. To easily access this executable from the command line, place it somewhere on your computer where your system can find it (i.e. in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))). One way to guarantee this on Mac OS X or Linux is to place the executable in `/usr/local/bin`, for example using this command:
 	
 		mv iqtree /usr/local/bin
@@ -54,22 +51,6 @@ The data used in this tutorial are the filtered versions of the alignments gener
 * **FigTree:** The program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) by Andrew Rambaut is a very intuitive and useful tool for the visualization and (to a limited extent) manipulation of phylogenies encoded in [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) format. Executables for Mac OS X, Linux, and Windows are provided on [https://github.com/rambaut/figtree/releases](https://github.com/rambaut/figtree/releases).
 
 
-<!-- XXX remove this section later XXX--->
-<a name="aliview"></a>
-## Visualizing sequence alignments
-
-To get an impression of the data used in this tutorial, we will visualize the alignment files in AliView.
-
-* Download the files [`16s_filtered.nex`](data/16s_filtered.nex) and [`rag1_filtered.nex`](data/rag1_filtered.nex) and open them both with the program AliView. With the 16S alignment, the AliView window should look as shown in the screenshot below: <p align="center"><img src="img/aliview1.png" alt="AliView" width="600"></p>
-
-* Scroll to the end of the aligment to see how variable the sequences are and how many of them are partially missing.
-
-* Do the same for the *RAG1* alignment.
-
-* In contrast to 16S, *RAG1* is protein coding. To illustrate the translation of codon triplets to amino acids, click on the fourth icon from the left in AliView menu bar. AliView should then color code triplets as shown below: <p align="center"><img src="img/aliview2.png" alt="AliView" width="600"></p>
-
-
-	
 <a name="iqtree"></a>
 ## Maximum-likelihood phylogenetic inference with IQ-TREE
 
