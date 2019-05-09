@@ -17,7 +17,7 @@ Most methods for species-tree inference with the multi-species coalescent model 
 <a name="outline"></a>
 ## Outline
 
-In this tutorial I am going to present how to quickly infer the topology of the species tree from SNP data with the multi-species-coalescent model implemented in the software [SVDQuartets](https://www.asc.ohio-state.edu/kubatko.2/software/SVDquartets/) ([Chifman and Kubatko 2014](https://academic.oup.com/bioinformatics/article/30/23/3317/206559)), and how to assess node support with bootstrapping. The SNP dataset will first be filtered with [bcftools](http://www.htslib.org/doc/bcftools.html) ([Li 2011](https://academic.oup.com/bioinformatics/article/27/21/2987/217423)) and [vcftools](https://vcftools.github.io/downloads.html) ([Danecek et al. 2011](https://academic.oup.com/bioinformatics/article/27/15/2156/402296)).
+In this tutorial I am going to present how to quickly infer the topology of the species tree from SNP data with the multi-species-coalescent model implemented in the software [SVDQuartets](https://www.asc.ohio-state.edu/kubatko.2/software/SVDquartets/) ([Chifman and Kubatko 2014](https://academic.oup.com/bioinformatics/article/30/23/3317/206559)), and how to assess node support with bootstrapping. The SNP dataset will first be filtered with [bcftools](http://www.htslib.org/doc/bcftools.html) ([Li 2011](https://academic.oup.com/bioinformatics/article/27/21/2987/217423)).
 
 <a name="dataset"></a>
 ## Dataset
