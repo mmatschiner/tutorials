@@ -68,13 +68,11 @@ Note that one of these *Neolamprologus* species, *Neolamprologus cancellatus* ("
 
 * **bcftools:** [bcftools](http://www.htslib.org/doc/bcftools.html) ([Li 2011](https://academic.oup.com/bioinformatics/article/27/21/2987/217423)) is a fast and versatile tool for the manipulation and filtering of variant data in VCF format. Downloads and instructions for installation on Mac OS X and Linux are available at the [HTSlib download webpage](http://www.htslib.org/download/). Installation on Windows is apparently not possible. If you should fail to install bcftools, you could skip the optional [SNP filtering](#filtering) steps in the first part of the tutorial and still run the SVDQuartets analysis.
 
-* **vcftools:** Similar to bcftools, [vcftools](https://vcftools.github.io/downloads.html) ([Danecek et al. 2011](https://academic.oup.com/bioinformatics/article/27/15/2156/402296)) is a program for the manipulation of files in VCF format. vcftools is generally slower than bcftools and is increasingly being replaced by it. Nevertheless, some functions that are available in vcftools have not yet been implemented in bcftools; therefore vcftools will also be used in this tutorial. Download files and installation instructions can be found at the [vcftools download webpage](https://vcftools.github.io/downloads.html). Like the bcftools installation, installing vcftools is not absolutely required for this tutorial because you could skip the [SNP filtering](#filtering) part of the tutorial.
-
 
 <a name="filtering"></a>
 ## SNP filtering
 
-The dataset of SNP variation for the above-listed 28 individuals of 14 Lake Tanganyika cichlid species is stored in in compressed variant-call format (VCF) in file [`NC_031969.f5.sub1.vcf.gz`](data/NC_031969.f5.sub1.vcf.gz). To identify the SNPs most suitable for phylogenetic analysis, we will filter the information from this file with the programs bcftools and vcftools. If you failed to install one or both of these tools, you could skip the commands in this part of the tutorial and continue with [Species-tree inference with SVDQuartets](#svdquartets).
+The dataset of SNP variation for the above-listed 28 individuals of 14 Lake Tanganyika cichlid species is stored in in compressed variant-call format (VCF) in file [`NC_031969.f5.sub1.vcf.gz`](data/NC_031969.f5.sub1.vcf.gz). To identify the SNPs most suitable for phylogenetic analysis, we will filter the information from this file with the program bcftools. If you failed to install one or both of these tools, you could skip the commands in this part of the tutorial and continue with [Species-tree inference with SVDQuartets](#svdquartets).
 
 * Download the file [`NC_031969.f5.sub1.vcf.gz`](data/NC_031969.f5.sub1.vcf.gz) (24 MB) to your analysis directory without uncompressing it yet.
 
@@ -105,22 +103,18 @@ The dataset of SNP variation for the above-listed 28 individuals of 14 Lake Tang
 
 		bcftools view -H NC_031969.f5.sub2.vcf.gz | wc -l
 				
-* We will now generate a reduced version of the dataset that includes only the most suitable SNPs for phylogenetic analysis. This means that we exclude all sites at which no alternative alleles are called for any of the samples ("AC==0"), all sites at which only alternative alleles are called ("AC==AN"), and sites at which the proportion of missing data is greater than 20% ("F_MISSING > 0.2"). At the same time, we will ensure that only bi-allelic SNPs are included in the reduced dataset by using the bcftools options "-m2" and "-M2" which set both the minimum ("-m") and maximum ("-M") number of alleles to 2. Thus, use the following bcftools command to the reduced dataset to a new file named `NC_031969.f5.sub3.vcf.gz`:
+* We will now generate a reduced version of the dataset that includes only the most suitable SNPs for phylogenetic analysis. This means that we exclude all sites at which no alternative alleles are called for any of the samples ("AC==0"), all sites at which only alternative alleles are called ("AC==AN"), and sites at which the proportion of missing data is greater than 20% ("F_MISSING > 0.2"). At the same time, we will ensure that only bi-allelic SNPs are included in the reduced dataset by using the bcftools options "-m2" and "-M2" which set both the minimum ("-m") and maximum ("-M") number of alleles to 2. Thus, use the following bcftools command to write the reduced dataset to a new file named `NC_031969.f5.sub3.vcf.gz`:
 
 		bcftools view -e 'AC==0 || AC==AN || F_MISSING > 0.2' -m2 -M2 -O z -o NC_031969.f5.sub3.vcf.gz NC_031969.f5.sub2.vcf.gz
 
 * Check once again the total number of SNPs included in file `NC_031969.f5.sub3.vcf.gz` **Question 2:** How many SNPs were removed in the last step? [(see answer)](#q2)
 		
-* As we've seen above, some SNPs in file `NC_031969.f5.sub2.vcf.gz` were too close to each other on the chromosome to be considered independent markers. Some of these might have been removed in the last filtering step. Nevertheless, to ensure that no SNPs are closer to each other than a minimum distance of 100 bp, we can use the "--thin" option of vcftools as in the following command:
+* As we've seen above, some SNPs in file `NC_031969.f5.sub2.vcf.gz` were too close to each other on the chromosome to be considered independent markers. Some of these might have been removed in the last filtering step. Nevertheless, to ensure that no SNPs are closer to each other than a minimum distance of 100 bp, we can use the "prune" plugin of bcftools, specifying a window size of 100 bp with `-w 100bp` and the number of sites to keep within the window with `-n 1`, as in the following command:
 
-		vcftools --gzvcf NC_031969.f5.sub3.vcf.gz --thin 100 --recode --out NC_031969.f5.sub4
+		bcftools +prune -w 100bp -n 1 -o NC_031969.f5.sub4.vcf NC_031969.f5.sub3.vcf.gz
 		
-	The screen output of vcftools should indicate that 65,325 SNPs remain in the filtered dataset. Thus, a bit more than every second SNP has been removed in this step. This filtered dataset should have been written to the uncompressed file `NC_031969.f5.sub4.recode.vcf`.
-	
-* Rename the VCF file written by vcftools in the previous step using the following command:
-
-		mv NC_031969.f5.sub4.recode.vcf NC_031969.f5.sub4.vcf
-	
+	The filtered dataset in file `NC_031969.f5.sub4.vcf` should now contain 65,325 SNPs. Thus, a bit more than every second SNP has been removed in this step.
+		
 
 <a name="svdquartets"></a>
 ## Species-tree inference with SVDQuartets
@@ -135,7 +129,7 @@ SVDQuartets is a highly efficient tool to estimate the species-tree topology bas
 
 		less -S NC_031969.f5.sub4.nex
 		
-	Note that heterozygous sites have been coded with [IUPAC ambiguity codes](https://en.wikipedia.org/wiki/Nucleic_acid_notation), so that for example a "C/T" allele has been replace with the letter "Y". While many phylogenetic algorithms can not deal with this ambiguity information, SVDQuartets will automatically recognize that both alleles are then present in the sample and will account for it in its calculations of the SVD score.
+	Note that heterozygous sites have been coded with [IUPAC ambiguity codes](https://en.wikipedia.org/wiki/Nucleic_acid_notation), so that for example a "C/T" allele has been replace with the letter "Y". While many phylogenetic algorithms can not deal with this ambiguity information, SVDQuartets will automatically recognize that both alleles are present heterozygously in the sample and will account for both in its calculations of the SVD score.
 
 * Open the Nexus file `NC_031969.f5.sub4.nex` in PAUP\*, and make sure that the option "Execute" is set in the opening dialog, as shown in the next screenshot.<p align="center"><img src="img/paup1.png" alt="PAUP\*" width="600"></p>
 
