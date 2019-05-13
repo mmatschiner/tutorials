@@ -302,7 +302,7 @@ To use the `--tree` option of Dsuite, we will obviously need a tree file. As a b
 	
 	*D* = (12909.6 - 7182.28) / (12909.6 + 7182.28) = 0.285055
 	
-	after rearranging the species so that P1="telvit", P2="altfas", and P3="neocan", and thus *C*<sub>BBAA</sub> = 893.302, *C*<sub>ABBA</sub> = 12909.6 and *C*<sub>BABA</sub> = 7182.28. This *D*-statistic is lower than those reported for other trios in file [`samples__Dmin.txt`](res/samples__Dmin.txt)), therefore, the command `cat samples__Dmin.txt | tail -n +2 | sort -n -k 4 -r | head -n 1` reported a different trio that included "neooli" instead of "telvit". Either way, the *p*-values for the *D*-statistics are highly significant for many trios and in particular for those that include *Neolamprologus cancellatus* ("neocan"), indicating introgression involving this species is highly supported. Given that the highest *D*-statistics are reported for the trio in which P1="altfas", P2="neocan", and P3="telvit", we may hypothesize that *Neolamprologus cancellatus* "neocan" has received a large amount of introgression from *Telmatochromis vittatus*, in agreement with the speculation by Konings ([2015](http://www.cichlidpress.com/books/details/tc3.html)) that *Neolamprologus cancellatus* is a "natural hybrid between *Telmatochromis vittatus* and another species".
+	after rearranging the species so that P1="telvit", P2="altfas", and P3="neocan", and thus *C*<sub>BBAA</sub> = 893.302, *C*<sub>ABBA</sub> = 12909.6 and *C*<sub>BABA</sub> = 7182.28. This *D*-statistic is lower than those reported for other trios in file [`samples__Dmin.txt`](res/samples__Dmin.txt)), therefore, the command `cat samples__Dmin.txt | tail -n +2 | sort -n -k 4 -r | head -n 1` reported a different trio that included "neooli" instead of "telvit". Either way, the *p*-values for the *D*-statistics are highly significant for many trios and in particular for those that include *Neolamprologus cancellatus* ("neocan"), indicating introgression involving this species is highly supported. Given that the highest *D*-statistics are reported for the trio in which P1="altfas", P2="neocan", and P3="telvit", we may hypothesize that *Neolamprologus cancellatus* "neocan" has received a large amount of introgression from *Telmatochromis vittatus*, in agreement with the speculation by [Konings (2015)](http://www.cichlidpress.com/books/details/tc3.html) that *Neolamprologus cancellatus* is a "natural hybrid between *Telmatochromis vittatus* and another species".
 
 * To get a better overview of introgression patterns supported by *D*-statistics, we'll plot these in the form of a heatmap in which the species in positions P2 and P3 are sorted on the horizontal and vertical axes, and the color of the corresponding heatmap cell indicates the most significant *D*-statistic found with these two species, across all possible species in P1. To prepare this plot, we will, however, first need to prepare a file that lists the order in which the P2 and P3 species should be listed along the heatmap axes. It makes sense to sort species for this according to the tree file that we used ([`snapp.complete.tre`](res/snapp.complete.tre)); thus, write the following list to a new file named `species_order.txt`:
 
@@ -339,12 +339,69 @@ To use the `--tree` option of Dsuite, we will obviously need a tree file. As a b
 	
 	In addition, there seems to be some support for introgression among the species of the genus *Neolamprologus*, such as between *N. crassus* and *N. brichardi* or between *N. brichardi* and *N. pulcher*.
 
-<!--XXX Continue here-->
+So far we only calculated *D*-statistics across the entire chromosome 5 (the only chromosome included in the VCF), but we haven't yet tested whether the *D*-statistic is homogeneous or variable throughout the chromosome. This information could be valuable to determine how recent introgression has occurred because younger introgression events are expected to produce more large-scale variation in the *D*-statistic than older introgression events. The information could also help to identify individual introgressed loci.
+
+* To quantify the *D*-statistic in sliding windows across the genome, Dsuite's Dinvestigate command can be used, and we will apply it to the trio with the strongest signals of introgression, composed of the three species *Altolamprologus fasciatus* ("altfas"), *Neolamprologus cancellatus* ("neocan"), and *Telmatochromis vittatus* ("telvit"). Have a look at the available options for this command, simply by typing the following:
+
+		Dsuite Dinvestigate
+
+	You'll see that besides the VCF input file [`NC_031969.f5.sub1.vcf.gz`](data/NC_031969.f5.sub1.vcf.gz) and the samples table [`samples.txt`](res/samples.txt), two more pieces of information are required. One is a file containing only the species names from one or more trios, and the other is a window size (plus the step size by which the window is incremented) that should be used for the sliding window-analyses.
+	
+* Prepare a file specifying the trio "altfas", "neocan", and "telvit", and name this file `test_trios.txt`. This could be done on the command line with the following command:
+
+		echo -e "altfas\tneocan\ttelvit" > test_trios.txt
+		
+* As both the window size and the increment for the window, we'll use 500 SNPs. To start sliding-window analyses with these settings, execute the following command:
+
+		Dsuite Dinvestigate -w 500,500 NC_031969.f5.sub1.vcf.gz samples.txt test_trios.txt 
+		
+	This analysis should again take only a few minutes. Dsuite should then have written a file named `altfas_neocan_telvit_localFstats_500,500_500_500.txt`.
+	
+* Have a look at file [`altfas_neocan_telvit_localFstats_500,500_500_500.txt`](res/altfas_neocan_telvit_localFstats_500,500_500_500.txt), for example using the `less` command:
+
+		less altfas_neocan_telvit_localFstats_500,500_500_500.txt
+		
+	The rows in this file correspond to individual chromosomal windows, and the  six columns included in the file contain information on the chromosome ID in the first column and the central position of each window in the third column. This is followed by three numbers on each line, which represent the *D*-statistic calculated for the window in the fourth column, and two further statistics aiming to quantify the proportions of the window affected by introgression. The two statistics are the *f*<sub>d</sub> statistic of [Martin et al. (2015)](https://academic.oup.com/mbe/article/32/1/244/2925550) and the related *f*<sub>dM</sub> statistic introduced by [Malinsky et al. (2015)](https://science.sciencemag.org/content/350/6267/1493).
+	
+* Find out into how many windows chromosome 5 was divided, using the following command:
+
+		cat altfas_neocan_telvit_localFstats_500,500_500_500.txt | tail -n +2 | wc -l
+		
+	This should show that 513 windows were used in Dsuite's Dinvestigate analysis. If this number would be much higher or lower, the information density could be adjusted by specifying a larger or smaller window size with `-w`.
+	
+* Before plotting sliding-window statistics, we need to remove the first line, which is not really a header line but contains information on the trio, from the output file. This can be done with the following command that writes the content without the first line to a new file named `altfas_neocan_telvit_localFstats.clean.txt`:
+
+		cat altfas_neocan_telvit_localFstats_500,500_500_500.txt | tail -n +2 > altfas_neocan_telvit_localFstats.clean.txt
+
+* Using the R environment, plot the *D* and *f*<sub>d</sub> statistics across chromosome 5, using the following commands:
+
+		table <- read.table("altfas_neocan_telvit_localFstats.clean.txt")
+		plot(table$V3, table$V4, type="l", xlab="Position", ylab="D (black)/fD (gray)", ylim=c(0,1), main="Chromosome 5 (altfas, neocan, telvit)")
+		lines(table$V3, table$V5, col="gray")
+
+	This should produce the following plot, showing that the *D*-statistic (in black) is always substantially higher than the *f*<sub>d</sub>-statistic (in gray), and that the *f*<sub>d</sub>-statistic, which estimates admixture proportion is consistently around 0.5:<p align="center"><img src="img/trio1.png" alt="Dinvestigate" width="600"></p>
+
+* Repeat the same for a second trio that appeared to show signals of introgression, composed of *Neolamprologus olivaceous* ("neooli"), *N. pulcher* ("neopul), and *N. brichardi* ("neobri"). To do so, use these commands on the command line:
+
+		echo -e "neooli\tneopul\tneobri" > test_trios.txt
+		Dsuite Dinvestigate -w 500,500 NC_031969.f5.sub1.vcf.gz samples.txt test_trios.txt
+		cat neooli_neopul_neobri_localFstats_500,500_500_500.txt | tail -n +2 > neooli_neopul_neobri_localFstats.clean.txt
+
+* To produce the same plots as before now for the trio of "neooli", "neopul", and "neobri", use again the R environment and in it the following commands:
+
+		table <- read.table("neooli_neopul_neobri_localFstats.clean.txt")
+		plot(table$V3, table$V4, type="l", xlab="Position", ylab="D (black) / fD (gray)", ylim=c(0,1), main="Chromosome 5 (neooli, neopul, neobri)")
+		lines(table$V3, table$V5, col="gray")
+		
+	This should produce the plot shown below:<p align="center"><img src="img/trio2.png" alt="Dinvestigate" width="600"></p>
+
+	As you can see, the *D*-statistic (in black) is now consistently close to 0.2 and the *f*<sub>d</sub>-statistic (in gray) is again slightly lower. Notably, the same peak-trough pattern is shown near the beginning of the chromosome, which indicates that the peak is not caused by an introgressed locus, but rather by some other characteristic shared between the two trios, such as perhaps a high proportion of missing data in this region. Besides this peak-trough pattern, the two statistics appear rather stable over the chromosome, indicating that either the individuals are F1 hybrids (in this case, an admixture proportion consistently around 0.5 would be expected, as observed for *Neolamprologus cancellatus*), or introgression is rather ancient, so that recombination had time to split introgressed blocks to the point that these are no longer recognized as such. The latter might be the case for the trio of *N. olivaceus*, *N. pulcher*, and *N. brichardi*.
+
 
 <a name="painting"></a>
 ## Ancestry painting
 
-A very simple alternative way of investigating patterns of ancestry in potential hybrid species is to "paint" their chromosomes according to the genotypes carried at sites that are fixed between the presumed parental species. This type of plot, termed "ancestry painting" was used for example by [Fu et al. (2015; Fig. 2)](https://www.nature.com/articles/nature14558) to find blocks of Neanderthal ancestry in an ancient human genome, by [Der Sarkassian et al. (2015; Fig. 4)](https://www.cell.com/current-biology/abstract/S0960-9822(15)01003-9) to investigate the ancestry of Przewalski's horses or by [Runemark et al. (2018; Suppl. Fig. 4)](https://www.nature.com/articles/s41559-017-0437-7) to assess hybridization in sparrows.
+A very simple alternative way of investigating patterns of ancestry in potential hybrid species is to "paint" their chromosomes according to the genotypes carried at sites that are fixed between the presumed parental species. This type of plot, termed "ancestry painting" was used for example by [Fu et al. (2015; Fig. 2)](https://www.nature.com/articles/nature14558) to find blocks of Neanderthal ancestry in an ancient human genome, by [Der Sarkassian et al. (2015; Fig. 4)](https://www.cell.com/current-biology/abstract/S0960-9822(15)01003-9) to investigate the ancestry of Przewalski's horses, by [Runemark et al. (2018; Suppl. Fig. 4)](https://www.nature.com/articles/s41559-017-0437-7) to assess hybridization in sparrows, and by [Barth et al. (2019)](https://www.biorxiv.org/content/10.1101/635631v1) to identify hybrids in tropical eels.
 
 * If you're not familiar with the above-named studies, you might want to have a look at the ancestry-painting plots of these studies. You may note that the ancestry painting in [Fu et al. (2015; Fig. 2)](https://www.nature.com/articles/nature14558) is slightly different from the other two studies because no discrimination is made between heterozygous and homozygous Neanderthal alleles. Each sample in Fig. 2 of [Fu et al. (2015)](https://www.nature.com/articles/nature14558) is represented by a single row of cells that are white or colored depending on whether or not the Neanderthal allele is present at a site. In contrast, each sample in the ancestry paintings of [Der Sarkassian et al. (2015; Fig. 4)](https://www.cell.com/current-biology/abstract/S0960-9822(15)01003-9) and [Runemark et al. (2018; Suppl. Fig. 4)](https://www.nature.com/articles/s41559-017-0437-7) is drawn with two rows of cells. However, as the analyses in both studies were done with unphased data, these two rows do not represent the two haplotypes per sample. Instead, the two cells per site were simply both colored in the same way for homozygous sites or differently for heterozygous sites without regard to haplotype structure.
 
