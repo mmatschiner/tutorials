@@ -4,24 +4,24 @@ A tutorial on the analysis of hybridization and introgression with SNP data
 
 ## Summary
 
-A number of approaches for the analysis of introgression based on SNP data have been developed recently. Among these is the well-known ABBA-BABA test ([Green et al. 2010](http://science.sciencemag.org/content/328/5979/710.full)) that uses the so-called <i>D</i>-statistic to assess support for introgression in sets of four species. The original ABBA-BABA test has been extended in various ways, including the <i>D</i><sub>FOIL</sub>-statistic that allows inferring the direction of introgression from sets of five species ([Pease and Hahn 2015](https://academic.oup.com/sysbio/article/64/4/651/1650669)) and the <i>f</i><sub>D</sub>-statistic that is better suited for the identification of gene flow pertaining to certain regions of the genome ([Martin et al. 2014](https://academic.oup.com/mbe/article/32/1/244/2925550)). If a putative hybrid individual as well as the presumed parental species have already been identified, patterns of introgression can be investigated with ancestry painting, a method that sites that are fixed between the parental species and the alleles observed at these sites in the putative hybrid. SNP data can also be used in phylogenetic approaches for introgression analysis; one such approach is implemented in the recently introduced method TWISST, which weighs topologies of local SNP phylogenies according to how well they are supported by different samples of the same species.
+A number of approaches for the analysis of introgression based on SNP data have been developed recently. Among these is the well-known ABBA-BABA test ([Green et al. 2010](http://science.sciencemag.org/content/328/5979/710.full)) that uses the so-called *D*-statistic to assess support for introgression in sets of four species. The original ABBA-BABA test has been extended in various ways, including the <i>D</i><sub>FOIL</sub>-statistic that allows inferring the direction of introgression from sets of five species ([Pease and Hahn 2015](https://academic.oup.com/sysbio/article/64/4/651/1650669)) and the <i>f</i><sub>D</sub>-statistic that is better suited for the identification of gene flow pertaining to certain regions of the genome ([Martin et al. 2014](https://academic.oup.com/mbe/article/32/1/244/2925550)). If a putative hybrid individual as well as the presumed parental species have already been identified, patterns of introgression can be investigated with ancestry painting, a method that focuses on sites that are fixed between the parental species and the alleles observed at these sites in the putative hybrid.
+<!--XXX Relate XXX-->
 
 ## Table of contents
 
 * [Outline](#outline)
 * [Dataset](#dataset)
 * [Requirements](#requirements)
-* [Assessing introgression with D-statistics](#dstatistics)
-* [Allele phasing](#phasing)
-* [Topology weighting with TWISST](#twisst)
+* [Identifying introgression with D-statistics](#dsuite)
+<!--* XXX-->
 * [Ancestry painting](#painting)
-* [Improved allele phasing for recent hybrids](#improvedphasing)
+<!--* [Inferring genome-wide genealogies](#relate)-->
 
 
 <a name="outline"></a>
 ## Outline
 
-In this tutorial I am going to present the application of three different methods for the analysis of introgression with SNP data: <i>D</i>-statistics obtained with the ABBA-BABA test, topology weighting with TWISST, and ancestry painting. As the use of phased data is recommended for analysis with TWISST, allele phasing with the software [BEAGLE](https://faculty.washington.edu/browning/beagle/beagle.html) ([Browning and Browning 2007](https://www.cell.com/ajhg/fulltext/S0002-9297(07)63882-8)) is going to be applied before this analysis.
+In this tutorial I am going to present the application of three different methods for the analysis of introgression with SNP data: *D*-statistics, ancestry painting, and XXX.
 
 
 <a name="dataset"></a>
@@ -68,60 +68,31 @@ The SNP data used in this tutorial is the unfiltered dataset used for species-tr
 <a name="requirements"></a>
 ## Requirements
 
-* **Python library ete3:** The [ete toolkit](http://etetoolkit.org) ([Huerta-Cepas et al. 2016](https://academic.oup.com/mbe/article/33/6/1635/2579822)) will be required for [topology-weighting](#twisst) analyses with [TWISST](https://github.com/simonhmartin/twisst) ([Martin and van Belleghem 2017](http://www.genetics.org/content/206/1/429)). Instructions for the installation of the ete toolkit on Mac OS X and Linux are provided on the [ete download webpage](http://etetoolkit.org/download/); however, the easiest way to install the ete3 toolkit might be with the pip package manager for Python, using the following command:
+* **Dsuite:** The [Dsuite](https://github.com/millanek/Dsuite) program allows the fast calculation of the *D*-statistic from SNP data in VCF format. The program is particularly useful because it automatically calculates the *D*-statistic either for all possible species quartets or for subsets of quartets that are compatible with a user-provided species tree. Instructions for download and installation on Mac OS X and Linux are provided on [https://github.com/millanek/Dsuite](https://github.com/millanek/Dsuite). Installation on Windows is not supported, but Windows users can use the provided output files to learn how to plot and analyze the Dsuite output.
 
-		python -m pip install --user ete3
+* **FigTree:** The program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) by Andrew Rambaut is a very intuitive and useful tool for the visualization and (to a limited extent) manipulation of phylogenies encoded in [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) format. Executables for Mac OS X, Linux, and Windows are provided on [https://github.com/rambaut/figtree/releases](https://github.com/rambaut/figtree/releases).
+
+<!--XXX Relate-->
+
+<a name="dsuite"></a>
+## Identifying introgression with *D*-statistics
 		
-	To ensure that the installation worked, you could execute the following command:
-	
-		python -c 'import ete3'
-		
-	If no error message is given, the ete3 library is correctly installed and ready to be used.
+Under incomplete lineage sorting alone, both of two sister species are expected to share about the same proportion of derived alleles with a third closely related species. Thus, if species "P1" and "P2" are sisters and "P3" is a closely related species, then the number of derived alleles shared by P1 and P3 but not P2 and the number of derived alleles that is shared by P2 and P3 but not P1 should be approximately similar. In contrast, if hybridization leads to introgression between species P3 and one out the two species P1 and P2, then P3 should share more derived alleles with that species than it does with the other one, leading to asymmetry in the sharing of derived alleles. These expectations are the basis for the so-called "ABBA-BABA test" (first described in the Supporting Material of [Green et al. 2010](http://science.sciencemag.org/content/328/5979/710.full)) that quantifies support for introgression by the *D*-statistic. In addition to the three species P1, P2, and P3, the ABBA-BABA test requires a fourth species, "P4", which should be a common outgroup to P1, P2, and P3, and only serves to determine which allele is the ancestral one and which is derived; the ancestral allele is then labelled "A" and the derived allele of a bi-allelic SNP is labelled "B". In the simplest case in which only a single haploid sequence is sampled from each of the four species, "ABBA sites" are those where species P2 and P3 share the derived allele B while P1 retains the ancestral allele A. Similarly "BABA sites" are those where P1 and P3 share the derived allele B while P2 retains the ancestral allele A. The *D*-statistic is then defined as the difference between the counts of ABBA sites and BABA sites relative to the sum of both types of sites:
 
-* **RAxML:** Like the ete toolkit, [RAxML](https://sco.h-its.org/exelixis/web/software/raxml/index.html) ([Stamatakis 2014](https://academic.oup.com/bioinformatics/article/30/9/1312/238053)) is also going to be required for [Topology weighting with TWISST](#twisst). Source code for Mac OS X and Linux, as well as precompiled executables for Windows, can be found on RAxML's github page [https://github.com/stamatak/standard-RAxML](https://github.com/stamatak/standard-RAxML). The installation of RAxML is also described in more detail in tutorial [Maximum-Likelihood Phylogenetic Inference](../ml_phylogeny_inference/README.md).
+*D* = (*C*<sub>ABBA</sub> - *C*<sub>BABA</sub>) / (*C*<sub>ABBA</sub> + *C*<sub>BABA</sub>)
 
+This statistic is expected to be 0 if no introgression occurred, to be 1 in the extreme case of no incomplete lineage sorting but introgression between P2 and P3, and -1 if incomplete lineage sorting is absent but introgression occurred between P1 and P3. By convention, however, P1 and P2 are swapped if P1 turns out to be closer to P3 than P2 is to P3, so that the *D*-statistic remains within the interval [0, 1] and the number of ABBA sites is always greater than the number of BABA sites. When the dataset includes more than a single sequence per species, the calculation of the *D*-statistic is slightly more complicated and involves weighting each site for the ABBA or BABA pattern based on the alleles observed in each species.
 
+When more than four species are included in the dataset, obtaining *D*-statistics has long been a bit tedious because no program was available to calculate them automatically for all possible combinations of species in a VCF input file. This gap the available methodology, however, has recently been filled with the program Dsuite by Milan Malinsky ([Malinsky 2019](https://www.biorxiv.org/content/10.1101/634477v1)), which will be used in this tutorial. To calculate *D*-statistics not just for one specific quartet but comprehensively for sets of species in a VCF file, Dsuite keeps the outgroup (which is specified by the user) fixed, but tests all possible ways in which three species can be selected from the ingroup species and placed into the positions P1, P2, and P3. In addition to the *D*-statistic, Dsuite allows the calculation of a p-value based on jackknifing for the null hypothesis that the D-statistic is 0, which means that the absence of introgression can be rejected if the p-value is below the significance level.
 
-<a name="dstatistics"></a>
-## Assessing introgression with <i>D</i>-statistics
-		
-Under incomplete lineage sorting alone, both of two sister species are expected to share about the same proportion of derived alleles with a third closely related species. Thus, if species "spc1" and "spc2" are sisters and "spc3" is a closely related species, then the number of derived alleles shared by "spc1" and "spc3" but not "spc2" and the number of derived alleles that is shared by "spc2" and "spc3" but not "spc1" should be approximately similar. In contrast, if hybridization leads to introgression between species "spc3" and one out the two species "spc1" and "spc2", then "spc3" should share more derived alleles with that species than it does with the other one, leading to asymmetry in the sharing of derived alleles. These expectations are the basis for the so-called "ABBA-BABA test" (first described in the Supporting Material of [Green et al. 2010](http://science.sciencemag.org/content/328/5979/710.full)) that quantifies support for introgression by the <i>D-statistic</i>. In addition to the three species "spc1", "spc2", and "spc3", the ABBA-BABA test requires a fourth species, "spc4", which should be a common outgroup to "spc1", "spc2", and "spc3", and only serves to determine which allele is the ancestral one and which is derived; the ancestral allele is then labelled "A" and the derived allele of a bi-allelic SNP is labelled "B". In the simplest case in which only a single haploid sequence is sampled from each of the four species, "ABBA sites" are those where species "spc2" and "spc3" share the derived allele "B" while "spc1" retains the ancestral allele "A". Similarly "BABA sites" are those where "spc1" and "spc3" share the derived allele "B" while "spc2" retains the ancestral allele "A". The <i>D</i>-statistic is then defined as the difference between the number of ABBA sites and BABA sites relative to the sum of both types of sites. This statistic is expected to be 0 if no introgression occurred, to be 1 in the extreme case of no incomplete lineage sorting but introgression between "spc2" and "spc3", and -1 if incomplete lineage sorting is absent but introgression occurred between "spc1" and "spc3". By convention, however, "spc1" and "spc2" are swapped if "spc1" turns out to be closer to "spc3" than "spc2" is to "spc3", so that the <i>D</i>-statistic remains within the interval [0, 1] and the number of ABBA sites is always greater than the number of BABA sites. When the dataset includes more than a single sequence per species, the calculation of the <i>D</i>-statistic is slightly more complicated and involves weighting each site for the ABBA or BABA pattern based on the alleles observed in each species.
-
-A popular set of scripts for the calculation of the <i>D</i>-statistic has been written by Simon Martin ([Martin et al. 2014](https://academic.oup.com/mbe/article/32/1/244/2925550)) and these scripts can be found on his github repository. In addition to the <i>D</i>-statistic, these scripts allow the calculation of a p-value based on jackknifing for the null hypothesis that the <i>D</i>-statistic is 0, which means that the absence of introgression can be rejected if the p-value is below the significance level. The scripts also allow the calculation of Martin's <i>f</i><sub>d</sub> ([Martin et al. 2014](https://academic.oup.com/mbe/article/32/1/244/2925550)), a more conservative estimator of introgression that is better-suited for sliding-window analyses.
-
-In this part of the tutorial, we are going to calculate the <i>D</i> and <i>f</i><sub>d</sub> statistics to test for introgression among sets of four species from our dataset. As a first test, we will apply these statistics to determine potential introgression into *Neolamprologus cancellatus*, the species that had been excluded from species-tree analyses in tutorials [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md) and [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md) due to its presumed hybrid nature. As mentioned in tutorial [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md), *Neolamprologus cancellatus* ("neocan") is not accepted as a valid species by some authors who speculate that it is a "natural hybrid between *Telmatochromis vittatus* and another species" ([Konings 2015](http://www.cichlidpress.com/books/details/tc3.html)), based on field observations.
+In this part of the tutorial, we are going to calculate *D*-statistics with Dsuite to test for introgression among sets of species from our dataset. We will apply these statistics in particular to determine potential introgression into *Neolamprologus cancellatus*, the species that had been excluded from species-tree analyses in tutorials [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md) and [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md) due to its presumed hybrid nature. As mentioned in tutorial [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md), *Neolamprologus cancellatus* ("neocan") is not accepted as a valid species by some authors who speculate that it is a "natural hybrid between *Telmatochromis vittatus* and another species" ([Konings 2015](http://www.cichlidpress.com/books/details/tc3.html)), based on field observations.
 
 * Make sure that you have the file [`NC_031969.f5.sub1.vcf.gz`](data/NC_031969.f5.sub1.vcf.gz) in your current analysis directory, either by copying it from the analysis directory for tutorial [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md), or by downloading it with the link. Make sure not to uncompress it yet.
-
-* To be able to use the collection of scripts written by Simon Martin for the calculation of the <i>D</i> and <i>f</i><sub>d</sub> statistics, download his entire github repository named "genomics\_general", using the following command:
-
-		git clone https://github.com/simonhmartin/genomics_general.git
-		
-* To ensure that the libraries included in this repository are recognized by Python, add the repository to the general Python path with the following command:
-
-		export PYTHONPATH=genomics_general
-		
-* You can test if the genomics library in file `genomics_general/genomics.py` is recognized by Python by executing the following command:
-
-		python -c 'import genomics'
-		
-	Unless you see an error message as a response, the genomics library can now be used.
-		
-* As all of Simon Martin's scripts use the more light-weight "genotype" file format instead of the VCF format, we'll first convert the VCF file [`NC_031969.f5.sub1.vcf.gz`](data/NC_031969.f5.sub1.vcf.gz) into genotype file format, by running the `parseVCF.py` Python script with the following command:
-
-		python genomics_general/VCF_processing/parseVCF.py -i NC_031969.f5.sub1.vcf.gz | gzip > NC_031969.f5.sub1.geno.gz
-		
-* Compare the VCF format to the genotype format by having a look at both `NC_031969.f5.sub1.vcf.gz` and `NC_031969.f5.sub1.geno.gz`, for example with the `zless -S` command:
-
-		zless -S NC_031969.f5.sub1.vcf.gz
-		zless -S NC_031969.f5.sub1.geno.gz
-		
-	(in both cases, return to the command line by hitting the `q` key).<br>You'll see that `NC_031969.f5.sub1.geno.gz` contains the same genotype information for all samples as well as the chromosome ID and the chromosomal position, but no further information.
 	
-* To assign samples to species for the calculation of the <i>D</i>-statistic, we'll need to write a table with two columns, where the first columns contains the sample IDs and the second column contains the corresponding species ID. Even though we'll use only four species in the first application of the ABBA-BABA test, you could already include all samples and species of the dataset to this table; this will facilitate later analyses with other sets of four species. Thus, write the following text to a new file named `samples.txt`:
+* To assign samples to species for the calculation of the *D*-statistic, we'll need to write a table with two tab-delimited columns, where the first column contains the sample IDs and the second column contains the corresponding species ID. We are going to use the only haplochromine species in the dataset, *Astatotilapia burtoni* as the outgroup (its outgroup position was confirmed in tutorial [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md)), which needs to be specified for Dsuite with the keyword "Outgroup". Thus, write the following text to a new file named `samples.txt`:
 
-		IZA1	astbur
-		IZC5	astbur
+		IZA1	Outgroup
+		IZC5	Outgroup
 		AUE7	altfas
 		AXD5	altfas
 		JBD5	telvit
@@ -151,294 +122,224 @@ In this part of the tutorial, we are going to calculate the <i>D</i> and <i>f</i
 
 	(note that the file with the same name written in tutorial [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md) should not be re-used here as its content differs).
 
-* To facilitate later analyses with other sets of four species, we will use variables for the four species IDs. As mentioned above, we will first focus on the potential hybrid nature of *Neolamprologus cancellatus* ("neocan"), which means that we will test for introgression into this species and that we therefore use it as "spc2". Because it has been speculated by [Konings (2015)](http://www.cichlidpress.com/books/details/tc3.html) that *Neolamprologus cancellatus* is a "hybrid between *Telmatochromis vittatus* and another species", we'll put *Telmatochromis vittatus* ("telvit") into the position of the potential donor of introgression, "spc3". And as an outgroup, we'll use the most distant of the species included in the dataset, *Astatotilapia burtoni* ("astbur") (this outgroup status of *Astatotilapia burtoni* was confirmed in the analyses of tutorial [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md)). However, it is up to you to decide which species you would like to use as the second species to potentially contribute to hybridization. Thus, select any of the species of genus *Neolamprologus* or *Altolamprologus fasciatus* ("altfas") and use this species as "spc1". Then, replace "XXXXXX" in the command below with the ID of the species that you selected for "spc1" and execute the command.
+* To familiarize yourself with Dsuite, simply start the program with the command `Dsuite`. When you hit enter, you should see a help text that informs you about three different commands named "Dtrios", "DtriosCombine", and "Dinvestigate", with short descriptions of what these commands do. Of the three commands, we are going to focus on Dtrios, which is the one that calculates the *D*-statistic for all possible species trios.
 
-		spc1=XXXXXX; spc2=neocan; spc3=telvit; spc4=astbur
+* To learn more about the command, type `Dsuite Dtrios` and hit enter. The help text should then inform you about how to run this command. You'll see that the available options allow to limit the genomic region used in the analysis, to specify a window size for significance testing based on jackknifing, or to specify a tree file. For now, there is no need to specify any of these options, but we'll look at the tree-file option later in this tutorial.
 
-* Then, use script `freq.py` from Simon Martin's repository to calculate allele frequencies of the four species, using the following command:
+* As shown at the top of the Dsuite help text, the program can be run with `Dsuite Dtrios [OPTIONS] INPUT_FILE.vcf SETS.txt`. In our case, the input file is [`NC_031969.f5.sub1.vcf.gz`](data/NC_031969.f5.sub1.vcf.gz) and the sets files is the table with sample and species IDs written earlier to [`samples.txt`](res/samples.txt). Thus, start the Dsuite analysis of our dataset with
 
-		python genomics_general/freq.py -g NC_031969.f5.sub1.geno.gz -p ${spc1} -p ${spc2} -p ${spc3} -p ${spc4} --popsFile samples.txt --target derived | grep -v nan | gzip > NC_031969.f5.sub1.pops1.tsv.gz
+		Dsuite Dtrios NC_031969.f5.sub1.vcf.gz samples.txt
 		
-	In the above command, the input file in genotype format is specified with `-g NC_031969.f5.sub1.geno.gz`, the four species that are to be analyzed are separately specified with the `-p` option, and the file assigning samples to species is provided with `--popsFile samples.txt`. The option `--target derived` specifies that the allele observed for the last of the four species IDs (here "spc4") should be considered as the ancestral allele and the alternative allele is therefore the derived allele. Sites where the allele in the fourth species is not fixed are ignored. With `| grep -v nan` The output is passed to the program grep which removes lines corresponding to sites for which allele frequencies could not be calculated. After that, the output is passed to the program gzip for compression with `| gzip`, and then directed into a new file named `NC_031969.f5.sub1.pops1.tsv.gz` (here, "pops1" is used to distinguish from later analyses with other sets of four species that you could then call "pops2", "pops3", etc.). To see further options of the script `freq.py`, you could type `python genomics_general/freq.py -h`.
+	The program should finish within a few minutes.
+
+* Now have a look at the files in the current directory, using the `ls` command. You should see that Dsuite has written a number of files named after the sample-table file:
+
+		samples__BBAA.txt
+		samples__Dmin.txt
+		samples__combine.txt
+		samples__combine_stderr.txt
+		
+* Next, have a look at the content of file [`samples__combine.txt`](res/samples__combine.txt), for example using the `less` command. You'll see that the first part of this files has the following content:
+
+		altfas  neobri  neocan  1378.2  13479.6 4066.95
+		altfas  neobri  neochi  2281.67 2322.45 8154.16
+		altfas  neobri  neocra  1610.98 1495.17 14174.6
+		altfas  neobri  neogra  1618.4  1559.8  14312.1
+		altfas  neobri  neohel  1549.77 1416.71 14741.8
+		altfas  neobri  neomar  1980.94 1728.7  13168.8
+		altfas  neobri  neooli  1668.03 1460.84 14734.4
+		altfas  neobri  neopul  1279.66 1164.73 14283.7
+		altfas  neobri  neosav  1729.49 1616.15 12626.2
+		altfas  neobri  neowal  2525.99 2440.28 8572.34
+		altfas  neobri  telvit  2581.12 2688.36 8258.12
+		altfas  neocan  neochi  12306.4 1310.06 3745.6
+		altfas  neocan  neocra  14200.7 1395.33 4097.46
+		altfas  neocan  neogra  14825.3 1436.9  4286.4
+		altfas  neocan  neohel  14063.7 1361.83 4102.08
+		altfas  neocan  neomar  14794.6 1422.08 4181.25
+		altfas  neocan  neooli  14834.4 1408.33 4274.5
+		...
+
+	Here, each row shows the results for the analysis of one trio, and for example in the first row, *Altolamprologus fasciatus* ("altfas") was used as P1, *Neolamprologus brichardi* was considered as P2, and *Neolamprologus cancellatus* was placed in the position of P3. The numbers in the fifth and sixth column of that row then include the count of ABBA sites, *C*<sub>ABBA</sub>, in that trio (where the derived allele is shared by "neobri" and "neocan") and the count of BABA sites, *C*<sub>BABA</sub> (where the derived allele is shared by "altfas" and "neocan"). Note, however, that (perhaps unintuitively) *C*<sub>ABBA</sub> is given in the sixth column whereas *C*<sub>BABA</sub> is in the fifth column. **Question 1:** Can you tell why these numbers are not integer numbers but have decimal positions? [(see answer)](#q1)
 	
-* To calculate the <i>D</i>-statistic, the <i>f</i><sub>d</sub>-statistic, and the p-value for the hypothesis that the <i>D</i>-statistic is zero, we are going to use the R script [`calculate_abba_baba.r`](src/calculate_abba_baba.r). This script is not part of Simon Martin's repository, but it is based on R commands from a [tutorial by Simon Martin](http://evomics.org/learning/population-and-speciation-genomics/2018-population-and-speciation-genomics/abba-baba-statistics/). For the jackknifing procedure performed to assess the p-value, the script requires information about the length of each chromosome. Because in our case, we use only a single chromosome, specifying the length of this chromosome would in principle be sufficient. However, the R script [`calculate_abba_baba.r`](src/calculate_abba_baba.r) would have to be rewritten to accept a single chromosome length, which would make it less generally applicable. Therefore, it is easier to specify the lengths of all tilapia chromosomes ([Conte et al. 2017](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-017-3723-5))  even though all but one of those lengths will be ignored. To do so, write the following text to a new file and name it `chr_lengths.txt`:
-
-		NC_031965	38372991
-		NC_031966	35256741
-		NC_031967	14041792
-		NC_031968	54508961
-		NC_031969	38038224
-		NC_031970	34628617
-		NC_031971	44571662
-		NC_031972	62059223
-		NC_031973	30802437
-		NC_031974	27519051
-		NC_031975	32426571
-		NC_031976	36466354
-		NC_031977	41232431
-		NC_031978	32337344
-		NC_031979	39264731
-		NC_031980	36154882
-		NC_031981	40919683
-		NC_031982	37007722
-		NC_031983	31245232
-		NC_031984	36767035
-		NC_031985	37011614
-		NC_031986	44097196
-		NC_031987	43860769
-		UNPLACED	141274046
-
-* Then, run the R script [`calculate_abba_baba.r`](src/calculate_abba_baba.r) to calculate the <i>D</i>-statistic, the <i>f</i><sub>d</sub>-statistic, and the p-value for the hypothesis that the <i>D</i>-statistic is zero, using the following command:
-
-		Rscript calculate_abba_baba.r NC_031969.f5.sub1.pops1.tsv.gz pops1.abba_baba.txt ${spc1} ${spc2} ${spc3} ${spc4} chr_lengths.txt
-		
-	(the script [`calculate_abba_baba.r`](src/calculate_abba_baba.r) assumes that the first command-line argument passed to it is the name of the file with allele frequencies, the second is the output file, the third to sixth are the IDs of "spc1", "spc2", "spc3", and "spc4" in this order, and the seventh is the file with information about chromosome lengths).
-
-* Have a look at file `pops1.abba_baba.txt`, for example with the `less` command:
-
-		less pops1.abba_baba.txt
-		
-	You'll see a list of the four species IDs used in the analysis, followed by the total number of sites used in the analysis and the numbers of "BBAA", "ABBA", and "BABA" sites. With *Neolamprologus cancellatus* ("neocan") as "spc2" and *Telmatochromis vittatus* ("telvit") as "spc3", the number of "ABBA" sites is likely around 7,500, but the other numbers will depend on which species you used as "spc1". If the number of "BBAA" sites is not greater than the number of "ABBA" sites, you might want to repeat the analysis with script `calculate_abba_baba.r` after switching "spc1" and "spc3" to obtain the right <i>D</i>-statistic.
-
-* Repeat the last steps with different species in the place of "spc1" to find the species with the strongest signal of introgression, measured by the <i>D</i>-statistic. Thus, start again with the following command, using a different species ID this time instead of "XXXXXX":
-
-		spc1=XXXXXX; spc2=neocan; spc3=telvit; spc4=astbur
-		
-	Then, repeat the subsequent steps but replace "pops1" with "pops2", "pops3", etc. in each command to avoid overwriting the previous results.
+	In addition to the counts of BABA and ABBA sites in columns five and six, the fourth column lists the count of "BBAA" sites, *C*<sub>BBAA</sub>, at which the derived allele is shared by P1 and P2 (thus by "altfas" and "neobri"). **Question 2:** How many different trios are listed in the file? Are these all possible (unordered) trios? [(see answer)](#q2)
 	
-	**Question 1:** Could you identify the species that maximizes the <i>D</i>-statistic (note that the <i>D</i>-statistic is only valid if the number of "BBAA" sites is greater than the other two numbers)? [(see answer)](#q1)
+	You may note that in this file all trios are ordered alphabetically; thus, P1 is alphabetically before P2 and P2 is before P3. As described above, however, the ABBA-BABA test is based on the assumption that P1 and P2 are sister species. When calculating the *D*-statistic for a given trio, Dsuite first rearranges the species assigned to P1, P2, and P3 (and as a consequence the counts of ABBA, BABA, and BBAA sites are also rearranged), and this is done separately according to certain rules: 
+	1. In a first set of calculations, all possible rearrangements are tested, and the lowest *D*-statistic, called *D*<sub>min</sub> is reported for each trio. *D*<sub>min</sub> is therefore a conservative estimate of the *D*-statistic in a given trio. This output is written to a file with the ending `__Dmin.txt`.
+	2. The trio is arranged so that P1 and P2 are the two species of the trio that share the largest number of derived sites. In other words, the rearrangement is done so that *C*<sub>BBAA</sub> > *C*<sub>ABBA</sub> and *C*<sub>BBAA</sub> > *C*<sub>BABA</sub>. In addition, P1 and P2 are rotated so that the number of derived sites shared between P2 and P3 is larger than that between P1 and P3. In sum this means that *C*<sub>BBAA</sub> > *C*<sub>ABBA</sub> > *C*<sub>BABA</sub>. The idea behind this type of rearrangement is that the two species that share the largest number of derived sites are most likely the true two sister species in the trio, and thus rightfully placed in the positions P1 and P2. This assumption is expected to hold under certain conditions (e.g. clock-like evolution, absence of homoplasies, absence of introgression, and panmictic ancestral populations), but how reliable it is for real datasets is sometimes difficult to say. *D*-statistics based on this type of rearrangement are written to a file with ending `__BBAA.txt`.
+	3. To tell Dsuite directly which species of a trio should be considered sister species (and thus, which should be assigned to P1 and P2), a tree file that contains all species of the dataset can be provided by the user with option `-t` or `--tree`. The output will then be written to an additional file with ending `__tree.txt`. We will use this option later in the tutorial.
 
-* Before continuing with the next steps, make sure that the four species are now specified so that the species leading to the highest <i>D</i>-statistic is placed in the position of "spc1". Thus, execute the following once again after replacing "XXXXXX" accordingly:
+* So, let's see how the *D*-statistics were calculated based on the first two rules for trio rearrangement. Have a look at file [`samples__Dmin.txt`](res/samples__Dmin.txt), e.g. with the `less` command:
 
-		spc1=XXXXXX; spc2=neocan; spc3=telvit; spc4=astbur
-
-* Then, calculate the <i>f</i><sub>d</sub>-statistic in sliding windows across the chromosome to see if you can identify regions that have received a particularly high or low degree of introgression. These regions could indicate adaptiveness of introgressed alleles or selection against them, respectively. To calculate <i>f</i><sub>d</sub> in sliding windows, use the Python script `ABBABABAwindows.py` from Simon Martin's repository with the following command:
-
-		python genomics_general/ABBABABAwindows.py -g NC_031969.f5.sub1.geno.gz -o pops1.abba_baba.windows.txt -P1 ${spc1} -P2 ${spc2} -P3 ${spc3} -O ${spc4} --popsFile samples.txt -f phased -w 500000 --windType coordinate --minSites 500
+		less samples__Dmin.txt
 		
-	In the above command, the input file in genotype format is again specified with `-g NC_031969.f5.sub1.geno.gz`, the output file is specified with `-o` and named `pops1.abba_baba.windows.txt`, and the species IDs for "spc1", "spc2", "spc3", and "spc4" are specified with `-P1`, `-P2`, `-P3`, and `-P4`, respectively. In addition, the file assigning samples to species is provided with option `--popsFile samples.txt`, option `-w 500000` specifies half an Mb as the size of the window, `--windType coordinate` specifies that the window size should be measured in coordinates rather than the number of SNPs, and `--minSites 500` specifies the minimum number of SNPs within the window. Contrary to what one might assume, the option `-f phased` does not require phased data, it merely specifies that the genotypes are defined as in the VCF format.
-
-* To plot the <i>f</i><sub>d</sub>-statistics calculated with the Python script `ABBABABAwindows.py`, you can run the R script [`plot_abbababa_windows.r`](src/plot_abbababa_windows.r) with the following command:
-
-		Rscript plot_abbababa_windows.r pops1.abba_baba.windows.txt chr_lengths.txt pops1.abba_baba.windows.pdf
-		
-	In the above command, the three arguments passed to the script are the name of the file `pops1.abba_baba.windows.txt` written by script `ABBABABAwindows.py`, the file with the chromosome lengths, and the name of a new file, `pops1.abba_baba.windows.pdf`, to which the plot will be written.
-
-	**Question 2:** Do you see any obvious patterns of variation in <i>f</i><sub>d</sub> across the chromosome? [(see answer)](#q2)
-
-* You could repeat the last two steps with different window sizes (e.g. 100,000 bp or 1 Mb) to see if this changes the pattern of variation in the <i>f</i><sub>d</sub>-statistics across the chromosome.
-
-
-<a name="phasing"></a>
-## Allele phasing
-
-According to [Martin and van Belleghem (2017)](http://www.genetics.org/content/206/1/429), SNP data should ideally be phased for [Topology weighting with TWISST](#twisst), the focus of the next part of this tutorial. Therefore, we are first going to use phasing with the software [BEAGLE](https://faculty.washington.edu/browning/beagle/beagle.html) ([Browning and Browning 2007](https://www.cell.com/ajhg/fulltext/S0002-9297(07)63882-8)). By doing so, we attempt to split each sequence into the two haplotypes of its diploid genome. In the absence of long sequencing reads such as those generated on the PacBio platform, any attempt at phasing will most likely not succeed in correctly determining both haplotypes from end to end, but one might expect that at least within short regions of the genome the phasing may be correct. If these regions are longer than the windows used for [Topology weighting with TWISST](#twisst) or other phylogenetic approaches, phasing can be expected to improve the reliability of the results.
-
-A similar approach to that of BEAGLE has also been implemented in the software [SHAPEIT](https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.html) ([Delaneau et al. 2012](https://www.nature.com/articles/nmeth.1785)). From my experience, the results of both tools are very comparable. BEAGLE, however, has the advantage that it is far easier to run; therefore, we are here going to use BEAGLE.
-
-* Download the Java jar file of the latest version of BEAGLE from the [BEAGLE webpage](https://faculty.washington.edu/browning/beagle/beagle.html), either using a browser or the following command:
-
-		wget https://faculty.washington.edu/browning/beagle/beagle.16May18.771.jar
-
-* Have a look at the available options for BEAGLE, which you should see when you start the program without any input, as with the following command:
-
-		java -jar beagle.16May18.771.jar
-
-* Almost all of the default settings are fine for our analysis. We could, however, set the population size estimate used for phasing to a value comparable to the estimate obtained in tutorial [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md). As this estimate was on the order of 100,000, we'll specify `ne=100000`. According to the [BEAGLE manual](https://faculty.washington.edu/browning/beagle/beagle_5.0_14May18.pdf), specifying a correct population size is mainly important when phasing very inbred populations, so this setting is probably not very important in our case. More importantly, make sure to specify that BEAGLE should run on a single CPU with `nthreads=1`. Without this option, BEAGLE will use all CPUs available, which reduces the run time but leads to higher memory requirements that may exceed the available memory on your machine. To run imputation with BEAGLE using a single CPU and up to 4 Gb of memory, run the following command:
-
-		java -jar -Xmx4G beagle.16May18.771.jar nthreads=1 ne=100000 gt="NC_031969.f5.sub1.vcf.gz" out="NC_031969.f5.sub1.phased"
-		
-	This analysis should take around 7 minutes.
-
-* Have a look at the output file `NC_031969.f5.sub1.phased` written by BEAGLE, for example with `zless -S` using the following command:
-
-		zless -S NC_031969.f5.sub1.phased.vcf.gz
-
-	You should note that the genotypes are now separated with the pipe symbol "|" instead of the forward slash "/", and that a distinction is now being made between heterozygous genotypes such as "0|1" and "1|0". With unphased data, the lower number was always listed first as in "0/1" because their order did not have a meaning, but after phasing, all alleles before the pipe symbol are considered to form one haplotype while those after the pipe symbol form the other.
+	You should see the first part of the file as shown below:
 	
-	**Question 3:** Do you also notice something that is unexpected? [(see answer)](#q3)
+		P1      P2      P3      Dstatistic      p-value
+		altfas  neocan  neobri  0.493787        0
+		neobri  neochi  altfas  0.00885755      0.3836
+		neocra  neobri  altfas  0.0372849       0.013765
+		neogra  neobri  altfas  0.0184394       0.258714
+		neohel  neobri  altfas  0.0448571       0.113967
+		neomar  neobri  altfas  0.0679957       0.0195241
+		neooli  neobri  altfas  0.0662179       0.0133793
+		neopul  neobri  altfas  0.0470166       0.10957
+		neosav  neobri  altfas  0.0338796       0.103889
+		neowal  neobri  altfas  0.0172581       0.266909
+		neobri  telvit  altfas  0.0203511       0.199163
+		altfas  neocan  neochi  0.481745        0
+		altfas  neocan  neocra  0.491942        0
+		altfas  neocan  neogra  0.497877        0
+		altfas  neocan  neohel  0.501518        0
+		altfas  neocan  neomar  0.492416        0
+		altfas  neocan  neooli  0.504355        0
+		...
 
-* Given that we did not run BEAGLE with a reference set of haplotypes, we should probably consider the imputed alleles as being potentially incorrect and misleading for phylogenetic analyses. Thus, it might be safer to undo the imputation before using the dataset for phylogenetic analyses with TWISST. We can do so by comparing the unphased VCF file `NC_031969.f5.sub1.vcf.gz` with the phased VCF file `NC_031969.f5.sub1.phased.vcf.gz` and by setting all genotype in the phased VCF file to missing (coded by ".|.") if they were also missing in the unphased VCF file. This can be done with the Ruby script [`mask_imputed_gts.rb`](src/mask_imputed_gts.rb). However, the script expects as input both the unphased and phased VCF files without their headers; thus, we'll first generate versions of the two files with their headers removed. We can do so with the following commands:
-
-		gunzip -c NC_031969.f5.sub1.vcf.gz | grep -v "#" > original.vcf
-		gunzip -c NC_031969.f5.sub1.phased.vcf.gz | grep -v "#" > phased.vcf
-
-* Then, run the script [`mask_imputed_gts.rb`](src/mask_imputed_gts.rb) with the names of the two files generated in the last step as input, followed by the name of a new file, `masked.vcf`, to which the output of the script will be written:
-
-		ruby mask_imputed_gts.rb original.vcf phased.vcf masked.vcf
-
-* Have a look at file `masked.vcf`, for example with using `less -S` as in the following command:
-
-		less -S masked.vcf
-
-	You should see that this file does contain the phased genotypes marked by the pipe ("|") symbol separating the two alleles, but that it also includes missing data just like the unphased file `NC_031969.f5.sub1.vcf.gz` did.
+	One thing to notice here is that the species in the first three rows are no longer sorted alphabetically, so obviously they have been rearranged. As the header line indicates, the fourth column now shows the *D*-statistic for the trio in this constellation, and the fifth column shows the *p*-value based on jackknifing for the null hypothesis of *D* = 0.
 	
-* Finally, because the file `masked.vcf` does not contain a header, we will generate a new file containing only the header of the unphased file `NC_031969.f5.sub1.vcf.gz`, and we will combine this file containing only the header with the header-less file `masked.vcf` into a new file. We will also compress the new file at the same time and name it `NC_031969.f5.sub1.phased.masked.vcf.gz`. To do so, use the following two commands:
+* Let's pick one species trio and see how it appears in the three different files [`samples__combine.txt`](res/samples__combine.txt), [`samples__Dmin.txt`](res/samples__Dmin.txt), and [`samples__BBAA.txt`](res/samples__BBAA.txt). We'll select the first species trio, including "altfas", "neocan", and "neobri". To see only the line for this trio from the three lines, you could use this command:
 
-		gunzip -c NC_031969.f5.sub1.vcf.gz | grep "#" > header.vcf
-		cat header.vcf masked.vcf | gzip > NC_031969.f5.sub1.phased.masked.vcf.gz
+		cat samples__combine.txt | grep altfas | grep neocan | grep neobri
+		cat samples__Dmin.txt | grep altfas | grep neocan | grep neobri
+		cat samples__BBAA.txt | grep altfas | grep neocan | grep neobri
+
+	This should produce the following three output lines:
+	
+		altfas	neobri	neocan	1378.2	13479.6	4066.95
+		altfas	neocan	neobri	0.493787	0
+		altfas	neocan	neobri	0.493787	0
+
+
+	You'll see that compared to the alphabetical arrangement in [`samples__combine.txt`](res/samples__combine.txt), P1 has remained the same ("altfas") in the other two files, but P2 and P3 have been swapped ("neocan" and "neobri"). This swap also implied that the counts for ABBA, BABA, and BBAA patterns were swapped accordingly, so that after the swap and with P1="altfas", P2="neocan", P3="neobri", the counts were as follows: *C*<sub>ABBA</sub> = 4066.95, *C*<sub>BABA</sub> = 1378.2, and *C*<sub>BBAA</sub> = 13479.6. Thus, "neocan" and "neobri" share 4066.95 derived sites, "altfas" and "neobri" share 1378.2 derived sites, and "altfas" and "neocan" share 13479.6 derived sites. With these counts, *D* = (4066.95 - 1378.2) / (4066.95 + 1378.2) = 0.493787, as correctly reported by Dsuite in both files [`samples__Dmin.txt`](res/samples__Dmin.txt) and [`samples__BBAA.txt`](res/samples__BBAA.txt). **Question 3:** With *C*<sub>ABBA</sub> = 4066.95, *C*<sub>BABA</sub> = 1378.2, and *C*<sub>BBAA</sub> = 13479.6, the rule *C*<sub>BBAA</sub> > *C*<sub>ABBA</sub> > *C*<sub>BABA</sub> is fulfilled for this trio rearrangement, and thus it is not surprising that this particular rearrangement is reported in the output corresponding to this rule, the file ending in `__BBAA.txt`. But the fact that the same rearrangement is also included in the file ending in `__Dmin.txt` implies that the *D*-statistic for this rearrangement is smaller than it would be in all alternative rearrangements. Can you confirm this? [(see answer)](#q3)
+
+* Repeat the same as in the last step, but this time using a species trio for which the rearrangements differ between the files [`samples__Dmin.txt`](res/samples__Dmin.txt) and [`samples__BBAA.txt`](res/samples__BBAA.txt). The trio "neobri", "neocra", and "neogra" is one such example. Use these commands to see the line for this trio in all three files:
+
+		cat samples__combine.txt | grep neobri | grep neocra | grep neogra
+		cat samples__Dmin.txt | grep neobri | grep neocra | grep neogra
+		cat samples__BBAA.txt | grep neobri | grep neocra | grep neogra
+
+	This should produce these output lines:
+	
+		neobri	neocra	neogra	3788.23	3552.38	2992.93
+		neogra	neocra	neobri	0.0321294	0.145298
+		neocra	neobri	neogra	0.0854723	8.58201e-07
+
+	The results in file [`samples__BBAA.txt`](res/samples__BBAA.txt) indicate that when P1="neocra", P2="neobri", and P3="neogra", then *C*<sub>BBAA</sub> = 3788.23, *C*<sub>ABBA</sub> = 3552.38, and *C*<sub>BABA</sub> = 2992.93, and therefore *D* = (3552.38 - 2992.93) / (3552.38 + 2992.93) = 0.0854723.
+	
+	However, the results in file [`samples__Dmin.txt`](res/samples__Dmin) show that this time, another rearrangement (and therefore a rearrangement in which *C*<sub>BBAA</sub> is not larger than the two other counts) produces a lower *D*-statistic: With P1="neogra", P2="neocra", and P3="neobri", then *C*<sub>BBAA</sub> = 2992.93, *C*<sub>ABBA</sub> = 3788.23, and *C*<sub>BABA</sub> = 3552.38, and therefore *D* = (3788.23 - 3552.38) / (3788.23 + 3552.38) = 0.0321294. This illustrates that the *D*<sub>min</sub> value, reporting the lowest possible *D*-statistic for a given trio, sometimes selects an arrangement of the trio in which P1 and P2 actually share less derived sites with each other than both of them share with P3. This is in conflict with the original assumption of the ABBA-BABA test that P1 and P2 are more closely related to each other than to P3. When interpreting the results of Dsuite analyses, it should therefore be kept in mind that the *D*<sub>min</sub> values reported in the file ending in `__Dmin.txt` are in fact conservative estimates of the *D*-statistic. The values reported in the file ending in `__BBAA.txt`, which are based on the rearrangement that ensures *C*<sub>BBAA</sub> > *C*<sub>ABBA</sub> > *C*<sub>BABA</sub>, may often be better measurements of the *D*-statistic, however, the best option may be to also run the analysis with the `--tree` option, providing an input tree that directly tells Dsuite how to rearrange all trios.
+	
+To use the `--tree` option of Dsuite, we will obviously need a tree file. As a basis for that, we can use the time-calibrated species tree generated in tutorial [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md), in file [`snapp.tre`](data/snapp.tre). However, we need to prepare the tree file before we can use it with Dsuite. First, Dsuite requires tree files in Newick format, but the tree file [`snapp.tre`](data/snapp.tre) is written in Nexus format. Second, Dsuite currently can not handle branch lengths in tree files, so we will need to remove these. And third, the tree generated in tutorial [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md) did not include *Neolamprologus cancellatus*, so we will need to add this species to the tree manually.
+
+* To convert the tree file from Nexus to Newick format, simply open [`snapp.tre`](data/snapp.tre) in FigTree, and select "Export Trees..." from FigTree's "File" menu. In the dialog window, select "Newick" from the drop-down menu next to "Tree file format:", as shown in the next screenshot.<p align="center"><img src="img/figtree1.png" alt="FigTree" width="600"></p> Name the new file `snapp.as_newick.tre`.
+
+	The tree file [`snapp.as_newick.tre`](res/snapp.as_newick.tre) should now have the following content, in which branch lengths are encoded by numbers following colon symbols:
+
+		((altfas:2.594278046475669,((((((neobri:0.4315861683285048,(neooli:0.3619356529967183,neopul:0.3619356529967182):0.06965051533178657):0.12487340944557368,(neogra:0.5002021127811682,neohel:0.5002021127811681):0.05625746499291029):0.046536377715870936,(neocra:0.3843764668581544,neomar:0.3843764668581544):0.21861948863179498):0.13696107245777023,neosav:0.7399570279477196):0.3048349276159825,telvit:1.044791955563702):0.06307730474269935,(neochi:0.1368491602607037,neowal:0.1368491602607037):0.9710201000456977):1.4864087861692676):3.570689300019641,astbur:6.16496734649531);
+
+* To remove the branch lengths from the tree string, use the following command, saving the new tree without branch lengths as file `snapp.clean.tre`:
+	
+		cat snapp.as_newick.tre | tr -d [0-9.:] > snapp.clean.tre
+	
+	(note that this simple transformation would not work if some of the branch lengths in this tree string would be in scientific notation). The tree file [`snapp.clean.tre`](res/snapp.clean.tre) should then have this content:
+	
+		((altfas,((((((neobri,(neooli,neopul)),(neogra,neohel)),(neocra,neomar)),neosav),telvit),(neochi,neowal))),astbur);
+
+* Finally, we still need to add *Neolamprologus cancellatus* ("neocan") to the tree and we need to make a decision about where to place it. Perhaps the best way to do this would be a separate phylogenetic analysis, but as we will see later, there is no single true position of *Neolamprologus cancellatus* ("neocan") in the species tree anyway. So for now it will be sufficient to use the counts of shared derived sites from file [`samples__BBAA.txt`](res/samples__BBAA.txt) as an indicator for where best to place the species. Thus, we need to find the largest count of derived sites that *neocan* shares with any other species. To do this, we can use the following commands:
+
+		cat samples__combine.txt | grep neocan | sort -n -k 4 -r | head -n 1
+		cat samples__combine.txt | grep neocan | sort -n -k 5 -r | head -n 1
+		cat samples__combine.txt | grep neocan | sort -n -k 6 -r | head -n 1
+
+	This should produce the following lines:
+	
+		altfas	neocan	neooli	14834.4	1408.33	4274.5
+		altfas	neobri	neocan	1378.2	13479.6	4066.95
+		neocan	neochi	neowal	801.883	754.94	12863.7
+
+	The largest number of all of these lines is 14834.4. As this number is found in the fourth column, it specifies the count of BBAA sites, *C*<sub>BBAA</sub>, and therefore the number of derived sites shared by the first two species on this line, "altfas" and "neocan". This means that "neocan" appears to be more closely related to "altfas" than to other species in the dataset.
+	
+* To insert "neocan" into the tree string as the sister species of "altfas", replace "altfas" with "(altfas,neocan)", including the parentheses. This could be done using a text editor, or on the command line with the following command, saving the modified tree string in a new file named `snapp.complete.tre`:
+
+		cat snapp.clean.tre | sed "s/altfas/(altfas,neocan)/g" > snapp.complete.tre
+
+	File snapp.complete.tre should then contain the following tree string:
+	
+		(((altfas,neocan),((((((neobri,(neooli,neopul)),(neogra,neohel)),(neocra,neomar)),neosav),telvit),(neochi,neowal))),astbur);
+
+* Run Dsuite again, this time adding the `-t` (or `--tree`) option to specify the newly prepared tree file [`snapp.complete.tre`](res/snapp.complete.tre):
+
+		Dsuite Dtrios -t snapp.complete.tre NC_031969.f5.sub1.vcf.gz samples.txt
+
+	Dsuite should again finish the analysis within a few minutes. The output should be identical to the previously written output except that a file named `samples__tree.txt` should now also be written. **Question 4:** Do the results differ when trios are rearranged either to maximize the number of derived sites shared between P1 and P2 (thus, the results in file [`samples__BBAA.txt`](res/samples__BBAA.txt)) or according to the provided tree (in file [`samples__tree.txt`](res/samples__tree.txt))?
+
+* To further explore differences among the output files based on different rules for trio rearrangement, find the highest *D*-statistic reported in each of the files [`samples__Dmin.txt`](res/samples__Dmin.txt)), [`samples__BBAA.txt`](res/samples__BBAA.txt)), and [`samples__tree.txt `](res/samples__tree.txt)). One way to do this are the three following commands:
+
+		cat samples__Dmin.txt | tail -n +2 | sort -n -k 4 -r | cut -f 4 | head -n 1
+		cat samples__BBAA.txt | tail -n +2 | sort -n -k 4 -r | cut -f 4 | head -n 1
+		cat samples__tree.txt | tail -n +2 | sort -n -k 4 -r | cut -f 4 | head -n 1
 		
-* Before continuing with [Topology weighting with TWISST](#twisst), you might want to remove some of the larger files generated in the last couple of steps that we will not need anymore. To do so, use the following command:
+	You'll see that the highest *D*-statistic reported in file [`samples__Dmin.txt`](res/samples__Dmin.txt)) (0.504355) is smaller than those in the the other two files (0.778765 in both cases). This is not surprising, given that, as explained above, the *D*<sub>min</sub> values are conservative measure of introgression in a given trio.
+
+* Find the trio responsible for these extreme *D*-statistics, using the following commands:
+
+		cat samples__Dmin.txt | tail -n +2 | sort -n -k 4 -r | head -n 1
+		cat samples__BBAA.txt | tail -n +2 | sort -n -k 4 -r | head -n 1
+		cat samples__tree.txt | tail -n +2 | sort -n -k 4 -r | head -n 1
+
+	You'll see that the high *D*-statistic of 0.778765 is reported for the trio in which P1="altfas", P2="neocan", and P3="telvit".
+	
+* Look up the counts of shared sites for this trio from file [`samples__combine.txt`](res/samples__combine.txt), using the following command:
+
+		cat samples__combine.txt | grep altfas | grep neocan | grep telvit
 		
-		rm original.vcf header.vcf phased.vcf masked.vcf
+	You should then see that *C*<sub>BBAA</sub> = 12909.6 (in the fourth column), *C*<sub>BABA</sub> = 893.302 (in the fifth column), and *C*<sub>ABBA</sub> = 7182.28 (in the sixth column). Thus, "altfas" and "neocan" share 12909.6 derived sites, "neocan" and "telvit" share 7182.28 derived sites, but "altfas" and "telvit" share only 893.302 derived sites.
+	
+	The *D*-statistic is therefore
+	
+	*D* = (7182.28 - 893.302) / (7182.28 + 893.302) = 0.778765
+	
+	as reported in files [`samples__BBAA.txt`](res/samples__BBAA.txt)) and [`samples__tree.txt `](res/samples__tree.txt)). In file [`samples__Dmin.txt`](res/samples__Dmin.txt)), however, *D* was calculated for this trio as 
+	
+	*D* = (12909.6 - 7182.28) / (12909.6 + 7182.28) = 0.285055
+	
+	after rearranging the species so that P1="telvit", P2="altfas", and P3="neocan", and thus *C*<sub>BBAA</sub> = 893.302, *C*<sub>ABBA</sub> = 12909.6 and *C*<sub>BABA</sub> = 7182.28. This *D*-statistic is lower than those reported for other trios in file [`samples__Dmin.txt`](res/samples__Dmin.txt)), therefore, the command `cat samples__Dmin.txt | tail -n +2 | sort -n -k 4 -r | head -n 1` reported a different trio that included "neooli" instead of "telvit". Either way, the *p*-values for the *D*-statistics are highly significant for many trios and in particular for those that include *Neolamprologus cancellatus* ("neocan"), indicating introgression involving this species is highly supported. Given that the highest *D*-statistics are reported for the trio in which P1="altfas", P2="neocan", and P3="telvit", we may hypothesize that *Neolamprologus cancellatus* "neocan" has received a large amount of introgression from *Telmatochromis vittatus*, in agreement with the speculation by Konings ([2015](http://www.cichlidpress.com/books/details/tc3.html)) that *Neolamprologus cancellatus* is a "natural hybrid between *Telmatochromis vittatus* and another species".
 
-<a name="twisst"></a>
-## Topology weighting with TWISST
+* To get a better overview of introgression patterns supported by *D*-statistics, we'll plot these in the form of a heatmap in which the species in positions P2 and P3 are sorted on the horizontal and vertical axes, and the color of the corresponding heatmap cell indicates the most significant *D*-statistic found with these two species, across all possible species in P1. To prepare this plot, we will, however, first need to prepare a file that lists the order in which the P2 and P3 species should be listed along the heatmap axes. It makes sense to sort species for this according to the tree file that we used ([`snapp.complete.tre`](res/snapp.complete.tre)); thus, write the following list to a new file named `species_order.txt`:
 
-Topology weighting is a method recently introduced by [Martin and van Belleghem (2017)](http://www.genetics.org/content/206/1/429) to identify regions affected by introgression based on local phylogenies. In this approach, phylogenies are usually inferred across the genome from windows containing a fixed number of consecutive SNPs, genotyped for multiple samples of several species. For each window, the phylogeny is then repeatedly pruned to include just a single sample per species until all possible combinations (or a random subset thereof) of samples have been considered. The set of pruned phylogenies per window is then used to weigh all possible species topologies according to how often these topologies are observed among the set of pruned phylogenies. In the absence of incomplete lineage sorting and introgression, a single topology (the one corresponding to the species tree) should receive most of the weight all across the chromosome. With incomplete lineage sorting, one would expect more variation in the topology weights across the chromosome, but this variation might not be expected to lead to any large-scale patterns7(note, however, that ignores the fact that low-recombination regions more often support the true species tree even under incomplete lineage sorting alone; [Pease and Hahn 2013](https://onlinelibrary.wiley.com/doi/abs/10.1111/evo.12118)). In contrast, if introgression should affect a certain part of the chromosome, it would be extected that the weight of the topology resulting from introgression is higher in this region compared to others, which could lead to observable patterns in the topology weights when plotted across the chromosome.
-
-In their analysis prominently featured on the cover of Genetics shown below, [Martin and van Belleghem (2017)](http://www.genetics.org/content/206/1/429) used such a plot of the topology weights across chromosome 18 of five *Heliconius* populations to illustrate the introgression around the *optix* gene between *Heliconius melpomene amaryllis* and *Heliconius timareta thelxinoe*. The red regions in the center of that plot shows the locally increased weight of the topology grouping the two populations.
-
-<p align="center"><img src="img/genetics.png" alt="Genetic cover" width="600"></p>
-
-* As Simon Martin's genomics library for ABBA-BABA tests, the TWISST method is implemented is a set of Python scripts that are available from github. Like with the genomics library, download the entire [github repository for TWISST](https://github.com/simonhmartin/twisst) using the following command:
-
-		git clone https://github.com/simonhmartin/twisst.git
-
-* The Python scripts of the TWISST repository also expect the dataset to be in genotype format rather than VCF format. Therefore, convert the phased and masked VCF file into genotype format with the following command.
-
-		python genomics_general/VCF_processing/parseVCF.py -i NC_031969.f5.sub1.phased.masked.vcf.gz | gzip > NC_031969.f5.sub1.phased.masked.geno.gz
+		altfas
+		neocan
+		neochi
+		neowal
+		telvit
+		neosav
+		neocra
+		neomar
+		neogra
+		neohel
+		neobri
+		neooli
+		neopul
 		
-* Next, we'll reduce the genotype-format file to include only samples of four species that we'll use in this round of topology weighting. Based on the results of the ABBA-BABA tests done in the first part of the tutorial, we'll use the four species *Altolamprologus fasciatus* ("altfas"), *Neolamprologus cancellatus* ("neocan") , *Telmatochromis vittatus* ("telvit"), and *Astatotilapia burtoni* ("astbur") in the first analysis. From the table in the [Dataset](#dataset) section, you'll see that the sample IDs for these four species are "IZA1", "IZC5", "AUE7", "AXD5", "JBD5", "JBD6", "LJC9", and "LJD1". To reduce the genotype file to these eight samples, we can use the script `filterGenotypes.py` from the "genomics_general" repository with the following command:
+	(note that even though the outgroup "astbur" is included in the tree file, we here exclude it because it was never placed in the positions of P2 or P3 in the Dsuite analyses).
 
-		python genomics_general/filterGenotypes.py -s IZA1,IZC5,AUE7,AXD5,JBD5,JBD6,LJC9,LJD1 -i NC_031969.f5.sub1.phased.masked.geno.gz | grep -v "N|N" > pops1.geno
+* To plot the heatmap, use the Ruby script [`plot_d.rb`](src/plot_d.rb), specifying one of Dsuite's output files, file [`species_order.txt`](res/species_order.txt), the maximum *D* value to plot, and the name of an output file as command-line options. Start the script with the [`samples__Dmin.txt`](res/samples__Dmin.txt) file as input and a maximum *D* of 0.7, and name the output `samples__Dmin.svg`:
 
-	In the above command, the output of the script `filterGenotypes.py` is passed to the program grep which excludes lines containing "N|N", meaning that we remove all genotypes that have any missing data. The reduced dataset is stored in a new file named `pops1.geno`.
-
-* We are now going to generate local phylogenies based on the SNP data in the filtered file `pops1.geno`. To do so, we are going to use another script from the "genomics_general" repository, the script `raxml_sliding_windows.py` that internally is going to run the software RAxML. If you already followed tutorial [Maximum-Likelihood Phylogenetic Inference](../ml_phylogeny_inference/README.md), you will already be familiar with RAxML; if not, you'll find more information on RAxML in that other tutorial. To run RAxML for each window of 100 SNPs, use the following command:
-
-		python genomics_general/phylo/raxml_sliding_windows.py -T 1 -g pops1.geno --outgroup IZA1,IZC5 -w 100 --windType sites -f phased --prefix pops1.raxml 
+		ruby plot_d.rb samples__Dmin.txt species_order.txt 0.7 samples__Dmin.svg
 		
-	In the above command, option `-T 1` specifies that a single CPU should be used, the name of the input file `pops1.geno` is specified with `-g` and the two samples of *Astatotilapia burtoni* ("astbur"), "IZA1" and "IZC5" are both used as outgroups to root the RAxML phylogenies. The size of each window is set to 100 with `-w 100` and option `--windType sites` specifies that the size should be measured in number of SNPs, not in chromosomal coordinates. By setting `-f phased`, two sequences per sample will be used in the RAxML analyses, according to the phasing information included in the input file. Two output files are going to be written by script `raxml_sliding_windows.py`, one containing the trees inferred by RAxML for all windows, and one with additional information for each window. Both of these files will be named with the prefix `pops1.raxml` specified with option `--prefix`.
-	
-* To see all available options for script `raxml_sliding_windows.py`, you could use the following command:
+* The heatmap plot in file `samples__Dmin.svg` is written scalable vector graphic (SVG) format. Open this file with a program capable of reading files in SVG format, for example with a browser such as Firefox or with Adobe Illustrator. The heatmap plot should look as shown below:<p align="center"><img src="img/samples__Dmin.png" alt="Heatmap Dmin" width="600"></p> As you can see from the color legend in the bottom right corner, the colors of this heatmap show two things at the same time, the *D*-statistic as well as its *p*-value. So red colors indicate higher *D*-statistics, and generally more saturated colors indicate greater significance. Thus, the strongest signals for introgression are shown with saturated red, as in the bottom right of the color legend. While none of the cells in this plot actually have that color, almost all cells in rows or columns for "neocan" have a red-purple color corresponding to a highly significant *D*-statistic around 0.3.
 
-		python genomics_general/phylo/raxml_sliding_windows.py -h
-	
-* Have a look at the content of the two files written by script `raxml_sliding_windows.py`, `pops1.raxml.data.tsv` and  `pops1.raxml.trees.gz`. To view `pops1.raxml.data.tsv`, use for example the following command:
-
-		less pops1.raxml.data.tsv
+	In case that you're wondering why the heatmap looks symmetric, that is because no matter whether the maximum *D*-statistic for two species is obtained with the first species in position P2 and the second in position P3 or vice versa, the same value is plotted. The reason for this is that even though different *D*-statistics may result in the two cases, those differences should not be taken as evidence for a directionality of introgression from P3 to P2; it could just as well have come from P2 and into P3.
 		
-	You'll see that the file contains the coordinates and sizes of all windows, which will later be required for plotting the topology weights.
+* Before further interpreting the patterns of introgression shown in the heatmap, we'll also produce heatmap plots for the other two of Dsuite's output files, [`samples__BBAA.txt`](res/samples__BBAA.txt) and [`samples__tree.txt`](res/samples__tree.txt):
+
+		ruby plot_d.rb samples__BBAA.txt species_order.txt 0.7 samples__BBAA.svg
+		ruby plot_d.rb samples__tree.txt species_order.txt 0.7 samples__tree.svg
+
+	The two heatmaps should look as shown below (`samples__BBAA.svg` at top, `samples__tree.svg` below):<p align="center"><img src="img/samples__BBAA.png" alt="Heatmap BBAA" width="600"></p><p align="center"><img src="img/samples__tree.png" alt="Heatmap tree" width="600"></p> As you can see, both of the above heatmaps are overall a bit more saturated than the first heatmap based on *D*<sub>min</sub>, in agreement with the interpretation of *D*<sub>min</sub> as a conservative estimate of introgression. The strongest difference, however, is in the patterns shown for *Telmatochromis vittatus* ("telvit"). The most saturated red colors in the latter two plots are those for the cells connecting "neocan" and "telvit", which in contrast is only light blue in the first plot based on *D*<sub>min</sub>. These plots therefore support the hypothesis that introgression occurred between *Neolamprologus cancellatus* ("neocan") and *Telmatochromis vittatus* ("telvit"). However, the other red-purple cells in the rows and columns for "neocan" and "telvit" may only be side-effects of this introgression. In the last heatmap from file `samples__tree.svg`, for example, the red-purple cells could be caused by sites that are shared between *Neolamprologus cancellatus* ("neocan") and other species only because these other species are closely related to *Telmatochromis vittatus* ("telvit"), the putative donor of introgression.
 	
-* To view the content of file `pops1.raxml.trees.gz`, you could use this command:
+	In addition, there seems to be some support for introgression among the species of the genus *Neolamprologus*, such as between *N. crassus* and *N. brichardi* or between *N. brichardi* and *N. pulcher*.
 
-		zless pops1.raxml.trees.gz
-		
-	As you'll see, this file includes a single line in Newick format for each phylogeny. The number of trees in this file corresponds to the number of lines in file `pops1.raxml.data.tsv`, and trees are associated with the information in `pops1.raxml.data.tsv` through the order in which they are listed.
-		
-* You may also have noticed that in the trees in file `pops1.raxml.trees.gz` include the suffixes "\_A" and "\_B" for the IDs of all samples, as in the line below:
-
-		(((LJC9_A:0.00190438016407797994,((((AUE7_A:0.00000100000050002909,AXD5_A:0.03231334347982185023):0.02383254744690812416,LJD1_B:0.05895942722291461213):0.00903099686025816452,AXD5_B:0.00000100000050002909):0.00891262251954079952,AUE7_B:0.02378813162347421725):0.05700261225925781078):0.02574091080632853745,((LJC9_B:0.02677153716946910691,(((JBD5_B:0.01056079593024307310,JBD6_B:0.00000100000050002909):0.01042694299983100079,JBD5_A:0.00000100000050002909):0.02898836872749474200,JBD6_A:0.06564634167022023736):0.03462759024375731270):0.06606318957984576301,LJD1_A:0.00000100000050002909):0.05164182986452980212):0.33888045448192449793,(IZC5_B:0.00000100000050002909,(IZA1_A:0.00000100000050002909,(IZC5_A:0.06242344794840647138,IZA1_B:0.00960693103037006321):0.04152690280475764689):0.00981537319474862918):0.33888045448192449793);
-
-	This is because each sample is now represented by two sequences corresponding to the two haplotypes inferred by BEAGLE. To assign these sequences to species for the TWISST analysis, we will therefore need a new file assigning the sequence IDs used in `pops1.raxml.trees.gz` to species. Because the RAxML trees include only sequences of four species it would be sufficient to list only the same four species in the new file assigning sequences to species. But because we will rerun the analysis later with a different set of species, we might as well include all species in this file so that it can be reused later. Thus, write the following text to a new file named `sequences.txt`:
-
-		IZA1_A	astbur
-		IZA1_B	astbur
-		IZC5_A	astbur
-		IZC5_B	astbur
-		AUE7_A	altfas
-		AUE7_B	altfas
-		AXD5_A	altfas
-		AXD5_B	altfas
-		JBD5_A	telvit
-		JBD5_B	telvit
-		JBD6_A	telvit
-		JBD6_B	telvit
-		JUH9_A	neobri
-		JUH9_B	neobri
-		JUI1_A	neobri
-		JUI1_B	neobri
-		LJC9_A	neocan
-		LJC9_B	neocan
-		LJD1_A	neocan
-		LJD1_B	neocan
-		KHA7_A	neochi
-		KHA7_B	neochi
-		KHA9_A	neochi
-		KHA9_B	neochi
-		IVE8_A	neocra
-		IVE8_B	neocra
-		IVF1_A	neocra
-		IVF1_B	neocra
-		JWH1_A	neogra
-		JWH1_B	neogra
-		JWH2_A	neogra
-		JWH2_B	neogra
-		JWG8_A	neohel
-		JWG8_B	neohel
-		JWG9_A	neohel
-		JWG9_B	neohel
-		JWH3_A	neomar
-		JWH3_B	neomar
-		JWH4_A	neomar
-		JWH4_B	neomar
-		JWH5_A	neooli
-		JWH5_B	neooli
-		JWH6_A	neooli
-		JWH6_B	neooli
-		ISA6_A	neopul
-		ISA6_B	neopul
-		ISB3_A	neopul
-		ISB3_B	neopul
-		ISA8_A	neosav
-		ISA8_B	neosav
-		IYA4_A	neosav
-		IYA4_B	neosav
-		KFD2_A	neowal
-		KFD2_B	neowal
-		KFD4_A	neowal
-		KFD4_B	neowal
-
-* With the set of trees in file `pops1.raxml.trees.gz` and the assignment of sequence IDs to species in `sequences.txt`, we are then ready to calculate topology weights for each window. This is done with the script `twisst.py` from the downloaded TWISST repository, which you can execute using the following command:
-
-		python twisst/twisst.py -t pops1.raxml.trees.gz -w pops1.weights.csv.gz -g ${spc1} -g ${spc2} -g ${spc3} -g ${spc4} --groupsFile sequences.txt --method complete
-
-	In the above command, the input tree file is specified with option `-t` and the name of the output file is set to `pops1.weights.csv.gz` with option `-w`. The species that should be used in the analysis are specified individually with the `-g` option and the file assigning sequence IDs to these species is specified with option `--groupsFile`. By setting `--method complete`, we specify that the trees should be pruned to single sequences per species in all possible combinations of these sequences.
-	
-	Note that at the very beginning of the screen output of `twisst.py`, the script plotted three tree topologies as shown below:
-	
-		   /-astbur             /-astbur             /-astbur      
-		  |                    |                  --|              
-		--|      /-altfas    --|      /-altfas      |   /-altfas   
-		  |   /-|              |   /-|               \-|           
-		   \-|   \-neocan       \-|   \-telvit         |   /-neocan
-		     |                    |                     \-|        
-		      \-telvit             \-neocan                \-telvit
-
-	The order of these tree topologies should be kept in mind for when we later interpret the plots of topology weights.
-
-* As before, you could use option `-h` to look up all available options of script `twisst.py`.
-
-* Finally, we can plot the topology weights inferred by script `twisst.py` against the chromosomal window coordinates. To do so, we can use the R script [`plot_twisst_per_lg.r`](src/plot_twisst_per_lg.r), which is not part of the TWISST repository but internally also uses script `plot_twisst.R` from this repository. Script `plot_twisst_per_lg.r` expects six arguments; these are 
-	* the name of the file with topology weights, `pops1.weights.csv.gz`, inferred by script `twisst.py`,
-	* the name of the file with window coordinates, `pops1.raxml.data.tsv`, written by script `raxml_sliding_windows.py`,
-	* the name of the chromosome (all windows are expected to be from the same chromosome),
-	* the length of the chromosome,
-	* the name of a first output file, `pops1.rect.pdf`, in which exact topology weights will be drawn in the form of a barplot.
-	* the name of a second output file, `pops1.smooth.pdf`, in which topology weights will be drawn after applying a smoothing function.
-	
-	Thus, run script `plot_twisst_per_lg.r` with the following command:
-
-		Rscript plot_twisst_per_lg.r pops1.weights.csv.gz pops1.raxml.data.tsv NC_031969 38038224 pops1.rect.pdf pops1.smooth.pdf
-
-* Open file `pops1.rect.pdf` in a PDF viewer. You should see results very similar to the plot shown below.<p align="center"><img src="img/pops1.rect.png" alt="TWISST" width="600"></p>
-
-	To interpret the above plot, refer to the three topologies from the screen output of script `twisst.py`. In the first of these three topologies, *Altolamprologus fasciatus* ("altfas") and *Neolamprologus cancellatus* ("neocan") were sister species, in the second topology, *Altolamprologus fasciatus* ("altfas") appeared as the sister to *Telmatochromis vittatus* ("telvit"), and in the third, *Neolamprologus cancellatus* ("neocan") grouped with *Telmatochromis vittatus* ("telvit"). The three topologies correspond to the colors in the plot, from the bottom to the top. The weight of the topology grouping <font color="#2aa198">*Altolamprologus fasciatus* ("altfas") and *Neolamprologus cancellatus* ("neocan")</font> is therefore shown in green, the weight of the topology grouping <font color="#d33682">*Altolamprologus fasciatus* ("altfas") and *Telmatochromis vittatus* ("telvit")</font> is shown in pink, and the weight of the topology combining <font color="#b58900">*Neolamprologus cancellatus* ("neocan") and *Telmatochromis vittatus* ("telvit")</font> is shown in yellowish brown.
-	
-	As you can see from the plot above, the weights of the two topologies placing <font color="#2aa198">*Neolamprologus cancellatus* ("neocan") next to *Altolamprologus fasciatus* ("altfas")</font> or <font color="#b58900">next to *Telmatochromis vittatus* ("telvit")</font> are clearly dominant over the <font color="#d33682">second topology</font>, with approximately equal weights for both the <font color="#2aa198">first</font> and the <font color="#b58900">third</font> throughout the chromosome. A closer inspection also shows that the <font color="#2aa198">first topology</font> receives slightly more weight overall than the <font color="#b58900">third topology</font>.
-
-* Next open the second plot generated by script `plot_twisst_per_lg.r`, which was written to file `pops1.smooth.pdf`. This plot should look similar to the one shown below.<p align="center"><img src="img/pops1.smooth.png" alt="TWISST" width="600"></p>
-
-	Overall, this plot agrees with our interpretation of the first plot, but it shows a bit clearer that the <font color="#2aa198">first topology</font> receives more weight in total than the <font color="#b58900">third topology</font>.
-
-	**Question 4:** How do these TWISST results compare to the results of the ABBA-BABA test in section [Assessing introgression with D-statistics](#dstatistics)? [(see answer)](#q4)
-
-* Repeat the same TWISST analysis with a different window size, for example with a window of 25 sites or 400 sites instead of the 100 sites used in the above analysis. Thus, repeat the above steps with the scripts `raxml_sliding_windows.py`, `twisst.py`, and `plot_twisst_per_lg.r`. In the command for the first of these scripts, replace "100" in `-w 100` with the new window size. The commands for the latter two scripts do not need be changed.
-
-	**Question 5:** Which changes do you notice with smaller or larger window sizes? [(see answer)](#q5)
-
-* Also repeat the TWISST analyses with other sets of four species (but keep *Astatotilapia burtoni*, "astbur", as the outgroup) to see if localized introgression can be detected in those species. To repeat TWISST analyses with other species, you'll need to rerun the scripts `filterGenotypes.py`, `raxml_sliding_windows.py`, `twisst.py`, and `plot_twisst_per_lg.r`. In the commands used in the new analyses, replace "pops1" with "pops2", "pops3", etc. to avoid overwriting the result files from the first analysis.
+<!--XXX Continue here-->
 
 <a name="painting"></a>
 ## Ancestry painting
@@ -548,7 +449,45 @@ With the above analyses, we have found strong support for the hypothesis that *N
 
 <a name="q1"></a>
 
-* **Question 1:** The highest <i>D</i>-statistic should be observed with *Altolamprologus fasciatus* ("altfas") in the position of "spc1". This species in fact appears to share more genetic variation with *Neolamprologus cancellatus* ("neocan") than any other species, the number of "BBAA" sites at which *Neolamprologus cancellatus* ("neocan") and *Altolamprologus fasciatus* ("altfas") share the derived allele, is over 13,300, compared to around 7,500 sites at which *Neolamprologus cancellatus* ("neocan") and *Telmatochromis vittatus* ("telvit") share the derived allele. The <i>D</i>-statistic of 0.78 is extremely high, and correspondingly, the p-value for the hypothesis that introgression is absent is exactly 0, meaning that this hypothesis can be safely rejected. Notably, the <i>f</i><sub>d</sub>-statistic which estimates the proportion of the genome that is admixed is around 0.47 and thus close to 50%.
+* **Question 1:** In fact, integer counts of ABBA and BABA sites would only be expected if each species would be represented only by a single haploid sequence. With diploid sequences and multiple samples per species, allele frequences are taken into account to weigh the counts of ABBA and BABA sites as described by equation 1 of Malinsky [(2019](https://www.biorxiv.org/content/10.1101/634477v1)).
+
+
+<a name="q2"></a>
+
+* **Question 2:** Because each trio is listed on a single row, the number of trios in file [`samples__combine.txt`](res/samples__combine.txt) is identical to the number of lines in this file. This number can easily be counted using, e.g. the following command:
+
+		cat samples__combine.txt | wc -l
+		
+	You should see that the file includes 286 lines and therefore results for 286 trios. Given that the dataset includes (except the outgroup species) 13 species and 3 of these are required to form a trio, the number of possible trios is 
+	
+	[13 choose 3](https://en.wikipedia.org/wiki/Binomial_coefficient) = 13! / (3! &times; 10!) = 6227020800 / (6 &times; 3628800) = 286.
+	
+	(where ! denotes the [factorial function](https://en.wikipedia.org/wiki/Factorial))
+	
+	Thus, all possible trios seem to be included in file [`samples__combine.txt`](res/samples__combine.txt).
+	
+
+<a name="q3"></a>
+
+* **Question 3:** *D*-statistics that could be obtained with alternative rearrangements of the trio "altfas", "neocan", and "neobri" are the following:
+	
+	*D* = (13479.6 - 1378.2) / (13479.6 + 1378.2) = 0.814481
+	*D* = (13479.6 - 4066.95) / (13479.6 + 4066.95) = 0.536438
+	
+	Without violating the convention that *C*<sub>ABBA</sub> > *C*<sub>BABA</sub>, ensuring that *D* is positive, no other *D* statistics can be obtained for this trio. Thus, the reported *D*-statistic of 0.493787, even though it is extremely high, is in fact the lowest *D*-statistic possible for this trio.
+	
+
+<a name="q4"></a>
+
+* **Question 4:** Comparing the two files [`samples__BBAA.txt`](res/samples__BBAA.txt) and [`samples__tree.txt`](res/samples__tree.txt), for example using the command `diff samples__BBAA.txt samples__tree.txt` shows some differences. For example, the trio "neobri", "neocan", and "telvit" is arranged so that "neocan" and "telvit" are in the positions of P1 and P2 in [`samples__BBAA.txt`](res/samples__BBAA.txt), but "neobri" and "telvit" are in the same positions in [`samples__tree.txt`](res/samples__tree.txt). Such disagreement can arise when sister species do not share the largest number of derived sites with each other, for example as a result of introgression, ancestral population structure, or variation in substitution rates.
+
+
+
+	
+
+XXX
+
+* **Question 1:** The highest *D*-statistic should be observed with *Altolamprologus fasciatus* ("altfas") in the position of "spc1". This species in fact appears to share more genetic variation with *Neolamprologus cancellatus* ("neocan") than any other species, the number of "BBAA" sites at which *Neolamprologus cancellatus* ("neocan") and *Altolamprologus fasciatus* ("altfas") share the derived allele, is over 13,300, compared to around 7,500 sites at which *Neolamprologus cancellatus* ("neocan") and *Telmatochromis vittatus* ("telvit") share the derived allele. The *D*-statistic of 0.78 is extremely high, and correspondingly, the p-value for the hypothesis that introgression is absent is exactly 0, meaning that this hypothesis can be safely rejected. Notably, the <i>f</i><sub>d</sub>-statistic which estimates the proportion of the genome that is admixed is around 0.47 and thus close to 50%.
 
 
 <a name="q2"></a>

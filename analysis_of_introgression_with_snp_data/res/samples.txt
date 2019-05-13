@@ -1,5 +1,5 @@
-IZA1	astbur
-IZC5	astbur
+IZA1	Outgroup
+IZC5	Outgroup
 AUE7	altfas
 AXD5	altfas
 JBD5	telvit
