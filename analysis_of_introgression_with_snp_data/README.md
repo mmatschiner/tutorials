@@ -13,15 +13,14 @@ A number of approaches for the analysis of introgression based on SNP data have 
 * [Dataset](#dataset)
 * [Requirements](#requirements)
 * [Identifying introgression with D-statistics](#dsuite)
-<!--* XXX-->
 * [Ancestry painting](#painting)
-<!--* [Inferring genome-wide genealogies](#relate)-->
+<!--* [XXX Inferring genome-wide genealogies](#relate)-->
 
 
 <a name="outline"></a>
 ## Outline
 
-In this tutorial I am going to present the application of three different methods for the analysis of introgression with SNP data: *D*-statistics, ancestry painting, and XXX.
+In this tutorial I am going to present the application of *D*-statistics to identify introgression based on SNP data. Cases of introgression will be further investigated with sliding-window analyses, and ancestry painting will be used to  verify putatitve cases of hybridization.
 
 
 <a name="dataset"></a>
@@ -351,152 +350,95 @@ So far we only calculated *D*-statistics across the entire chromosome 5 (the onl
 
 		echo -e "altfas\tneocan\ttelvit" > test_trios.txt
 		
-* As both the window size and the increment for the window, we'll use 500 SNPs. To start sliding-window analyses with these settings, execute the following command:
+* We'll use a window size of 2,500 SNPs, incremented by 500 SNPs per iteration. To start sliding-window analyses with these settings, execute the following command:
 
-		Dsuite Dinvestigate -w 500,500 NC_031969.f5.sub1.vcf.gz samples.txt test_trios.txt 
+		Dsuite Dinvestigate -w 2500,500 NC_031969.f5.sub1.vcf.gz samples.txt test_trios.txt 
 		
-	This analysis should again take only a few minutes. Dsuite should then have written a file named `altfas_neocan_telvit_localFstats_500,500_500_500.txt`.
+	This analysis should again take only a few minutes. Dsuite should then have written a file named `altfas_neocan_telvit_localFstats__2500_500.txt`.
 	
-* Have a look at file [`altfas_neocan_telvit_localFstats_500,500_500_500.txt`](res/altfas_neocan_telvit_localFstats_500,500_500_500.txt), for example using the `less` command:
+* Have a look at file [`altfas_neocan_telvit_localFstats__2500_500.txt`](res/altfas_neocan_telvit_localFstats__2500_500.txt), for example using the `less` command:
 
-		less altfas_neocan_telvit_localFstats_500,500_500_500.txt
+		less altfas_neocan_telvit_localFstats__2500_500.txt
 		
-	The rows in this file correspond to individual chromosomal windows, and the  six columns included in the file contain information on the chromosome ID in the first column and the central position of each window in the third column. This is followed by three numbers on each line, which represent the *D*-statistic calculated for the window in the fourth column, and two further statistics aiming to quantify the proportions of the window affected by introgression. The two statistics are the *f*<sub>d</sub> statistic of [Martin et al. (2015)](https://academic.oup.com/mbe/article/32/1/244/2925550) and the related *f*<sub>dM</sub> statistic introduced by [Malinsky et al. (2015)](https://science.sciencemag.org/content/350/6267/1493).
+	The rows in this file correspond to individual chromosomal windows, and the  six columns included in the file contain information on the chromosome ID and the start and end positions of each window. This is followed by three numbers on each line, which represent the *D*-statistic calculated for the window in the fourth column, and two further statistics aiming to quantify the proportions of the window affected by introgression. The two statistics are the *f*<sub>d</sub> statistic of [Martin et al. (2015)](https://academic.oup.com/mbe/article/32/1/244/2925550) and the related *f*<sub>dM</sub> statistic introduced by [Malinsky et al. (2015)](https://science.sciencemag.org/content/350/6267/1493).
 	
 * Find out into how many windows chromosome 5 was divided, using the following command:
 
-		cat altfas_neocan_telvit_localFstats_500,500_500_500.txt | tail -n +2 | wc -l
+		cat altfas_neocan_telvit_localFstats__2500_500.txt | tail -n +2 | wc -l
 		
-	This should show that 513 windows were used in Dsuite's Dinvestigate analysis. If this number would be much higher or lower, the information density could be adjusted by specifying a larger or smaller window size with `-w`.
+	This should show that 509 windows were used in Dsuite's Dinvestigate analysis. If this number would be much higher or lower, the information density could be adjusted by specifying a larger or smaller window size with `-w`.
 	
-* Before plotting sliding-window statistics, we need to remove the first line, which is not really a header line but contains information on the trio, from the output file. This can be done with the following command that writes the content without the first line to a new file named `altfas_neocan_telvit_localFstats.clean.txt`:
-
-		cat altfas_neocan_telvit_localFstats_500,500_500_500.txt | tail -n +2 > altfas_neocan_telvit_localFstats.clean.txt
-
 * Using the R environment, plot the *D* and *f*<sub>d</sub> statistics across chromosome 5, using the following commands:
 
-		table <- read.table("altfas_neocan_telvit_localFstats.clean.txt")
-		plot(table$V3, table$V4, type="l", xlab="Position", ylab="D (black)/fD (gray)", ylim=c(0,1), main="Chromosome 5 (altfas, neocan, telvit)")
-		lines(table$V3, table$V5, col="gray")
+		table <- read.table("altfas_neocan_telvit_localFstats__2500_500.txt", header=T)
+		windowCenter=(table$windowStart+table$windowEnd)/2
+		plot(windowCenter, table$D, type="l", xlab="Position", ylab="D (gray) / fD (black)", ylim=c(0,1), main="Chromosome 5 (altfas, neocan, telvit)", col="gray")
+		lines(windowCenter, table$f_d)
 
-	This should produce the following plot, showing that the *D*-statistic (in black) is always substantially higher than the *f*<sub>d</sub>-statistic (in gray), and that the *f*<sub>d</sub>-statistic, which estimates admixture proportion is consistently around 0.5:<p align="center"><img src="img/trio1.png" alt="Dinvestigate" width="600"></p>
+	This should produce the following plot, showing that the *D*-statistic (in gray) is almost in all windows substantially higher than the *f*<sub>d</sub>-statistic (in black), and that the *f*<sub>d</sub>-statistic, which estimates admixture proportion is mostly close 0.5:<p align="center"><img src="img/trio1.png" alt="Dinvestigate" width="600"></p> There also appears to be a dip in both statistics at around 5 Mbp; however, whether this is an artifact resulting from e.g. missing data or misassembly in the reference genome, or whether it shows a biological signal of reduced introgression is difficult to tell without further analyses.
 
 * Repeat the same for a second trio that appeared to show signals of introgression, composed of *Neolamprologus olivaceous* ("neooli"), *N. pulcher* ("neopul), and *N. brichardi* ("neobri"). To do so, use these commands on the command line:
 
 		echo -e "neooli\tneopul\tneobri" > test_trios.txt
-		Dsuite Dinvestigate -w 500,500 NC_031969.f5.sub1.vcf.gz samples.txt test_trios.txt
-		cat neooli_neopul_neobri_localFstats_500,500_500_500.txt | tail -n +2 > neooli_neopul_neobri_localFstats.clean.txt
+		Dsuite Dinvestigate -w 2500,500 NC_031969.f5.sub1.vcf.gz samples.txt test_trios.txt
 
-* To produce the same plots as before now for the trio of "neooli", "neopul", and "neobri", use again the R environment and in it the following commands:
+* To produce the same plots as before now for the trio of "neooli", "neopul", and "neobri", use again the R environment and enter the following commands:
 
-		table <- read.table("neooli_neopul_neobri_localFstats.clean.txt")
-		plot(table$V3, table$V4, type="l", xlab="Position", ylab="D (black) / fD (gray)", ylim=c(0,1), main="Chromosome 5 (neooli, neopul, neobri)")
-		lines(table$V3, table$V5, col="gray")
+		table <- read.table("neooli_neopul_neobri_localFstats__2500_500.txt", header=T)
+		windowCenter=(table$windowStart+table$windowEnd)/2
+		plot(windowCenter, table$D, type="l", xlab="Position", ylab="D (gray) / fD (black)", ylim=c(0,1), main="Chromosome 5 (neooli, neopul, neobri)", col="gray")
+		lines(windowCenter, table$f_d)
 		
 	This should produce the plot shown below:<p align="center"><img src="img/trio2.png" alt="Dinvestigate" width="600"></p>
 
-	As you can see, the *D*-statistic (in black) is now consistently close to 0.2 and the *f*<sub>d</sub>-statistic (in gray) is again slightly lower. Notably, the same peak-trough pattern is shown near the beginning of the chromosome, which indicates that the peak is not caused by an introgressed locus, but rather by some other characteristic shared between the two trios, such as perhaps a high proportion of missing data in this region. Besides this peak-trough pattern, the two statistics appear rather stable over the chromosome, indicating that either the individuals are F1 hybrids (in this case, an admixture proportion consistently around 0.5 would be expected, as observed for *Neolamprologus cancellatus*), or introgression is rather ancient, so that recombination had time to split introgressed blocks to the point that these are no longer recognized as such. The latter might be the case for the trio of *N. olivaceus*, *N. pulcher*, and *N. brichardi*.
+	As you can see, the *D*-statistic (in black) now shows more variation and even becomes negative in several windows, indicating that in these windows, *neooli* shares more similarity with *neobri* than *neopul*. Overall, both statistics are lower than for the first trio. Notably, the dip at around 5 Mbp that was apparent in both statistics for the first trio is again visible. As it appears improbable that the same region has more introgression in both species trios, this may indicate that the dip is in fact caused by technical artifacts rather than biological processes. To further investigate whether any of the peaks or troughs in this plot result from actual changes in the introgression proportion, it might be necessary to compare the *D* and *f*<sub>d</sub>-statistics to measures of between-species differentiation (*F*<sub>ST</sub>) and divergence (*d*<sub>XY</sub>) ([The Heliconius Genome Consortium 2012](https://www.nature.com/articles/nature11041)). The reliability of these patterns could also be tested by repeating the analysis after mapping to an alternative, if possible more closely related, reference genome. Such in-depth analyses of introgressed loci based on genome scans are covered, for example, in the [Physalia Speciation Genomics workshop](https://www.physalia-courses.org/courses-workshops/course37/curriculum-37/) run by Mark Ravinet and Joana Meier.
 
 
 <a name="painting"></a>
 ## Ancestry painting
 
-A very simple alternative way of investigating patterns of ancestry in potential hybrid species is to "paint" their chromosomes according to the genotypes carried at sites that are fixed between the presumed parental species. This type of plot, termed "ancestry painting" was used for example by [Fu et al. (2015; Fig. 2)](https://www.nature.com/articles/nature14558) to find blocks of Neanderthal ancestry in an ancient human genome, by [Der Sarkassian et al. (2015; Fig. 4)](https://www.cell.com/current-biology/abstract/S0960-9822(15)01003-9) to investigate the ancestry of Przewalski's horses, by [Runemark et al. (2018; Suppl. Fig. 4)](https://www.nature.com/articles/s41559-017-0437-7) to assess hybridization in sparrows, and by [Barth et al. (2019)](https://www.biorxiv.org/content/10.1101/635631v1) to identify hybrids in tropical eels.
+A very simple alternative way of investigating patterns of ancestry in potentially introgressed or hybrid species is to "paint" their chromosomes according to the genotypes carried at sites that are fixed between the presumed parental species. This type of plot, termed "ancestry painting" was used for example by [Fu et al. (2015; Fig. 2)](https://www.nature.com/articles/nature14558) to find blocks of Neanderthal ancestry in an ancient human genome, by [Der Sarkassian et al. (2015; Fig. 4)](https://www.cell.com/current-biology/abstract/S0960-9822(15)01003-9) to investigate the ancestry of Przewalski's horses, by [Runemark et al. (2018; Suppl. Fig. 4)](https://www.nature.com/articles/s41559-017-0437-7) to assess hybridization in sparrows, and by [Barth et al. (2019; Fig. 2)](https://www.biorxiv.org/content/10.1101/635631v1) to identify hybrids in tropical eels.
 
-* If you're not familiar with the above-named studies, you might want to have a look at the ancestry-painting plots of these studies. You may note that the ancestry painting in [Fu et al. (2015; Fig. 2)](https://www.nature.com/articles/nature14558) is slightly different from the other two studies because no discrimination is made between heterozygous and homozygous Neanderthal alleles. Each sample in Fig. 2 of [Fu et al. (2015)](https://www.nature.com/articles/nature14558) is represented by a single row of cells that are white or colored depending on whether or not the Neanderthal allele is present at a site. In contrast, each sample in the ancestry paintings of [Der Sarkassian et al. (2015; Fig. 4)](https://www.cell.com/current-biology/abstract/S0960-9822(15)01003-9) and [Runemark et al. (2018; Suppl. Fig. 4)](https://www.nature.com/articles/s41559-017-0437-7) is drawn with two rows of cells. However, as the analyses in both studies were done with unphased data, these two rows do not represent the two haplotypes per sample. Instead, the two cells per site were simply both colored in the same way for homozygous sites or differently for heterozygous sites without regard to haplotype structure.
+* If you haven't seen any of the above-named studies, you might want to have a look at the ancestry-painting plots in some of them. You may note that the ancestry painting in [Fu et al. (2015; Fig. 2)](https://www.nature.com/articles/nature14558) is slightly different from the other two studies because no discrimination is made between heterozygous and homozygous Neanderthal alleles. Each sample in Fig. 2 of [Fu et al. (2015)](https://www.nature.com/articles/nature14558) is represented by a single row of cells that are white or colored depending on whether or not the Neanderthal allele is present at a site. In contrast, each sample in the ancestry paintings of [Der Sarkassian et al. (2015; Fig. 4)](https://www.cell.com/current-biology/abstract/S0960-9822(15)01003-9), [Runemark et al. (2018; Suppl. Fig. 4)](https://www.nature.com/articles/s41559-017-0437-7), and [Barth et al. (2019; Fig. 2)](https://www.biorxiv.org/content/10.1101/635631v1) is drawn with two rows of cells. However, as the analyses in both studies were done with unphased data, these two rows do not represent the two haplotypes per sample. Instead, the two cells per site were simply both colored in the same way for homozygous sites or differently for heterozygous sites without regard to haplotype structure.
 
-	Here, we are going to use ancestry painting to investigate ancestry in *Neolamprologus cancellatus* ("neocan"), assuming that it is a hybrid between the parental species *Altolamprologus fasciatus* ("altfas") and *Telmatochromis vittatus* ("telvit"). As in [Der Sarkassian et al. (2015; Fig. 4)](https://www.cell.com/current-biology/abstract/S0960-9822(15)01003-9) and [Runemark et al. (2018; Suppl. Fig. 4)](https://www.nature.com/articles/s41559-017-0437-7), we are going to draw two rows per sample, but because we now have phased SNP data, we can actually take the inferred haplotype structure into account.
+	Here, we are going to use ancestry painting to investigate ancestry in *Neolamprologus cancellatus* ("neocan"), assuming that it is a hybrid between the parental species *Altolamprologus fasciatus* ("altfas") and *Telmatochromis vittatus* ("telvit"). As in [Der Sarkassian et al. (2015; Fig. 4)](https://www.cell.com/current-biology/abstract/S0960-9822(15)01003-9), [Runemark et al. (2018; Suppl. Fig. 4)](https://www.nature.com/articles/s41559-017-0437-7), and [Barth et al. (2019; Fig. 2)](https://www.biorxiv.org/content/10.1101/635631v1), we are going to draw two rows per sample to indicate whether genotypes are homozygous or heterozygous.
 
 * To generate an ancestry painting, we will need to run two Ruby scripts. The first of these, [`get_fixed_site_gts.rb`](src/get_fixed_site_gts.rb) determines the alleles of the putative hybrid species at sites that are fixed differently in the two putative parental species. The second script, [`plot_fixed_site_gts.rb`](src/plot_fixed_site_gts.rb) then uses the output of the first script to draw an ancestry painting. As the first script requires an uncompressed VCF file as input, first uncompress the VCF file for the SNP dataset with the following command:
 
-		gunzip -c NC_031969.f5.sub1.phased.masked.vcf.gz > NC_031969.f5.sub1.phased.masked.vcf
+		gunzip -c NC_031969.f5.sub1.vcf.gz > NC_031969.f5.sub1.vcf
 
 * Then, run the Ruby script [`get_fixed_site_gts.rb`](src/get_fixed_site_gts.rb) to determine the alleles at sites that are fixed differently in the two parents. This script expects six arguments; these are
-	* the name of the uncompressed VCF input file, `NC_031969.f5.sub1.phased.masked.vcf`,
+	* the name of the uncompressed VCF input file, `NC_031969.f5.sub1.vcf`,
 	* the name of an output file, which will be a tab-delimited table,
 	* a string of comma-separated IDs of samples for the first putative parent species,
 	* a string of comma-separated IDs of samples for the putative hybrid species,
 	* another string of comma-separated IDs of samples for the second putative parent species,
 	* a threshold value for the required completeness of parental genotype information so that sites with too much missing data are discarded.
 
-	We'll use `NC_031969.f5.sub1.phased.masked.vcf` as the input and name the output file `pops1.fixed.txt`. Assuming that the parental species are *Altolamprologus fasciatus* ("altfas") and *Telmatochromis vittatus* ("telvit") and the hybrid species is *Neolamprologus cancellatus* ("neocan"), we'll specify the sample IDs for these species with the strings "AUE7,AXD5", "JBD5,JBD6", and "LJC9,LJD1". Finally, we'll filter for sites without missing data by specifying "1.0" as the sixth argument. Thus, run the script `NC_031969.f5.sub1.phased.masked.vcf` with the following command:
+	We'll use `NC_031969.f5.sub1.vcf` as the input and name the output file `pops1.fixed.txt`. Assuming that the parental species are *Altolamprologus fasciatus* ("altfas") and *Telmatochromis vittatus* ("telvit") and the hybrid species is *Neolamprologus cancellatus* ("neocan"), we'll specify the sample IDs for these species with the strings "AUE7,AXD5", "JBD5,JBD6", and "LJC9,LJD1". Finally, we'll filter for sites without missing data by specifying "1.0" as the sixth argument. Thus, run the script `NC_031969.f5.sub1.vcf` with the following command:
 
-		ruby get_fixed_site_gts.rb NC_031969.f5.sub1.phased.masked.vcf pops1.fixed.txt AUE7,AXD5 LJC9,LJD1 JBD5,JBD6 1.0
+		ruby get_fixed_site_gts.rb NC_031969.f5.sub1.vcf pops1.fixed.txt AUE7,AXD5 LJC9,LJD1 JBD5,JBD6 1.0
 
 * The second script, [`plot_fixed_site_gts.rb`](src/plot_fixed_site_gts.rb), expects four arguments, which are
 	* the name of the file written by script [`get_fixed_site_gts.rb`](src/get_fixed_site_gts.rb),
 	* the name of an output file which will be a plot in SVG format,
-	* a threshold value for the required completeness, which now applies not only to the parental species but also to the putative hybrid species.,
+	* a threshold value for the required completeness, which now applies not only to the parental species but also to the putative hybrid species,
 	* the minimum chromosomal distance in bp between SNPs included in the plot. This last argument aims to avoid that the ancestry painting is overly dominated by high-divergence regions.
 
 	We'll use the file `pops1.fixed.txt` as input, name the output file `pops1.fixed.svg`, require again that no missing data remains in the output, and we'll thin the remaining distances so that those plotted have a minimum distance of 1,000 bp to each other. Thus, use the following command to draw the ancestry painting:
 
 		ruby plot_fixed_site_gts.rb pops1.fixed.txt pops1.fixed.svg 1.0 1000
 		
-	The screen output of this script should have indicated that 6,071 sites with the required completeness were found, these are the sites included in the ancestry painting.
+	The screen output of this script will include some warnings about unexpected genotypes, these can be safely ignored as the script automatically excludes those sites. At the very end, the output should indicate that 6,069 sites with the required completeness were found, these are the sites included in the ancestry painting. Th output also reports, for all analyzed specimens, the heterozygosity at those 6,069 sites. For first-generation hybrids, this heterozygosity is expected to be close to 1.
 
 * Open the file `pops1.fixed.svg` with a program capable of reading files in SVG format, for example with a browser such as Firefox or with Adobe Illustrator. You should see a plot like the one shown below. <p align="center"><img src="img/pops1.fixed.png" alt="Ancestry Painting" width="600"></p>
 
-	In this ancestry painting, the two samples of the two parental species are each drawn in solid colors because all included sites were required to be completely fixed and completely without missing data. The samples of *Neolamprologus cancellatus*, "LJC9" and "LJD1" are drawn in between, with two rows per sample that are colored according to alleles observed at the 6,071 sites.
+	In this ancestry painting, the two samples of the two parental species are each drawn in solid colors because all included sites were required to be completely fixed and completely without missing data. The samples of *Neolamprologus cancellatus*, "LJC9" and "LJD1" are drawn in between, with two rows per sample that are colored according to genotypes observed at the 6,069 sites. Keep in mind that even though the pattern may appear to show phased haplotypes, this is not the case; instead the bottom row for a sample is arbitrarily colored in red and the top row is colored in blue when the genotype is heterozygous.
 	
-	**Question 6:** Do you notice any surprising difference to the ancestry plots of [Der Sarkassian et al. (2015; Fig. 4)](https://www.cell.com/current-biology/abstract/S0960-9822(15)01003-9) and [Runemark et al. (2018; Suppl. Fig. 4)](https://www.nature.com/articles/s41559-017-0437-7)? [(see answer)](#q6)
+	**Question 5:** Do you notice any surprising difference to the ancestry plots of [Der Sarkassian et al. (2015; Fig. 4)](https://www.cell.com/current-biology/abstract/S0960-9822(15)01003-9) and [Runemark et al. (2018; Suppl. Fig. 4)](https://www.nature.com/articles/s41559-017-0437-7)? [(see answer)](#q5)
 
-	**Question 7:** How can this difference be explained? [(see answer)](#q7)
+	**Question 6:** How can this difference be explained? [(see answer)](#q6)
 
-<a name="improvedphasing"></a>
-## Improved allele phasing for recent hybrids
-
-Assuming that the two *Neolamprologus cancellatus* samples "LJC9" and "LJD1" are in fact first-generation hybrids between *Altolamprologus fasciatus* individuals and *Telmatochromis vittatus* individuals, we would expect that both *Neolamprologus cancellatus* carry one version of chromosome 5 from each parental species. Thus, in the ancestry-painting plot shown above, each of the two individuals should have one row that is completely blue and one row that is completely red. The fact this this is not what we observe shows that the phasing did not result in completely resolved haplotypes, and it gives us an indication of how incorrect the phasing results actually are.
-
-* With the following command, we can count the numbers of red or blue blocks per row in the ancestry painting:
-
-		cat pops1.fixed.svg | grep -e 27abd0 -e ef2746 | cut -d " " -f 4 | cut -d "\"" -f 2| sort -n | uniq -c | cut -c 1-4
-		
-	If you run this command, you'll see that the rows for the *Neolamprologus cancellatus* samples "LJC9" and "LJD1" all contain between 1,400 and 1,700 red or blue blocks, indicating that at least this many breakpoints between the haplotypes of those individuals were incorrectly inferred by BEAGLE.
-
-* However, we can also now use the information that both *Neolamprologus cancellatus* samples are first-generation hybrids to improve their phasing. Given that one of their chromosomal haplotypes should be similar to the *Altolamprologus fasciatus* sequence and the other should be similar to the *Telmatochromis vittatus*, it may be reasonable to phase each site that is heterozygous in the *Neolamprologus cancellatus* sample but fixed or nearly fixed in the two parental species so that, say, the first of the alleles of the heterozygous genotype matches the allele predominantly found in *Altolamprologus fasciatus* and the second matches the allele that is more dominant in *Telmatochromis vittatus*.
-
-	To improve the phasing of the *Neolamprologus cancellatus* samples as described above, we can use the Ruby script [`fix_hybrid_phasing.rb`](src/fix_hybrid_phasing.rb). This script expects five or more arguments; these are
-	* the name of a file containing only the uncompressed header of a VCF file (this is needed only to identify the columns of hybrid and parental samples),
-	* the name of a file containing the uncompressed records of the same VCF file without a header,
-	* the name of an output file,
-	* the name of a file with a table assigning samples to species,
-	* and one or more strings with the comma-separated species IDs of parent and hybrid species (the ID of the hybrid species should be listed second).
-
-	The output is going to have the same content as the second input file (the file with records from the original VCF file that is stripped of its header) except that the phasing of the hybrid samples is adjusted.
-	
-	Before running the script [`fix_hybrid_phasing.rb`](src/fix_hybrid_phasing.rb), we therefore first need to generate an uncompressed file containing only the header of the VCF file `NC_031969.f5.sub1.phased.masked.vcf.gz` as well as another uncompressed file containing the records of file `NC_031969.f5.sub1.phased.masked.vcf.gz`. We can generate these two files with the following commands:
-
-		cat NC_031969.f5.sub1.phased.masked.vcf | grep "#" > header.vcf
-		cat NC_031969.f5.sub1.phased.masked.vcf | grep -v "#" > main.vcf
-		
-* Then, we are ready to run the Ruby script [`fix_hybrid_phasing.rb`](src/fix_hybrid_phasing.rb) with the following command.
-
-		ruby fix_hybrid_phasing.rb header.vcf main.vcf main.mod.vcf samples.txt altfas,neocan,telvit
-
-	The screen output of this script will report the number of lines that were changed; this number is equivalent to the number of sites for which the phasing of one or both *Neolamprologus cancellatus* samples was adjusted.
-
-* To quickly see some of the changes that were made to the phasing of the *Neolamprologus cancellatus* samples, you could use the following command:
-
-		diff <(head -n 1000 main.vcf ) <(head -n 1000 main.mod.vcf ) | less -S
-		
-	In the screen output generated by this command, the original version of a record is always followed by the same record after the phasing adjustment. 
-	
-	**Question 8:** Can you identify the change that was made between the very first pair of lines reported by the last command? [(see answer)](#q8)
-
-* We'll combine again the file with the VCF header and the file with the adjusted records of the VCF, using the following command:
-
-		cat header.vcf main.mod.vcf > NC_031969.f5.sub1.phased.masked.mod.vcf
-
-* You might want to remove some of the larger files that are now not needed anymore, using the following command:
-
-		rm header.vcf main.vcf main.mod.vcf
-
-* Once again perform ancestry painting as described above, but with file `NC_031969.f5.sub1.phased.masked.mod.vcf` as input instead of file `NC_031969.f5.sub1.phased.masked.vcf`.
-
-	**Question 9:** Does the ancestry painting look very different this time? [(see answer)](#q9)
-
-With the above analyses, we have found strong support for the hypothesis that *Neolamprologus cancellatus* is a hybrid species. However, the overall patterns of introgression among the species included in the dataset is still poorly resolved, in part because of the limitation of the above analysis that they are applicable only to 3 to 4 species at a time (TWISST could be used with a few more but the topology weights would become difficult to interpret).
 
 <br><hr>
 
@@ -539,78 +481,11 @@ With the above analyses, we have found strong support for the hypothesis that *N
 * **Question 4:** Comparing the two files [`samples__BBAA.txt`](res/samples__BBAA.txt) and [`samples__tree.txt`](res/samples__tree.txt), for example using the command `diff samples__BBAA.txt samples__tree.txt` shows some differences. For example, the trio "neobri", "neocan", and "telvit" is arranged so that "neocan" and "telvit" are in the positions of P1 and P2 in [`samples__BBAA.txt`](res/samples__BBAA.txt), but "neobri" and "telvit" are in the same positions in [`samples__tree.txt`](res/samples__tree.txt). Such disagreement can arise when sister species do not share the largest number of derived sites with each other, for example as a result of introgression, ancestral population structure, or variation in substitution rates.
 
 
-
-	
-
-XXX
-
-* **Question 1:** The highest *D*-statistic should be observed with *Altolamprologus fasciatus* ("altfas") in the position of "spc1". This species in fact appears to share more genetic variation with *Neolamprologus cancellatus* ("neocan") than any other species, the number of "BBAA" sites at which *Neolamprologus cancellatus* ("neocan") and *Altolamprologus fasciatus* ("altfas") share the derived allele, is over 13,300, compared to around 7,500 sites at which *Neolamprologus cancellatus* ("neocan") and *Telmatochromis vittatus* ("telvit") share the derived allele. The *D*-statistic of 0.78 is extremely high, and correspondingly, the p-value for the hypothesis that introgression is absent is exactly 0, meaning that this hypothesis can be safely rejected. Notably, the <i>f</i><sub>d</sub>-statistic which estimates the proportion of the genome that is admixed is around 0.47 and thus close to 50%.
-
-
-<a name="q2"></a>
-
-* **Question 2:** While the <i>f</i><sub>d</sub>-statistics is not entirely uniform across the entire chromosome, it remains between 0.4 and 0.6 in almost all windows, as shown in the plot below. Without further evidence, arguing for selection as a driver of any peaks would likely be an overinterpretation of the pattern.<p align="center"><img src="img/pops1.abba_baba.windows.png" alt="fd" width="600"></p>
-
-
-<a name="q3"></a>
-
-* **Question 3:** You might have noticed that the file does not contain any missing data anymore, as shown in the text below. This is because the imputation that is part of phasing with BEAGLE does exactly that: it replaces missing data with "imputed" alleles that are estimated based on the alleles present in other samples. This approach may work well with population-level data for model species where a reference set of haplotypes is available (such a reference set can be passed to BEAGLE with the `ref=` option); however, the accuracy of the imputed alleles may be questioned when the imputation is applied to datasets comprising multiple species without a reference set.
-
-		##fileformat=VCFv4.2
-		##filedate=20180523
-		##source="beagle.16May18.771.jar"
-		##INFO=<ID=AF,Number=A,Type=Float,Description="Estimated ALT Allele Frequencies">
-		##INFO=<ID=DR2,Number=1,Type=Float,Description="Dosage R-Squared: estimated squared correlation between estimated REF dose [P(RA) + 2*P(RR)] and true REF dose">
-		##INFO=<ID=IMP,Number=0,Type=Flag,Description="Imputed marker">
-		##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
-		##FORMAT=<ID=DS,Number=A,Type=Float,Description="estimated ALT dose [P(RA) + P(AA)]">
-		##FORMAT=<ID=GP,Number=G,Type=Float,Description="Estimated Genotype Probability">
-		#CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO    FORMAT  IZA1    IZC5    AUE7    AXD5    JBD5    JBD6    JUH9    JUI1    LJC9    LJD1    KHA7    KHA9    IVE8    IVF1    JWH1    JWH2    JWG8    JWG9    JWH3    JWH4    JWH5    JWH6    ISA6    ISB3    ISA8    IYA4    KFD2    KFD4
-		NC_031969       45158   .       A       C       .       PASS    .       GT      0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|1     0|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0
-		NC_031969       58829   .       T       C       .       PASS    .       GT      1|1     1|1     1|1     1|1     1|0     1|1     1|1     1|1     1|1     1|1     1|0     1|0     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     0|1     1|1
-		NC_031969       88364   .       T       G       .       PASS    .       GT      1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1
-		NC_031969       88371   .       C       T       .       PASS    .       GT      1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1
-		NC_031969       98367   .       T       A       .       PASS    .       GT      1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1
-		NC_031969       98404   .       G       C       .       PASS    .       GT      0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     1|0     1|0     0|0     0|0     0|0     0|0     1|0     1|0     0|0     0|0     0|0     0|0     0|1     1|0     0|0     0|0
-		NC_031969       124768  .       A       C       .       PASS    .       GT      0|0     0|0     0|0     0|0     1|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0
-		NC_031969       141856  .       G       A       .       PASS    .       GT      1|1     0|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1
-		NC_031969       141896  .       G       T       .       PASS    .       GT      0|0     0|0     1|0     1|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0
-		NC_031969       141908  .       G       A       .       PASS    .       GT      1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1
-
-
-<a name="q4"></a>
-
-* **Question 4:** The results of the TWISST analyses and the ABBA-BABA test agree well with each other. In both cases, *Neolamprologus cancellatus* appeares slightly closer to *Altolamrologus fasciatus* than to *Telmatochromis vittatus*. The pattern of across-chromosome variation in the <i>f</i><sub>d</sub>-statistics, however, does not seem to be replicated by the topology weights inferred with TWISST.
-
-
 <a name="q5"></a>
 
-* **Question 5:** One obvious difference between the results of TWISST analyses with different window sizes is that the width of the bars in file `pops1.rect.pdf` becomes wider with larger windows. This is, however, not surprising since the width of these bars corresponds to the absolute chromosomal positions of the first and last SNP within the window. More interesting is that the dominant topologies become more dominant with larger window and less dominant with smaller windows. For example, compare the smoothed weights of the <font color="#d33682">second topology</font> in a plot generated with a window size of 12 and with a window size of 800, as shown in the images below. This change in the topology weights suggests on the one hand that particularly short windows do not contain sufficient phylogenetic information and that the results based on such windows are largely stochastic. Particularly large windows, on the other hand, will often average over multiple different topologies and thus may have a bias towards a consensus topology. Finding the right balance between too short and too long window sizes may therefore be tricky. Based on simulations, [Martin and van Belleghem (2017)](http://www.genetics.org/content/206/1/429) found that a window size of 50 sites is a good compromise between too little information and averaging over too many distinct topologies; however, this may depend on factors such as the substitution rate, the population size, and the recombination rate, and therefore it may be advisable to test a range of window sizes before drawing conclusions based on TWISST results.
-<p align="center"><img src="img/pops1.smooth.12.png" alt="TWISST" width="600"></p>
-<p align="center"><img src="img/pops1.smooth.800.png" alt="TWISST" width="600"></p>
+* **Question 5:** One remarkable difference compared to the ancestry painting of [Der Sarkassian et al. (2015; Fig. 4)](https://www.cell.com/current-biology/abstract/S0960-9822(15)01003-9) and [Runemark et al. (2018; Suppl. Fig. 4)](https://www.nature.com/articles/s41559-017-0437-7) is that almost no homozygous genotypes are observed in the two samples of *Neolamprologus cancellatus*: the bottom rows are drawn almost entirely in red for the two putative hybrid individuals and the top rows are almost entirely in blue. The same pattern, however, can be found in [Barth et al. (2019; Fig. 2)](https://www.biorxiv.org/content/10.1101/635631v1).
 
 
 <a name="q6"></a>
 
-* **Question 6:** One remarkable difference compared to the ancestry painting of [Der Sarkassian et al. (2015; Fig. 4)](https://www.cell.com/current-biology/abstract/S0960-9822(15)01003-9) and [Runemark et al. (2018; Suppl. Fig. 4)](https://www.nature.com/articles/s41559-017-0437-7) is that almost no homozygous genotypes are observed in the two samples of *Neolamprologus cancellatus*: Whenever the bottom row of these samples is drawn in red, the top row is drawn in blue and vice versa.
-
-
-<a name="q7"></a>
-
-* **Question 7:** The fact that both *Neolamprologus cancellatus* samples are heterozygous for basically all sites that are differentially fixed in the two parental species can only be explained if both of these samples are in fact first-generation hybrids. If introgression would instead be more ancient and back-crossing (or recombination within the hybrid population) had occurred, we would expect that only certain regions of the chromosome are heterozygous while others should be homozygous for the alleles of one or the other of the two parental species. However, unlike in cases where the genomes have been sequenced of parent-offspring trios, we do not know who the actual parent individuals were. We can guess that the parent individuals were members of the species *Altolamprologus fasciatus* and *Telmatochromis vittatus*, but whether the parental individuals were part of the same population as the sampled individuals or a more distantly related population within these species remains uncertain.
-
-
-<a name="q8"></a>
-
-* **Question 8:** Due to stochasticity in the phasing with BEAGLE, the first line on which a change happened may differ in your case. In my analysis, the first adjustment made by script `fix_hybrid_phasing.rb` was for the site at position 575342, where the phasing of the tenth sample was rotated, as shown below.
-
-		316c316
-		< NC_031969     575342  .       G       C       .       PASS    .       GT      0|0     0|0     0|0     0|0     1|1     1|1     0|0     .|.     0|1     1|0     
-		---
-		> NC_031969     575342  .       G       C       .       PASS    .       GT      0|0     0|0     0|0     0|0     1|1     1|1     0|0     .|.     0|1     0|1     
-
-
-<a name="q9"></a>
-
-* **Question 9:** The ancestry painting should in fact have changed substantially, and the haplotypes of both *Neolamprologus cancellatus* samples should now be drawn with one row that is almost completely red and one row that is almost completely blue, as shown in the figure below.
-<p align="center"><img src="img/pops1.mod.fixed.png" alt="Ancestry Painting" width="600"></p>
+* **Question 6:** The fact that both *Neolamprologus cancellatus* samples are heterozygous for basically all sites that are differentially fixed in the two parental species can only be explained if both of these samples are in fact first-generation hybrids. If introgression would instead be more ancient and backcrossing (or recombination within the hybrid population) had occurred, we would expect that only certain regions of the chromosome are heterozygous while others should be homozygous for the alleles of one or the other of the two parental species. However, unlike in cases where the genomes have been sequenced of parent-offspring trios, we do not know who the actual parent individuals were. We can guess that the parent individuals were members of the species *Altolamprologus fasciatus* and *Telmatochromis vittatus*, but whether the parental individuals were part of the same population as the sampled individuals or a more distantly related population within these species remains uncertain. 
