@@ -5,7 +5,7 @@ A tutorial on the analysis of hybridization and introgression with SNP data
 ## Summary
 
 A number of approaches for the analysis of introgression based on SNP data have been developed recently. Among these is the well-known ABBA-BABA test ([Green et al. 2010](http://science.sciencemag.org/content/328/5979/710.full)) that uses the so-called *D*-statistic to assess support for introgression in sets of four species. The original ABBA-BABA test has been extended in various ways, including the <i>D</i><sub>FOIL</sub>-statistic that allows inferring the direction of introgression from sets of five species ([Pease and Hahn 2015](https://academic.oup.com/sysbio/article/64/4/651/1650669)) and the <i>f</i><sub>D</sub>-statistic that is better suited for the identification of gene flow pertaining to certain regions of the genome ([Martin et al. 2014](https://academic.oup.com/mbe/article/32/1/244/2925550)). If a putative hybrid individual as well as the presumed parental species have already been identified, patterns of introgression can be investigated with ancestry painting, a method that focuses on sites that are fixed between the parental species and the alleles observed at these sites in the putative hybrid.
-<!--XXX Relate XXX-->
+
 
 ## Table of contents
 
@@ -14,7 +14,6 @@ A number of approaches for the analysis of introgression based on SNP data have 
 * [Requirements](#requirements)
 * [Identifying introgression with D-statistics](#dsuite)
 * [Ancestry painting](#painting)
-<!--* [XXX Inferring genome-wide genealogies](#relate)-->
 
 
 <a name="outline"></a>
@@ -70,8 +69,6 @@ The SNP data used in this tutorial is the unfiltered dataset used for species-tr
 * **Dsuite:** The [Dsuite](https://github.com/millanek/Dsuite) program allows the fast calculation of the *D*-statistic from SNP data in VCF format. The program is particularly useful because it automatically calculates the *D*-statistic either for all possible species quartets or for subsets of quartets that are compatible with a user-provided species tree. Instructions for download and installation on Mac OS X and Linux are provided on [https://github.com/millanek/Dsuite](https://github.com/millanek/Dsuite). Installation on Windows is not supported, but Windows users can use the provided output files to learn how to plot and analyze the Dsuite output.
 
 * **FigTree:** The program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) by Andrew Rambaut is a very intuitive and useful tool for the visualization and (to a limited extent) manipulation of phylogenies encoded in [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) format. Executables for Mac OS X, Linux, and Windows are provided on [https://github.com/rambaut/figtree/releases](https://github.com/rambaut/figtree/releases).
-
-<!--XXX Relate-->
 
 <a name="dsuite"></a>
 ## Identifying introgression with *D*-statistics
