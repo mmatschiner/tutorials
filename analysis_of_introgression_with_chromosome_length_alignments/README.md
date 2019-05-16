@@ -14,10 +14,12 @@ On the other hand, the identification of suitable alignment blocks for phylogene
 * [Outline](#outline)
 * [Dataset](#dataset)
 * [Requirements](#requirements)
-* [Inferring recombination breakpoints with Saguaro](#saguaro)
-* [Identifying alignment blocks for phylogenetic analysis](#alignments)
-* [Automating BEAST2 analyses](#beast2)
-* [Disentangling incomplete lineage sorting and introgression](#disentangle)
+* [Genotype phasing](#phasing)
+* [Preparing a chromosome-length alignment](#preparing)
+* [Identifying alignment blocks for phylogenetic analysis](#blocks)
+* [Inferring block phylogenies with IQ-TREE](#iqtree)
+* [Analyzing asymmetry of trio topologies](#asymmetry)
+* [XXXtriangle](#triangle)
 * [Simulating recombination with c-genie](#cgenie)
 
 
@@ -26,15 +28,6 @@ On the other hand, the identification of suitable alignment blocks for phylogene
 
 In this tutorial I am going to demonstrate how phylogenies from different regions of the genome can be used to infer past introgression events. The alignment blocks used for phylogenetic inference will be extracted from a phased chromosome-length alignment, and they will be filtered according to their proportion of missing data and their frequency of recombination breakpoints to identify the most suitable alignment blocks for phylogenetic analysis. This analysis will then be conducted for each selected alignment block based on maximum likelihood with IQ-TREE. The resulting set of local phylogenies will then be used to determine imbalance among alternative phylogenetic topologies for each species trio, and as with *D*-statistics in tutorial [Analysis of Introgression with SNP data](../analysis_of_introgression_with_snp_data/README.md), these imbalances will be visualized in the form of a heatmap. Additionally, particularly controversial phylogenetic relationships will be analyzed in more detail by plotting differences in likelihood support for competing topological hypotheses.
 
-XXX
-1. Phasing
-2. Reduce to one sample per species
-3. Convert to Nexus
-4. Reduce to one phased sequence per species
-5. Select alignment blocks
-6. Infer phylogenies
-7. Apply heatmap approach
-8. Apply triangle approach
 
 <a name="dataset"></a>
 ## Dataset
@@ -68,19 +61,23 @@ Moreover, when converting the dataset from VCF into a sequence alignment in Nexu
 <a name="requirements"></a>
 ## Requirements
 
-* **IQ-TREE:** If you followed tutorials [Maximum-Likelihood Species Tree Inference](../ml_species_tree_inference/README.md), you should already have IQ-TREE installed. If not, you can find the source code for Mac OS X and Linux, as well as precompiled executables for Windows, on [http://www.iqtree.org/#download](http://www.iqtree.org/#download). To install IQ-TREE on any of these systems, download the version for your operating system, and decompress this file on your machine if necessary. In the decompressed directory, you'll find a subdirectory named `bin` and inside of this subdirectory should be a file named `iqtree` or `iqtree.exe`. To easily access this executable from the command line, place it somewhere on your computer where your system can find it (i.e. in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))).
-	
-* **Phi Test:** [Phy Test](http://www.maths.otago.ac.nz/~dbryant/software.html) ([Bruen et al. 2006](http://www.genetics.org/content/172/4/2665)) implements a statistical test for the presence of recombination in a sequence alignment. Source code is available from [David Bryant's software webpage](http://www.maths.otago.ac.nz/~dbryant/software.html). Note that in order to compile it on a Mac, you may have to replace `CXX = gcc` with `CXX = clang` on the third line of the file `Makefile` (but try the compilation without this change first).
+* **bcftools:** [bcftools](http://www.htslib.org/doc/bcftools.html) ([Li 2011](https://academic.oup.com/bioinformatics/article/27/21/2987/217423)) is a fast and versatile tool for the manipulation and filtering of variant data in VCF format. Downloads and instructions for installation on Mac OS X and Linux are available at the [HTSlib download webpage](http://www.htslib.org/download/). Installation on Windows is apparently not possible. If you should fail to install bcftools, you could skip the optional [SNP filtering](#filtering) steps in the first part of the tutorial and still run the SVDQuartets analysis.
 
-* **Libraries for Python 3.x:** The Python libraries [dendropy](https://www.dendropy.org) ([Sukumaran and Holder 2010](https://academic.oup.com/bioinformatics/article/26/12/1569/287181)) and [msprime](https://msprime.readthedocs.io/en/stable/index.html) [(Kelleher et al. 2016)](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004842) will be required for analyses of topology frequencies and for simulations of recombination, respectively. The two libraries can be installed with pip for Python 3, using the following commands:
+* **AliView:** To visualize sequence alignments, the software [AliView](http://www.ormbunkar.se/aliview/) ([Larsson 2014](https://academic.oup.com/bioinformatics/article/30/22/3276/2391211)) is recommended. The installation of AliView is described at [http://www.ormbunkar.se/aliview/](http://www.ormbunkar.se/aliview/) and should be possible on all operating systems.
+
+* **PAUP\* (command-line version):** Unlike in tutorials [Substitution Model Selection](../substitution_model_selection/README.md) and [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md), the command-line version of PAUP* will be required for this tutorial. Precompiled binaries of these versions are available for Mac OS X, Linux, and Windwows from the [PAUP\* website]([http://phylosolutions.com/paup-test/](http://phylosolutions.com/paup-test/)). Download the correct version for your system and place it somewhere on your computer where your system can find it (i.e. in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))).
+
+* **IQ-TREE:** If you followed tutorials [Maximum-Likelihood Species Tree Inference](../ml_species_tree_inference/README.md), you should already have IQ-TREE installed. If not, you can find the source code for Mac OS X and Linux, as well as precompiled executables for Windows, on [http://www.iqtree.org/#download](http://www.iqtree.org/#download). To install IQ-TREE on any of these systems, download the version for your operating system, and decompress this file on your machine if necessary. In the decompressed directory, you'll find a subdirectory named `bin` and inside of this subdirectory should be a file named `iqtree` or `iqtree.exe`. To easily access this executable from the command line, also place it in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))).
+
+* **FigTree:** The program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) by Andrew Rambaut is a very intuitive and useful tool for the visualization and (to a limited extent) manipulation of phylogenies encoded in [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) format. Executables for Mac OS X, Linux, and Windows are provided on [https://github.com/rambaut/figtree/releases](https://github.com/rambaut/figtree/releases).
+
+* **msprime:** The Python library [msprime](https://msprime.readthedocs.io/en/stable/index.html) [(Kelleher et al. 2016)](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004842) will be required for simulations of recombination. The library can be installed with pip for Python 3, using the following command:
 
 		python3 -m pip install --user msprime
-		python3 -m pip install --user dendropy
 		
-	The installations can be tested with these commands:
+	The installation can be tested with these commands:
 	
 		python3 -c 'import msprime'
-		python3 -c 'import dendropy'
 
 
 <a name="phasing"></a>
@@ -110,7 +107,7 @@ The two programs [BEAGLE](https://faculty.washington.edu/browning/beagle/beagle.
 
 	You should note that the genotypes are now separated with the pipe symbol "|" instead of the forward slash "/", and that a distinction is now being made between heterozygous genotypes such as "0|1" and "1|0". With unphased data, the lower number was always listed first as in "0/1" because their order did not have a meaning, but after phasing, all alleles before the pipe symbol are considered to form one haplotype while those after the pipe symbol form the other. **Question 1:** Do you also notice something that is unexpected? [(see answer)](#q1)
 
-* Given that we did not run BEAGLE with a reference set of haplotypes, we should probably consider the imputed alleles as being potentially incorrect and misleading for phylogenetic analyses. Thus, it might be safer to undo the imputation before using the dataset for phylogenetic analyses. We can do so by comparing the unphased VCF file `NC_031969.f5.sub1.vcf.gz` with the phased VCF file `NC_031969.f5.sub1.phased.vcf.gz` and by setting all genotype in the phased VCF file to missing (coded by ".|.") if they were also missing in the unphased VCF file. This can be done with the Ruby script [`mask_imputed_gts.rb`](src/mask_imputed_gts.rb). However, the script expects as input both the unphased and phased VCF files without their headers; thus, we'll first generate versions of the two files with their headers removed. We can do so with the following commands:
+* Given that we did not run BEAGLE with a reference set of haplotypes, we should probably consider the imputed alleles as being potentially incorrect and misleading for phylogenetic analyses. Thus, it might be safer to undo the imputation before using the dataset for phylogenetic analyses. We can do so by comparing the unphased VCF file [`NC_031969.f5.sub1.vcf.gz`](data/NC_031969.f5.sub1.vcf.gz) with the phased VCF file [`NC_031969.f5.sub1.phased.vcf.gz`](res/NC_031969.f5.sub1.phased.vcf.gz) and by setting all genotype in the phased VCF file to missing (coded by ".|.") if they were also missing in the unphased VCF file. This can be done with the Ruby script [`mask_imputed_gts.rb`](src/mask_imputed_gts.rb). However, the script expects as input both the unphased and phased VCF files without their headers; thus, we'll first generate versions of the two files with their headers removed. We can do so with the following commands:
 
 		gunzip -c NC_031969.f5.sub1.vcf.gz | grep -v "#" > original.vcf
 		gunzip -c NC_031969.f5.sub1.phased.vcf.gz | grep -v "#" > phased.vcf
@@ -130,52 +127,26 @@ The two programs [BEAGLE](https://faculty.washington.edu/browning/beagle/beagle.
 		gunzip -c NC_031969.f5.sub1.vcf.gz | grep "#" > header.vcf
 		cat header.vcf masked.vcf | gzip > NC_031969.f5.sub1.phased.masked.vcf.gz
 		
-* Before continuing with [XXX](#XXX), you might want to remove some of the larger files generated in the last couple of steps that we will not need anymore. To do so, use the following command:
+* Before continuing with the next section of the tutorial, you might want to remove some of the larger files generated in the last couple of steps that we will not need anymore. To do so, use the following command:
 		
 		rm original.vcf header.vcf phased.vcf masked.vcf
 
 
-XXX
+<a name="preparing"></a>
+## Preparing a chromosome-length alignment
 
+In this part of the tutorial, we are going to prepare a single chromosome-length alignment, including one phased sequence for each of the 14 cichlid species included in the dataset. We are going to need three different sources of information:
 
+1.	The VCF file [`NC_031969.f5.sub1.phased.masked.vcf.gz`](res/NC_031969.f5.sub1.phased.masked.vcf.gz) with phased SNP variation generated in tutorial [Analysis of Introgression with SNP Data](../analysis_of_introgression_with_snp_data/README.md).
 
+2. As the VCF file `NC_031969.f5.sub1.phased.masked.vcf.gz` does not contain information about invariant sites but these are required for phylogenetic inference with BEAST2, we assume that the sites between those included in the VCF file are in fact unchanged between the species in the dataset and the tilapia reference sequence. Thus, we'll use the reference sequence for chromosome 5 of tilapia to fill the gaps between SNPs included in the VCF. 		
+3. The assumption that sites between SNPs are invariant is only justified for sites in which SNPs could have been called at all if there had been any. This is not the case for all sites between the SNPs, due to low sequencing coverage in some regions or low mapping quality in repetitive regions. It would also have been impossible to call SNPs very close to indel variation, because these were filtered when the original VCF file `NC_031969.f5.sub1.vcf.gz` (see tutorial [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md)) was prepared. Thus, we will take into account information about the chromosomal regions in which SNP variation could not have been called in the first place, and we will conservatively set these chromosomal regions to missing, coded by "N", in the generated alignment. The information about callable chromosomal regions is contained in a set of files in [BED format](http://genome.ucsc.edu/FAQ/FAQformat#format1); these files are within a compressed directory named [`masks.tgz`](data/masks.tgz).
 
+* Obtain all required input files and place them in your analysis directory. To download the sequence for chromosome 5 of tilapia from GenBank, you can use the following command:
 
-
-
-
-
-
-
-
-
-
-
-
-<a name="saguaro"></a>
-## Inferring recombination breakpoints with Saguaro
-
-In this part of the tutorial, the software [Saguaro](http://saguarogw.sourceforge.net) ([Zamani et al. 2013](http://bmcgenomics.biomedcentral.com/articles/10.1186/1471-2164-14-347)) will be used to detect breakpoints between chromosome regions that are characterized by different phylogenetic histories due to recombination. However, for computational reasons, Saguaro does not infer these phylogenetic histories directly. Instead, the analysis performed by Saguaro is based on what the authors call "cacti", sets of distance matrices that describe how different each pair of genomes is relative to all others. These cacti can to some extent be considered as proxies for phylogenetic histories, as the genetic difference between pairs of chromosomes is obviously linked to their phylogenetic relatedness. Assuming (naively) that Saguaro accurately detects all recombination breakpoints, we applied this method in [Gante et al. (2016)](https://onlinelibrary.wiley.com/doi/abs/10.1111/mec.13767) to select chromosomal blocks of 500 kb that were not broken up by recombination, and we used these blocks for subsequent phylogenetic analysis.
-
-However, it has been shown based on simulations ([Martin and van Belleghem 2017](http://www.genetics.org/content/206/1/429.long)) that Saguaro may not always be able to discriminate chromosomal regions characterized by different phylogenetic histories and that subtle changes caused by incomplete lineage sorting may remain undetected. If this was the case for the chromosomal blocks used in [Gante et al. (2016)](https://onlinelibrary.wiley.com/doi/abs/10.1111/mec.13767) for phylogenetic analysis, each of the inferred trees may have been affected by the issues that potentially result from concatenation, including exaggerated node support ([Kubatko and Degnan 2007](https://academic.oup.com/sysbio/article/56/1/17/1658327)) and overestimated divergence times ([Ogilvie et al. 2017](https://academic.oup.com/mbe/article/34/8/2101/3738283)).
-
-To avoid recombination in the alignments used for phylogenetic analysis in this tutorial, we are therefore going to use Saguaro only as a first attempt of identifying recombination breakpoints. The breakpoints identied by Saguaro will be taken into account when generating alignment blocks for phylogenetic analysis; however, each of these alignment blocks will further be filtered according to a second test for recombination with the software [Phy Test](http://www.maths.otago.ac.nz/~dbryant/software.html) ([Bruen et al. 2006](http://www.genetics.org/content/172/4/2665)).
-
-At the beginning of the analysis, Saguaro will calculate a single cactus for the entire alignment, and a score will be calcuated for each variable alignment position, describing the fit between this site and the first cactus. Based on these scores, genomic regions with a poor fit to the current cactus are identied with the hidden Markov model implemented in Saguaro, and a new cactus is defined for these. This process is repeated multiple times, thus further partitioning the alignment into segments, and at the same time assigning a cactus out of a growing set of cacti to each segment. Details of this procedure are described in ([Zamani et al. 2013](http://bmcgenomics.biomedcentral.com/articles/10.1186/1471-2164-14-347)).
-
-As in tutorial [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md) and other tutorials, we are here going to focus on chromosome 5 of tilapia only to reduce the computational demand of all analyses.
-
-* To generate a chromosome-length sequence alignment for the 14 cichlid species included in the dataset, we'll need several different input files:
-
-	* 	The VCF file `NC_031969.f5.sub1.phased.masked.mod.vcf.gz` with phased SNP variation generated in tutorial [Analysis of Introgression with SNP Data](../analysis_of_introgression_with_snp_data/README.md). Either copy this file from the analysis directory of that tutorial if you followed it already, or download file [`NC_031969.f5.sub1.phased.masked.mod.vcf.gz`](NC_031969.f5.sub1.phased.masked.mod.vcf.gz) by clicking on the link and copy it to the analysis directory for this tutorial.
-
-	* As the VCF file `NC_031969.f5.sub1.phased.masked.mod.vcf.gz` does not contain information about invariant sites but these are required for phylogenetic inference with BEAST2, we assume that the sites between those included in the VCF file are in fact unchanged between the Lamprologini species and the tilapia reference sequence. Thus, we'll use the reference sequence for chromosome 5 of tilapia to fill the gaps between SNPs included in the VCF. To download the sequence for chromosome 5 of tilapia from GenBank, you can use the following command:
-
-			wget 'http://www.ncbi.nlm.nih.gov/sviewer/viewer.fcgi?tool=portal&sendto=on&log$=seqview&db=nuccore&dopt=fasta&val=NC_031969&extrafeat=0&maxplex=1' -O NC_031969.fasta
+		wget 'http://www.ncbi.nlm.nih.gov/sviewer/viewer.fcgi?tool=portal&sendto=on&log$=seqview&db=nuccore&dopt=fasta&val=NC_031969.1&extrafeat=0&maxplex=1' -O NC_031969.fasta
 		
-		The downloaded sequence will in in Fasta format in a file named `NC_031969.fasta`.
-		
-	* The assumption that sites between SNPs are invariant is only justified for sites in which SNPs could have been called at all if there had been any. This is not the case for all sites between the SNPs, due to low sequencing coverage in some regions or low mapping quality in repetitive regions. It would also have been impossible to call SNPs very close to indel variation, because these were filtered when the original VCF file `NC_031969.f5.sub1.vcf.gz` (see tutorial [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md)) was prepared. Thus, we will take into account information about the chromosomal regions in which SNP variation could not have been called in the first place, and we will conservatively set these chromosomal regions to missing, coded by "N", in the generated alignment. The information about callable chromosomal regions is contained in a set of files in [BED format](http://genome.ucsc.edu/FAQ/FAQformat#format1); these files are within a compressed directory named [`masks.tgz`](data/masks.tgz). Download this directory by clicking on the link and copy it to your analysis directory.
+	The downloaded sequence will in in Fasta format in a file named `NC_031969.fasta`.
 
 * Unless the directory with the files in BED format has already been uncompressed automatically, do so with the following command:
 
@@ -200,1072 +171,352 @@ As in tutorial [Species-Tree Inference with SNP Data](../species_tree_inference_
 		
 	The second and third of these columns indicate the beginning and the end of chromosomal regions that were masked because SNPs in these regions would not have been detected due to low coverage or other reasons. You'll see that these uncallable regions are quite long compared to the callable regions in between them. In the example shown above, only few callable sites were found within the first 100 kb of the chromosome. Overall, about two thirds of the chromosome are uncallable, which can be explained by a combination of several causes, including mapping to a distant reference, masking of repetitive regions, and rigorous filtering of sites close to insertions and deletions. However, even after conservatively setting all these regions to missing, the remaining sequence information will be more than sufficient for phylogenetic analysis.
 
-* The three different types of information (the SNP data, the reference sequence, and the information on uncallable regions) will be combined to generate chromosome-length sequences in Fasta format by the Ruby script [`fill_seq.rb`](src/fill_seq.rb). To reduce the memory requirement of this script, we are going to run it separately for each of the samples included in the dataset, and as input for the script we are going to use individual VCF files that contain SNP data only for the respective sample. Prepare these individual VCF files from the full VCF file [`NC_031969.f5.sub1.phased.masked.mod.vcf.gz`](data/NC_031969.f5.sub1.phased.masked.mod.vcf.gz), using the following command (if you copied the VCF file from the analysis directory of tutorial [Analysis of Introgression with SNP Data](../analysis_of_introgression_with_snp_data/README.md), it might be uncompressed; if so, just remove the file extension `.gz` in this command):
+* The three different types of information (the SNP data, the reference sequence, and the information on uncallable regions) will be combined to generate chromosome-length sequences in Fasta format by the Ruby script [`fill_seq.rb`](src/fill_seq.rb). To reduce the memory requirement of this script, we are going to run it separately for each of the samples included in the dataset, and as input for the script we are going to use individual VCF files that contain SNP data only for the respective sample. Prepare these individual VCF files from the full VCF file [`NC_031969.f5.sub1.phased.masked.vcf.gz`](data/NC_031969.f5.sub1.phased.masked.vcf.gz), using the following command (if you copied the VCF file from the analysis directory of tutorial [Analysis of Introgression with SNP Data](../analysis_of_introgression_with_snp_data/README.md), it might be uncompressed; if so, just remove the file extension `.gz` in this command):
 
 		for i in IZC5 AUE7 JBD6 JUH9 LJC9 KHA7 IVE8 JWH2 JWG9 JWH4 JWH6 ISB3 ISA8 KFD2
 		do
-			bcftools view -s ${i} -o ${i}.NC_031969.f5.masked.mod.vcf NC_031969.f5.sub1.phased.masked.mod.vcf.gz
+			bcftools view -s ${i} -o ${i}.NC_031969.f5.masked.vcf NC_031969.f5.sub1.phased.masked.vcf.gz
 		done
 		
-	The above command should have written 14 separate uncompressed VCF files. To make sure that these have been generated, you could use `ls *.NC_031969.f5.masked.mod.vcf`.
+	The above command should have written 14 separate uncompressed VCF files. To make sure that these have been generated, you could use `ls *.NC_031969.f5.masked.vcf`.
 
-* We can now run the script [`fill_seq.rb`](src/fill_seq.rb) to combine, for each sample, the SNP data with the reference sequence and the information on callable regions, using the following command (this will take about ten minutes to finish):
+* We can now run the script [`fill_seq.rb`](src/fill_seq.rb) to combine, for each sample, the SNP data with the reference sequence and the information on callable regions, using the following command:
 
-		for i in *.NC_031969.f5.masked.mod.vcf
+		for i in *.NC_031969.f5.masked.vcf
 		do
-			sample_id=`basename ${i%.NC_031969.f5.masked.mod.vcf}`
+			sample_id=`basename ${i%.NC_031969.f5.masked.vcf}`
 			echo -n "Translating file ${i}..."
-			ruby fill_seq.rb ${i} NC_031969.fasta masks/${sample_id}.NC_031969.f5.merged.bed ${sample_id}.NC_031969.f5.masked.mod.fasta
+			ruby fill_seq.rb ${i} NC_031969.fasta masks/${sample_id}.NC_031969.f5.merged.bed ${sample_id}.NC_031969.f5.masked.fasta 1
 			echo " done."
 		done
 
-	As you can see from the command above, the script `fill_seq.rb` expects four command-line arguments. These are, in this order,
+	 This should take about ten minutes to finish. As you can see from the command above, the script `fill_seq.rb` expects five command-line arguments. These are, in this order,
 	
 	* the VCF file with SNP information,
 	* the reference sequence in Fasta format,
 	* the file in BED format containing information about callable regions,
 	* the name of an output file, which will be written in Fasta format.
+	* a flag specifying whether only the first, the second, or both phased haplotypes should be written to the output. Here, we arbitrarily chose the first haplotype.
 
 	The script expects that all input files are for a single chromosome only, so we would have to run it multiple times if we would use information from several chromosomes.
 
 * Have a look at one of the Fasta files generated by script `fill_seq.rb`, for example using the following command:
 
-		less -S AUE7.NC_031969.f5.masked.mod.fasta
+		less -S AUE7.NC_031969.f5.masked.fasta
 		
-	You'll see that it contains two sequences, one for each haplotype of the phased VCF file.
+	You'll see that it contains a single sequence, which corresponds to the first haplotype of the phased VCF file.
 
-* Next, combine all sequences into a single file in Fasta format named `NC_031969.f5.masked.mod.fasta`. Because all sequences are already aligned in the same way to the tilapia reference sequence, the combined file will already be perfectly aligned and no realignment with a tool like MAFFT (see tutorial [Multiple Sequence Alignment](../multiple_sequence_alignment/README.md)) will be necessary. The combined Fasta file `NC_031969.f5.masked.mod.fasta` will have a file size of about 1 Gb, thus make sure that you have sufficient disk space left before executing the following command:
+* Next, combine all sequences into a single file in Fasta format named `NC_031969.f5.masked.fasta`. Because all sequences are already aligned in the same way to the tilapia reference sequence, the combined file will already be perfectly aligned and no realignment with a tool like MAFFT (see tutorial [Multiple Sequence Alignment](../multiple_sequence_alignment/README.md)) will be necessary. The combined Fasta file `NC_031969.f5.masked.fasta` will have a file size of about 500 MB. To combine the sequences, execute the following command:
 
-		cat *.NC_031969.f5.masked.mod.fasta > NC_031969.f5.masked.mod.fasta
+		cat *.NC_031969.f5.masked.fasta > NC_031969.f5.masked.fasta
 		
-* You could now remove the per-sample Fasta files to save space, using the following command:
+* You could now remove the per-sample Fasta and VCF files to save disk space, using the following command:
 
-		rm *.NC_031969.f5.masked.mod.fasta
-
-* As you've already seen, the Fasta file `NC_031969.f5.masked.mod.fasta` contains two sequences for each sample (and, given that we're here using a single sample per species, this means that it also contains two sequences per species). If we would use this dataset for analyses with Saguaro, these analyses might infer recombination breakpoints at which only the relationships between the two sequences per species change but not the relationships among species. While it would be a more conservative approach to also account for these recombination breakpoints, one could argue that their influence on the phylogenetic inference of the species tree is likely minimal. Therefore, and in order to shorten the run time of the Saguaro analysis, we are going to reduce the dataset for the Saguaro analysis to a single sequence per species, meaning that only recombination breakpoints affecting the relationships among species will be detected. To write the first sequence of each sample to a new file named `NC_031969.f5.masked.mod.A.fasta`, use the following command:
-
-		cat NC_031969.f5.masked.mod.fasta | grep -A 1 "_A" | grep -v "^--$" > NC_031969.f5.masked.mod.A.fasta
-
-* The next command can only be executed if Saguaro has been installed. Thus, if you could not install Saguaro on your own computer but on a remote Linux server, you should now copy the file `NC_031969.f5.masked.mod.A.fasta` to the Linux server, with the `scp` or `rsync` command-line tools.
-
-* To prepare the sequence alignment for analysis with Saguaro, it needs to be converted from Fasta format into the "Feature" format of Saguaro. This can be done with the tool Fasta2HMMFeature that is part of the Saguaro installation. To see the available options of Fasta2HMMFeature, just type the program name on the command line:
-
-		Fasta2HMMFeature
-		
-	This will show the following text:
-	
-		Fasta2HMMFeature: Converts multi-fasta data into a Saguaro-digestable file of features
-
-		Available arguments:
-		
-		-i<string> : input fasta file (multiple alignment)
-		-o<string> : binary output file
-		-nosame<bool> : skip positions in which all calls are the same (def=0)
-		-m<int> : minimum coverage (def=2)
-		-d<int> : minimum disagreeing (def=2)
-		-n<string> : chromosome name (def=mult)
-
-	With the options `-m` and `-d` we can specify that Saguaro should only use positions with a minimum coverage (here, this means non-missing sequence information) or to use only those where at least two sequences are different from the others. The default values for both is 2, which means that only parsimony-informative sites are considered.
-	
-* Use the Fasta file `NC_031969.f5.masked.mod.A.fasta` as the input for the Saguaro analysis with option `-i` and name the output `NC_031969.f5.masked.mod.A.feature` with option `-o`. Also make sure to set the chromosome name to `NC_031969.f5.masked.mod` (without the `.A` at the end) with option `-n`; this will be important when the Saguaro results are later used to generate alignment blocks. Thus, execute Fasta2HMMFeature with the following command:
-
-		Fasta2HMMFeature -i NC_031969.f5.masked.mod.A.fasta -o NC_031969.f5.masked.mod.A.feature -n NC_031969.f5.masked.mod
-
-* Next, have a look at the available options for Saguaro, by typing the program name on the command line:
-
-		Saguaro
-		
-	This should output the following text:
-	
-		Saguaro: Smoothly, automatically and generically uncover the ancestry of related organisms.
+		rm *.NC_031969.f5.masked.fasta
+		rm *.NC_031969.f5.masked.vcf
 
 
-		Available arguments:
-
-		-f<string> : Feature vector (def=)
-		-l<string> : Feature vector list file (def=)
-		-o<string> : output directory
-		-cycle<int> : iterations per cycle (def=2)
-		-iter<int> : iterations with split (def=40)
-		-t<double> : transition penalty (def=150)
-		-resume<int> : resume w/ iteration # (def=0)
-		-neurons<int> : number of neurons in the SOM (def=800)
-
-		
-	You'll see that input can either be provided with option `-f` or option `-l`. Of these, `-f` followed by the name of a Feature file should be used when you have just a single such file (as in our case), and a list of file names can be provided with with `-l` if you have multiple Feature files for different chromosomes. The options `-cycle`, `-iter`, and `-neurons` determine settings for the hidden Markov model of Saguaro. The default values for these settings are relatively thorough and usually appropriate. To reduce the run time of Saguaro, we will here, however, use less cycles and iterations as well as a smaller number of neurons. Another parameter that might be worth modifying is the transition penalty, specified with option `-t`. By reducing the transition penalty, the sensitivity of Saguaro to detect recombination breakpoints can be increased. This means that Saguaro would then be less likely to miss true recombination breakpoints but it might also lead to the detection of false positives. To run Saguaro with `NC_031969.f5.masked.mod.A.feature` as the input file, `saguaro_results` as the name of the output directory, 10 iterations with 1 cycle per iterations, and 100 neurons, use the following command:
-	
-		Saguaro -f NC_031969.f5.masked.mod.A.feature -o saguaro_results -iter 10 -cycle 1 -neurons 100
-
-* Once the Saguaro analysis has finished, results should have been written to directory `saguaro_results`. Have a look at the content of this directory. You'll see the following files:
-
-		HMMTrain.out.0
-		HMMTrain.out.1
-		HMMTrain.out.2
-		...
-		LocalTrees.out
-		saguaro.cactus
-		saguaro.config
-		saguaro.garbage
-		saguaro.garbage.vec
-		
-	Of these, only `LocalTrees.out` and `saguaro.cactus` are relevant for us. If you ran the Saguaro analysis on a Linux server because you could not install Saguaro on your own computer, you could now copy these files back to your own computer with `scp` or `rsync`. If you were unable to run the Saguaro analysis at all, you can download the ready-made result files [`LocalTrees.out`](res/LocalTrees.out) and [`saguaro.cactus`](res/saguaro.cactus) with the two links.
-
-* Open file `saguaro.cactus` in a text editor, or from the command line with the following command:
-
-		less saguaro.cactus
-
-	You should see more or less the following content:
-	
-		cactus0
-		AUE7_A  ISA8_A  ISB3_A  IVE8_A  IZC5_A  JBD6_A  JUH9_A  JWG9_A  JWH2_A  JWH4_A  JWH6_A  KFD2_A  KHA7_A  LJC9_A
-		AUE7_A  -0.000000       0.793221        0.872338        0.839333        0.524633        0.687894        0.843126        0.866756        0.819825        0.839036        0.877009        0.834673        0.834047        0.069426
-		ISA8_A  0.793221        -0.000000       0.304833        0.368500        0.444325        0.384680        0.335022        0.323023        0.322399        0.358284        0.331484        0.486985        0.495132        0.906134
-		ISB3_A  0.872338        0.304833        -0.000000       0.356743        0.493709        0.430859        0.232075        0.288845        0.309689        0.357865        0.222982        0.526403        0.524468        0.987994
-		IVE8_A  0.839333        0.368500        0.356743        -0.000000       0.478407        0.410530        0.337957        0.340104        0.314575        0.189210        0.340049        0.490898        0.504986        0.935056
-		IZC5_A  0.524633        0.444325        0.493709        0.478407        -0.000000       0.390289        0.503307        0.485551        0.459490        0.475014        0.496944        0.486223        0.500198        0.650715
-		JBD6_A  0.687894        0.384680        0.430859        0.410530        0.390289        -0.000000       0.427936        0.410087        0.411593        0.412935        0.439920        0.422403        0.432646        0.782539
-		JUH9_A  0.843126        0.335022        0.232075        0.337957        0.503307        0.427936        -0.000000       0.261218        0.301458        0.370035        0.287994        0.537055        0.533601        0.951846
-		JWG9_A  0.866756        0.323023        0.288845        0.340104        0.485551        0.410087        0.261218        -0.000000       0.299211        0.368540        0.292421        0.512795        0.524726        0.958697
-		JWH2_A  0.819825        0.322399        0.309689        0.314575        0.459490        0.411593        0.301458        0.299211        -0.000000       0.313155        0.343014        0.504644        0.509835        0.921273
-		JWH4_A  0.839036        0.358284        0.357865        0.189210        0.475014        0.412935        0.370035        0.368540        0.313155        -0.000000       0.360356        0.475263        0.494985        0.951263
-		JWH6_A  0.877009        0.331484        0.222982        0.340049        0.496944        0.439920        0.287994        0.292421        0.343014        0.360356        -0.000000       0.525858        0.537397        0.963240
-		KFD2_A  0.834673        0.486985        0.526403        0.490898        0.486223        0.422403        0.537055        0.512795        0.504644        0.475263        0.525858        -0.000000       0.079350        0.938385
-		KHA7_A  0.834047        0.495132        0.524468        0.504986        0.500198        0.432646        0.533601        0.524726        0.509835        0.494985        0.537397        0.079350        -0.000000       0.929866
-		LJC9_A  0.069426        0.906134        0.987994        0.935056        0.650715        0.782539        0.951846        0.958697        0.921273        0.951263        0.963240        0.938385        0.929866        -0.000000
-		cactus1
-		...
-
-	This is the distance matrix for the first cactus (cactus0), followed by distance matrices for all other inferred cacti.
-
-* Next, open file [`LocalTrees.out`](res/LocalTrees.out) in a text editor or on the command line with the `less` command. You'll see something like this:
-
-		Reading features...
-		done!
-		Reading models.
-		Dynprog'ing...
-		Setting up HMM...
-		Adding word cactus0 as # 0
-		...
-
-	Scroll down a bit to this part:
-
-		...
-		Processed: 80000 (95.6034 %)
-		REPORTING Traceback and Update
-		cactus7 NC_031969.f5.masked.mod: 204750 - 3479153       length: 3274403 (frames 1-2704 l=2703)  score=62.9241
-		AUE7_A  ISA8_A  ISB3_A  IVE8_A  IZC5_A  JBD6_A  JUH9_A  JWG9_A  JWH2_A  JWH4_A  JWH6_A  KFD2_A  KHA7_A  LJC9_A
-		AUE7_A  -0.00   0.77    0.92    0.88    0.65    0.69    0.89    0.87    0.87    0.84    0.88    0.80    0.76    0.09
-		ISA8_A  0.77    -0.00   0.46    0.47    0.59    0.49    0.42    0.42    0.43    0.45    0.42    0.53    0.55    0.87
-		ISB3_A  0.92    0.46    -0.00   0.34    0.55    0.52    0.30    0.40    0.34    0.40    0.24    0.52    0.55    0.97
-		IVE8_A  0.88    0.47    0.34    -0.00   0.57    0.49    0.34    0.39    0.36    0.25    0.38    0.56    0.57    0.92
-		IZC5_A  0.65    0.59    0.55    0.57    -0.00   0.53    0.61    0.63    0.61    0.61    0.62    0.54    0.54    0.74
-		JBD6_A  0.69    0.49    0.52    0.49    0.53    -0.00   0.52    0.51    0.53    0.52    0.51    0.46    0.48    0.73
-		JUH9_A  0.89    0.42    0.30    0.34    0.61    0.52    -0.00   0.38    0.33    0.42    0.33    0.53    0.58    0.95
-		JWG9_A  0.87    0.42    0.40    0.39    0.63    0.51    0.38    -0.00   0.37    0.39    0.39    0.54    0.57    0.94
-		JWH2_A  0.87    0.43    0.34    0.36    0.61    0.53    0.33    0.37    -0.00   0.42    0.37    0.57    0.56    0.95
-		JWH4_A  0.84    0.45    0.40    0.25    0.61    0.52    0.42    0.39    0.42    -0.00   0.43    0.53    0.55    0.91
-		JWH6_A  0.88    0.42    0.24    0.38    0.62    0.51    0.33    0.39    0.37    0.43    -0.00   0.55    0.56    0.94
-		KFD2_A  0.80    0.53    0.52    0.56    0.54    0.46    0.53    0.54    0.57    0.53    0.55    -0.00   0.16    0.85
-		KHA7_A  0.76    0.55    0.55    0.57    0.54    0.48    0.58    0.57    0.56    0.55    0.56    0.16    -0.00   0.84
-		LJC9_A  0.09    0.87    0.97    0.92    0.74    0.73    0.95    0.94    0.95    0.91    0.94    0.85    0.84    -0.00
-		cactus4 NC_031969.f5.masked.mod: 3481523 - 3581323      length: 99800   (frames 2705-2808 l=103)        score=1692.5
-		...
-		
-	These lines contain information on the first segment identified by Saguaro. It is assigned to cactus7, and is located between position 204750 and position 3479153 on the chromosome named "NC_031969.f5.masked.mod". In contrast to distance matrices given in file `saguaro.cactus`, the distance matrices given in this in `LocalTrees.out` are calculated per segment, not per cactus. Nevertheless, the distance matrix of the first segment between position 204750 and position 3479153 is likely very similar to that of cactus7, otherwise, this segment would not have been assigned to this cactus.
-
-	As we're not particularly interested in the distance matrices of segments, but more in the placement of segment boundaries so that we can select alignment regions for phylogenetic analyses that are not broken up by boundaries, the most imporant information for us is in the header lines for each segment.
-
-* To see only header information for each cactus, type this command:
-
-		cat LocalTrees.out | grep length
-		
-	You should see output like this:
-
-		cactus7	NC_031969.f5.masked.mod: 204750 - 3479153	length: 3274403	(frames 1-2704 l=2703) 	score=62.9241
-		cactus4	NC_031969.f5.masked.mod: 3481523 - 3581323	length: 99800	(frames 2705-2808 l=103) 	score=1692.5
-		cactus7	NC_031969.f5.masked.mod: 3590084 - 6158718	length: 2568634	(frames 2809-8397 l=5588) 	score=104.99
-		cactus4	NC_031969.f5.masked.mod: 6158744 - 6166115	length: 7371	(frames 8398-8429 l=31) 	score=18425
-		cactus5	NC_031969.f5.masked.mod: 6166197 - 6167838	length: 1641	(frames 8430-8438 l=8) 	score=65580.2
-		cactus6	NC_031969.f5.masked.mod: 6167956 - 6182408	length: 14452	(frames 8439-8507 l=68) 	score=8637.73
-		cactus5	NC_031969.f5.masked.mod: 6182675 - 6188272	length: 5597	(frames 8508-8523 l=15) 	score=37313
-		...
-
-* To find out how many segments Saguaro has identified, you could type the following command:
-
-		cat LocalTrees.out | grep length | wc -l
-
-* In order to visualize recombination breakpoints and the cacti assigned to the different chromosomal regions, you can use the Ruby script [`paint_chromosomes.rb`](src/paint_chromosomes.rb). To find out how to run this script, you could type this command:
-
-		ruby paint_chromosomes.rb
-
-	This should show the following help text:
-
-		paint_chromosomes.rb
-
-		This script uses output from the software Saguaro to paint
-		chromosomes according to Saguaro cacti. The output will be
-		written in svg format.
-
-		This script should be run e.g. with
-		ruby paint_chromosomes.rb LocalTrees.out LocalTrees.svg
-		where 'LocalTrees.out' should be replaced with the actual path
-		to the Saguaro output file.
-
-* Now, run the script `paint_chromosomes.rb` with the following command:
-
-		ruby paint_chromosomes.rb LocalTrees.out
-		
-	This will generate a vector graphic file in SVG format that will be written to the same directory in which `LocalTrees.out` is placed, and it will be named `LocalTrees.svg`.
-	
-* Open the vector graphic file [`LocalTrees.svg`](res/LocalTrees.svg) with a program capable of reading files in SVG format, for example with a browser such as Firefox or with Adobe Illustrator. This plot should look as shown below:<p align="center"><img src="img/LocalTrees.png" alt="Saguaro" width="800"></p>
-
-	In this visualization, chromosomal regions assigned to the most common cactus are drawn in dark gray, and segments assigned to other cacti are shown in red, orange, cyan, and light green, purple (in decreasing frequency). With more than six different cacti, all remaining cacti are shown in light gray. You'll notice that the most frequent cactus (in dark gray) is found in the first part of the chromosome, that the last part of the chromosome is dominated by the third-most frequent cactus (in orange), and that the regions in the center of the chromosome are generally shorter than those at the chromosome ends. This observation disagrees with the pattern expected if recombination was more frequent in in the peripheries of the chromosome, which is commonly observed in animals and plants ([Haenel et al. 2018](https://onlinelibrary.wiley.com/doi/abs/10.1111/mec.14699)). But as we will see below, the alignment contains a higher amount of missing data towards the chromosome ends, which is likely responsible for the lower number of detected recombination breakpoints those parts of the chromosome. However, keep in mind that these results may not be particularly accurate, as we've only performed a short Saguaro analysis.
-
-<a name="alignments"></a>
+<a name="blocks"></a>
 ## Identifying alignment blocks for phylogenetic analysis
 
-After having inferred recombination breakpoints with Saguaro, we can now cut the breakpoint-free parts of the chromosome-length alignment into alignment blocks of a fixed length, and we can try to identify the most suitable of these blocks for subsequent phylogenetic analysis. Ideally, the blocks used for phylogenetic analysis should have as little missing data as possible, be as informative as possible, and show no signs of recombination that may have remained undetected in the Saguaro analysis. In this part of the tutorial, we are going to quantify these characteristics for all alignment blocks to select a set of blocks for phylogenetic analysis with BEAST2 in the next part of the tutorial.
+After having generated a chromosome-length alignment, we can now apply a sliding-window approach to identify blocks of the alignment that are suitable for phylogenetic analysis. Ideally, the blocks used for phylogenetic analysis should have as little missing data as possible, be as informative as possible, and show no signs of within-block recombination. In this part of the tutorial, we are going to extract alignment blocks from the chromosome-length alignment and we will further filter these based on informativeness and signals of recombinaiton.
 
-As the length of each block, we here use 50 kb, assuming that this length is a good compromise between increasing probability of undetected recombination with longer blocks and decreasing phylogenetic signal with shorter blocks. For a more thorough analysis, however, it might be worth testing this assumption with blocks of different sizes.
+As the length of each block, we here use 5 kb, assuming that this length is a good compromise between increasing probability of undetected recombination with longer blocks and decreasing phylogenetic signal with shorter blocks. For a more thorough analysis, however, it might be worth testing this assumption with blocks of different sizes.
 
-* To cut the breakpoint-free parts of the alignment into individual alignment blocks, we can use the Ruby script [`generate_alignments.rb`](src/generate_alignments.rb). This script was specifically written to read output by Saguaro as well as the input file(s) used in the Saguaro analysis. It expects four command-line arguments; these are
-	* the name of the `LocalTrees.out` output file of Saguaro,
-	* the name of a directory in which the alignment files used for the Saguaro analysis are located,
-	* the name of a new directory to which all output files will be written,
-	* the length of the alignment blocks.
+* To extract alignment blocks from the chromosome-length alignment, we can use the Ruby script [`extract_blocks.rb`](src/extract_blocks.rb). This script expects four command-line arguments; these are
+	* the name of the chromosome-length alignment in Fasta format,
+	* the name of a new directory to which all block-alignment files will be written in Nexus format,
+	* the size of the alignment blocks,
+	* (optionally) a maximum proportion of missing data allowed in alignment blocks.
 
-	Run the script with the following command:
+	Thus, to name the output directory `blocks`, use a block size 5,000 bp, and allow maximally half of the alignment to consist of missing data, run the script with the following command:
 	
-		ruby generate_alignments.rb LocalTrees.out . alignment_blocks 50000
+		ruby extract_blocks.rb NC_031969.f5.masked.fasta blocks 5000 0.5
 		
-	This will generate as many non-overlapping alignment blocks of 50 kb as possible without including the recombination breakpoints identified by Saguaro. With the settings used in the command above, the script will read file `LocalTrees.out` and will identify chromosome names based on the information in this file. In our case, it will identify "NC_031969.f5.masked.mod" as a chromosome name, and it will search for file `NC_031969.f5.masked.mod.fasta` in the directory that's specified as the second command line argument, which here simply is `.`, the shortcut for the current directory. Output files in Nexus format will be written to a directory named `alignment_blocks`, which will be created inside the current directory.
+	**Question 2:** How many alignment blocks were written and how many were removed due to a high proportion of missing data? [(see answer)](#q2)
+	
+* Have a look at the new directory named `blocks`. Note that the files in this directory are named according to the name of the linkage group and the first and the last position of the alignment block:
 
-* Have a look at the new directory named `alignment_blocks`. Note that the files in this directory are named according to the name of the linkage group and the first and the last position of the alignment block:
-
-		NC_031969.f5.masked.mod_00666951_00716950.nex
-		NC_031969.f5.masked.mod_01316951_01366950.nex
-		NC_031969.f5.masked.mod_01366951_01416950.nex
-		NC_031969.f5.masked.mod_01566951_01616950.nex
-		NC_031969.f5.masked.mod_01716951_01766950.nex
-		NC_031969.f5.masked.mod_01816951_01866950.nex
-		NC_031969.f5.masked.mod_02066951_02116950.nex
+		NC_031969.f5.masked_02505001_02509999.nex
+		NC_031969.f5.masked_04865001_04869999.nex
+		NC_031969.f5.masked_04910001_04914999.nex
+		NC_031969.f5.masked_04925001_04929999.nex
+		NC_031969.f5.masked_04935001_04939999.nex
+		NC_031969.f5.masked_05010001_05014999.nex
+		NC_031969.f5.masked_05030001_05034999.nex
 		...
 
-* Find out how many alignment blocks were written, using the following command:
-
-		ls alignment_blocks/*.nex | wc -l
-		
 * To facilitate the phylogenetic analyses, it will help to simplify the alignment names with the following set of commands.
 
-		for i in alignment_blocks/*.nex
+		for i in blocks/*.nex
 		do
-			new_name=`echo ${i} | sed 's/\.f5\.masked\.mod//g'`
+			new_name=`echo ${i} | sed 's/\.f5\.masked//g'`
 			mv ${i} ${new_name}
 		done
 
-* The files in directory `alignment_blocks` should now be named like this:
+* The files in directory `blocks` should now be named like this:
 
-		NC_031969_00666951_00716950.nex
-		NC_031969_01316951_01366950.nex
-		NC_031969_01366951_01416950.nex
-		NC_031969_01566951_01616950.nex
-		NC_031969_01716951_01766950.nex
-		NC_031969_01816951_01866950.nex
-		NC_031969_02066951_02116950.nex
+		NC_031969_02505001_02509999.nex
+		NC_031969_04865001_04869999.nex
+		NC_031969_04910001_04914999.nex
+		NC_031969_04925001_04929999.nex
+		NC_031969_04935001_04939999.nex
+		NC_031969_05010001_05014999.nex
+		NC_031969_05030001_05034999.nex
 		...
 
-* Pick one of the files in this directory at random, and open it either in a text editor or in AliView just to get a feeling for the size of the alignment block, as well as for its sequence variation and the amount of missing data. You should see something like this:<p align="center"><img src="img/aliview1.png" alt="AliView" width="600"></p>
+* Pick one of the files in this directory at random, and open it either in a text editor or in AliView just to get a feeling for the size of the alignment block, as well as for its sequence variation and the amount of missing data. You should see something like this:<p align="center"><img src="img/aliview1.png" alt="AliView" width="600"></p> Like the alignment shown above, many alignments still contain quite a proportion of missing data due to the strict filtering based on coverage, mapping quality, and indel proximity.
 
-	Like the alignment shown above, many alignments contain a very large proportion of missing data due to the strict filtering based on coverage, mapping quality, and indel proximity. Some alignment may even consist exclusively of missing data.
+* To filter the alignment blocks by phylogenetic informativeness, we are going to quantify their numbers of parsimony-informative sites. These are the sites at which at least two sequences share a derived site, so that their grouping is supported by this site. In other words, parsimony-informative sites result only from subsitutions on internal branches of the phylogeny, not from those that occur on terminal branches. The Ruby script [`get_number_of_pi_sites.rb`](src/get_number_of_pi_sites.rb) allows the quick calculation of this number from an alignment in Nexus format. Run this script with the following command to quantify the numbers of parsimony-informative sites in all alignment blocks:
 
-* We are going to use mean overall node support resulting from maximum-likelihood tree inference as one measure of phylogenetic informativeness. This inference will be done with the software RAxML, which you will be familiar with if you followed the tutorials [Maximum-Likelihood Phylogenetic Inference](../ml_phylogeny_inference/README.md) or [Maximum-Likelihood Species-Tree Inference](../ml_species_tree_inference/README.md). If you didn't, you may want to look up the instructions for these tutorials to learn more about RAxML analyses. However, to avoid RAxML analyses of alignment blocks without sequences data or with very little sequence data, we are first going to remove those alignment blocks with a proportion of missing data above 90%. We can do so with the following set of commands that uses the Ruby script [`get_proportion_of_missing_data.rb`](src/get_proportion_of_missing_data.rb). The input and output for this script is quite simple: It the name of a file in Nexus format as input and reports nothing but the proportion of missing data on the screen. With the set of commands below, this proportion is assigned to the variable "p\_missing" and if this variable is above 0.9, the Nexus-format alignment file is removed. Execute this set of commands:
-
-		for i in alignment_blocks/*.nex
+		for i in blocks/*.nex
 		do
-			p_missing=`ruby get_proportion_of_missing_data.rb ${i}`
-			if [[ ${p_missing} > 0.9 ]]
-			then
-				rm ${i}
-			fi
+			ruby get_number_of_pi_sites.rb ${i}
 		done
 
-* Now, count the number of alignment files in directory `alignment_blocks` once again with the following command:
+	This should show that most alignments contain between 10 and 30 parsimony-information sites. Particularly those with 10 or less such sites will not be informative enough to fully resolve the phylogeny of the 14 species in the dataset, because even if every internal branch would be supported by only a single substitution, this would require 11 parsimony-informative sites.
 
-		ls alignment_blocks/*.nex | wc -l
+* Before applying a threshold on the number of parsimony-informative sites, we are going to quantify the number of so-called hemiplasies in each alignment block as a second criterion for filtering. Simply put, a hemiplasy is a site that supports a grouping that is in conflict with a grouping supported by another site of the same alignment. Possible explanations for hemiplasy include sequencing errors but within-alignment recombination in combination with incomplete lineage sorting can also produce hemiplasies. And because within-alignment recombination can lead to unreliable phylogenetic inference, this means that alignments with none of few hemiplasies are more suitable for phylogenetic inference than other alignments with many hemiplasies ([Maynard Smith and Smith, 1998](https://academic.oup.com/mbe/article/15/5/590/987861)).
 
-	**Question 1:** How many alignments were removed due to a proportion of missing data greater than 90%? [(see answer)](#q1)
-
-* Next, we are going to run maximum-likelihood tree inference with the software RAxML for each alignment file. We are going to do so with the following set of commands that first of all uses the Python script `convert.py` to convert each alignment file from Nexus to Phylip format, as RAxML does not accept Nexus format. The RAxML analysis will be performed with the "GTRCAT" model of [Stamatakis 2006](https://ieeexplore.ieee.org/abstract/document/1639535/); however, as were are now only interested in the mean node support and not in the inferred tree itself, the choice of substitution model is not going to have a strong influence on our results. By using the options `-f a -x ${RANDOM} -N 100`, we specify that the maximum-likelihood analysis should be followed by bootstrapping to assess node support with 100 replicates. With the commands below, RAxML is set to use four CPUs with the option `-T 4` to speed up the analysis, but if you have less CPUs available on your machine, you should change this number to e.g. `-T 2`. Then, run this set of commands:
-
-		for i in alignment_blocks/*.nex
+	Fortunately, the number of hemiplasies can easily be approximated as the difference between the number of variable sites and the so-called parsimony score of an alignment, which is the lowest number of substitutions on a phylogeny that is required to produce the alignment (the result is only an approximation because some hemiplasies may increase the parsimony-score by more than 1 if three or more substitutions are required to explain them). To calculate the number of variable sites, the script [`get_number_of_variable_sites.rb`](src/get_number_of_variable_sites.rb) can be used. Before moving on to calculate parsimony scores, first apply script [`get_number_of_variable_sites.rb`](src/get_number_of_variable_sites.rb) to get a feeling of the number of variable sites in the alignments:
+	
+		for i in blocks/*.nex
 		do
-			# Get the alignment id.
+			ruby get_number_of_variable_sites.rb ${i}
+		done
+
+	You should see that most alignments have around 40-70 variable sites, but some particularly variable alignments have over 100.
+
+* The calculation of parsimony scores requires that the software PAUP* is installed on the command line, which can be checked with `paup -V`. If PAUP* seems to be working, the BASH script [`get_parsimony_score.sh`](src/get_parsimony_score.sh) can be used to obtain the parsimony score of a Nexus-format alignment. This script performs several steps: It writes a command file for PAUP* which specifies the task that PAUP* should perform as well as the input file, then it runs PAUP* with this command file, it reads the output of PAUP* to extract the parsimony score, and finally, it removes the temporary files that were written by PAUP* to clean up the directory. To see whether this process works well, run script [`get_parsimony_score.sh`](src/get_parsimony_score.sh) with a randomly selected alignment file, for example, using:
+
+		bash get_parsimony_score.sh blocks/NC_031969_08400001_08404999.nex
+		
+	With this alignment, the parsimony score is 115.
+	
+* Now, let's combine the different scripts to quantify parsimony-score and the number of hemiplasies for all alignments, and record this information in a table. The following block of code will allow this, writing the result to a new file named `block_stats.txt`:
+
+		echo -e "id\tn_pi_sites\tn_hemiplasies" > block_stats.txt
+		for i in blocks/*.nex
+		do
 			id=`basename ${i%.nex}`
+			n_pi_sites=`ruby get_number_of_pi_sites.rb ${i}`
+			n_variable_sites=`ruby get_number_of_variable_sites.rb ${i}`
+			parsimony_score=`bash get_parsimony_score.sh ${i}`
+			n_hemiplasies=$((${parsimony_score}-${n_variable_sites}))
+			echo -e "${id}\t${n_pi_sites}\t${n_hemiplasies}"
+		done >> block_stats.txt
 
-			# Convert the alignment to Phylip format.
-			python3 convert.py -f phylip ${i} tmp.phy
-			
-			# Run maximum-likelihood tree inference and assess node support by bootstrapping.
-			raxml -T 4 -m GTRCAT -n ${id} -s tmp.phy --silent -p ${RANDOM} -f a -x ${RANDOM} -N 100
-			
-			# Clean up RAxML output files.
-			rm tmp.phy*
-			rm RAxML_bipartitionsBranchLabels.*
-			rm RAxML_bestTree.*
-			rm RAxML_bootstrap.*
-			mv RAxML_bipartitions.* alignment_blocks/${id}.tre
-			mv RAxML_info.* alignment_blocks/${id}.info
-		done
-		
-	With the about 470 alignment blocks and bootstrapping to be performed for each of them, these RAxML analyses will take a rather long time, around 7 hours. Thus, unless you have the chance to run these analyses overnight, you'll probably rather want to continue the rest of this tutorial with the ready-made RAxML results from my analysis. You can find these in the compressed directory [`alignment_blocks.tgz`](res/alignment_blocks.tgz), which you can download by clicking on the link. This compressed directory contains not only the RAxML output but also the corresponding alignment files. As these alignment files may not be identical to those resulting from your Saguaro analysis, you should replace your `alignment_blocks` directory with the downloaded version of it or the RAxML tree files would not fit with your alignment files. To uncompress directory `alignment_blocks.tgz`, use this command (but your browser might have automatically uncompressed it after downloading):
-	
-		tar -xzf alignment_blocks.tgz
-		
-* Now, have a quick look at the files in the `alignment_blocks` directory. You'll see that for each alignment file named, e.g. `NC_031969_00666951_00716950.nex`, there is now also a tree file named `NC_031969_00666951_00716950.tre`, as well as a file with the extension `.info`. The tree file contains nothing more than the tree inferred by RAxML, in Newick format and with bootstrap support values, and the file with the `.info` extension contains the screen output of RAxML for this analysis.
+* Have a look at the content of file [`block_stats.txt`](res/block_stats.txt). The first part of the content should be the following, where the number of parsimony-informative sites is written in the second column and the third column contains the (approximated) number of hemiplasies:
 
-* The alignment files and the tree files will now be used jointly to assess how well each alignment block is suited for phylogenetic analysis. For this, we are going to use several scripts at once to calculate the proportion of missing data and the number of [parsimony-informative sites](https://en.wikipedia.org/wiki/Informative_site) for each alignment, as well as the mean bootstrap support for the corresponding tree and the probability of undetected within-block recombination. The following scripts will be required for this; thus, make sure that they are all located in your analysis directory before you continue:
-	* The Ruby script [`get_proportion_of_missing_data.rb`](src/get_proportion_of_missing_data.rb), which was used already before in this tutorial, will be used once again to calculate the proportion of missing data for each alignment block.
-	* The Ruby script [`get_number_of_pi_sites.rb`](src/get_number_of_pi_sites.rb) will be used to calculate the number of parsimony-informative sites for each alignment; these are sites where at least two sequences differ from all others so that they support a certain grouping of taxa.
-	* The Python script [`get_mean_node_support.py`](src/get_mean_node_support.py) will be used to calculate the mean bootstrap support for the trees corresponding to the alignments.
-	* The Python script [`convert.py`](src/convert.py) will once again be required to convert from one alignment-file format into another; in this case from Nexus to Fasta format.
-
-	In addition to the scripts listed above, we are going to also use the program [Phy Test](http://www.maths.otago.ac.nz/~dbryant/software.html) ([Bruen et al. 2006](http://www.genetics.org/content/172/4/2665)) to test for recombination within each alignment. If it is correctly installed, you should be able to start the Phi Test program simply by typing `Phi` on the command line; this should output a help text with the available options. You'll see that the input in Fasta format can be specified with the `-f` option. We can use default values for all other options. To perform a test run with the Phi Test program, use it to test for recombination in the first alignment file, with the following commands:
-	
-		python3 convert.py alignment_blocks/NC_031969_00666951_00716950.nex -f fasta > tmp.fasta
-		Phi -f tmp.fasta
-		
-	This should result in the following screen output:
-	
-		Reading sequence file tmp.fasta
-		Found 28 sequences of length 50000
-		Alignment looks like a valid DNA alignment.
-		Estimated diversity is (pairwise deletion - ignoring missing/ambig):  0.8%
-		Found 299 informative sites.
-		Writing alignment of informative sites to: Phi.inf.sites
-		Writing list of informative sites to:      Phi.inf.list
-		Calculating all pairwise incompatibilities...
-		Done: 100.0%
-
-		Using a window size of 100 with k as 1
-
-		Calculating analytical mean and variance
-
-		    **p-Value(s)**     
-             ----------
-
-		PHI (Normal):        2.75e-01
-
-	The most important part of this output is the p-value in the last line, indicating the probability of the null hypothesis that recombination is absent within the alignment. In this case, this p-value is 0.275, meaning that the absence of recombination can be assumed.
-	
-* To extract only the p-value from the output of the Phi Test program, you could try running this command:
-
-		Phi -f tmp.fasta | tail -n 2 | head -n 1 | cut -d ":" -f 2 | tr -d '[[:space:]]'
-
-	You should once again see the number 2.75e-01, this time without the rest of the program output.
-	
-* Remove the file `tmp.fasta` that was temporarily needed for the test run with the program Phi Test:
-
-		rm tmp.fasta
-	
-* To execute all the above-named scripts as well as the Phi Test program and generate a table with the different measurements for each alignment, we'll use the set of commands given below. You could copy all of these commands into a text file named, for example, `run.sh`, and the execute these commands with `bash run.sh`. Alternatively, you could copy the block and paste it on the command line as you probably did for the shorter code blocks given above.
-
-		echo -e "block_id\tp_missing\tn_pi_sites\tmean_bootstrap_support\tphi_p" > block_stats.txt
-		for i in alignment_blocks/*.nex
-		do
-			# Get the block ID.
-			block_id=`basename ${i%.nex}`
-			
-			# Provide feedback on screen.
-			echo -n "Analyzing file ${i}..."
-			
-			# Get the proportion of missing data.
-			proportion_of_missing_data=`ruby get_proportion_of_missing_data.rb $i`
-
-			# Get the number of parsimony-informative sites.
-			number_of_pi_sites=`ruby get_number_of_pi_sites.rb $i`
-						
-			# Get the mean bootstrap support.
-			bootstrap_value=`python3 get_mean_node_support.py ${i%.nex}.tre`
-			bootstrap_value_strip=`echo -n $bootstrap_value`
-			
-			# Run PhiPack to test for recombination and get the resulting p-value.
-			mkdir ${block_id}
-			python3 convert.py ${i} -f fasta > ${block_id}/tmp.fasta
-			cd ${block_id}
-			p_value=`Phi -f tmp.fasta | tail -n 2 | head -n 1 | cut -d ":" -f 2 | tr -d '[[:space:]]'`
-			cd ../
-			rm -r ${block_id}
-			
-			# Print all output.
-			echo -e -n ${block_id} >> block_stats.txt
-			echo -e -n "\t" >> block_stats.txt
-			printf "%.3f" ${proportion_of_missing_data} >> block_stats.txt
-			echo -e -n "\t" >> block_stats.txt
-			echo -n ${number_of_pi_sites} >> block_stats.txt
-			echo -e -n "\t" >> block_stats.txt
-			printf "%.1f" ${bootstrap_value_strip} >> block_stats.txt
-			echo -e -n "\t" >> block_stats.txt
-			echo -e -n ${p_value} >> block_stats.txt
-			echo >> block_stats.txt
-			
-			# Provide feedback on screen.
-			echo " done."
-
-		done
-
-* Have a brief look at the file written by the above code, named [`block_stats.txt`](res/block_stats.txt). You'll see that it contains five columns for
-	* the ID of the alignment block ("block_id"),
-	* the proportion of missing data ("p_missing"),
-	* the number of parsimony-informative sites ("n_pi_sites"),
-	* the mean bootstrap support value ("mean_bootstrap_support")
-	* the p-value resulting from the test for recombination with Phi Test ("phi_p").
-
-	The first lines of this file are shown below:
-	
-		block_id	p_missing	n_pi_sites	mean_bootstrap_support	phi_p
-		NC_031969_00666951_00716950	0.852	298	59.5	2.75e-01
-		NC_031969_01316951_01366950	0.792	202	75.1	5.82e-01
-		NC_031969_01366951_01416950	0.859	122	65.1	5.30e-01
-		NC_031969_01566951_01616950	0.864	221	71.4	4.34e-01
-		NC_031969_01716951_01766950	0.871	157	65.0	2.56e-01
-		NC_031969_01816951_01866950	0.842	149	43.7	1.13e-03
+		id	n_pi_sites	n_hemiplasies
+		NC_031969_02505001_02509999	13	2
+		NC_031969_04865001_04869999	6	3
+		NC_031969_04910001_04914999	8	6
+		NC_031969_04925001_04929999	13	11
+		NC_031969_04935001_04939999	5	2
+		NC_031969_05010001_05014999	6	1
+		NC_031969_05030001_05034999	8	2
+		NC_031969_05040001_05044999	9	3
+		NC_031969_05065001_05069999	15	11
+		NC_031969_05185001_05189999	12	9
+		NC_031969_05220001_05224999	19	16
+		NC_031969_05230001_05234999	14	7
+		NC_031969_05255001_05259999	5	1
+		NC_031969_05915001_05919999	44	39
+		NC_031969_05920001_05924999	36	37
 		...
 
-* To identify the most suitable alignment blocks for phylogenetic analysis based on these criteria, first make some exploratory plots in the R environment to find possible correlations with chromosomal positions or with other parameters. We'll use R to generate these plots. If you're familiar with R, you could use the software R Studio or another GUI program for R, but you could also run R on the command line as shown below. To start R interactively on the command line, simply type `R`. Then, write the following commands to read file `block_stats.txt` and to plot the proportion of missing data in an alignment against the chromosomal position of the center of the alignment:
-		
-		t <- read.table("block_stats.txt", header=T)
-		get_third_as_num <- function(x, split="_"){ return(as.numeric(strsplit(x, split=split)[[1]][3])) }
-		get_fourth_as_num <- function(x, split="_"){ return(as.numeric(strsplit(x, split=split)[[1]][4])) }
-		froms <- unlist(lapply(as.character(t$block_id), get_third_as_num))
-		tos <- unlist(lapply(as.character(t$block_id), get_fourth_as_num))
-		block_centers <- (froms + tos)/2
-		
-		pdf("alignment_blocks_missing.pdf", height=7, width=7)
-		plot(block_centers, t$p_missing, xlab="Position", ylab="Proportion missing", main="NC_031969")
-		abline(h=0.8)
-		rect(-5000000, 0, 40000000, 0.8, col=rgb(0.164,0.629,0.594,alpha=0.25))
-		dev.off()
-		
-	The above commands should have written the plot to a file named [`alignment_blocks_missing.pdf`](res/alignment_blocks_missing.pdf) in the analysis directory. This plot should look as shown below:<p align="center"><img src="img/alignment_blocks_missing.png" alt="Number of PI sites" width="600"></p>
-	As shown in the above plot, the proportion of missing data in the alignment is generally larger towards the ends of the chromosome, and there is also a weak increase in missing data in the very center of the chromosome, leading to a "W"-shaped pattern in the plot. This could possibly be explained by repetitive sequences that are more abundant in the terminal regions of the chromosome and perhaps by an effect caused by the centromere in the middle. We are not going to investigate these causes in more detail but patterns like this should be kept in mind when interpreting the results of analyses based on chromosome-length alignments. For example, the increased amount of missing data towards the chromosome ends could have caused the apparently longer distance between recombination breakpoints in the Saguaro plot shown at the beginning of this tutorial. The area highlighted in blue in the above plot indicates an amount of missing data below 80%; this value will be used for filtering the alignment blocks for further phylogenetic analysis.
+	It appears that the two values are closely correlated: the more parsimony-informative sites an alignment has the more hemiplasies is contains. This is in part expected because without parsimony-informative sites there could be no hemiplasies. It means, however, that a compromise will need to be made between too little information and too many hemiplasies, indicating within-alignment recombination.
 	
-* In a second plot we are going to compare the amount of missing data with the number of parsimony-informative sites to test if more missing data actually translates to a lower phylogenetic informativeness. With the R environment still open, now type the following commands:
+* To allow us to decide on appropriate thresholds for the numbers of parsimony-informative sites and hemiplasies, let's plot the two values. In the R environment, you could use the following commands to do so (just type `R` to enter the R environment from the command line):
 
-		pdf("alignment_blocks_pi_sites.pdf", height=7, width=7)
-		plot(t$p_missing, t$n_pi_sites, xlab="Proportion missing", ylab="Number PI sites", main="NC_031969")
-		abline(h=250)
-		abline(v=0.8)
-		rect(0, 250, 0.8, 1000, col=rgb(0.164,0.629,0.594,alpha=0.25))
-		dev.off()
-		
-	This should have written the plot shown below to a new file named [`alignment_blocks_pi_sites.pdf`](res/alignment_blocks_pi_sites.pdf).
-		
-	<p align="center"><img src="img/alignment_blocks_pi_sites.png" alt="Number of PI sites" width="600"></p>
-	
-	As we can see from this plot, there is clearly a negative correlation between the amount of missing data and the phylogenetic informativeness. The blue area highlight alignment blocks with less than 80% missing data and more than 250 parsimony-informative sites; these values will be used for filtering below.
-		
-* Finally, we are going to repeat the last plot with the mean bootstrap support instead of the number of parsimony-informative sites as an alternative measure of the phylogenetic informativeness. To do so, use the following code:
- 
-		pdf("alignment_blocks_bootstrap.pdf", height=7, width=7)
-		plot(t$p_missing, t$mean_bootstrap_support, xlab="Proportion missing", ylab="Mean Bootstrap support", main="NC_031969")
-		abline(h=70)
-		abline(v=0.8)
-		rect(0, 70, 0.8, 1000, col=rgb(0.164,0.629,0.594,alpha=0.25))
+		table <- read.table("block_stats.txt", header=T)
+		pdf("block_stats.pdf", height=7, width=7)
+		plot(table$n_pi_sites, table$n_hemiplasies, xlim=c(0,70), ylim=c(0,70), xlab="Parsimony-informative sites", ylab="Hemiplasies")
+		abline(a=0, b=1)
 		dev.off()
 
-	The resulting plot should have been written to file [`alignment_blocks_bootstrap.pdf`](res/alignment_blocks_bootstrap.pdf) and is shown below:
-
-	<p align="center"><img src="img/alignment_blocks_bootstrap.png" alt="Mean bootstrap support" width="600"></p>
-
-	As expected, an obvious negative correlation exists between the proportion of missing data in the alignments and the mean node support of the corresponding phylogenies. This correlation is similar to that observed between missing data and parsimony-informative sites, but appears to be less strong. The area in blue now indicates alignment blocks that have less than 80% missing data and a mean node support above 0.7 in their RAxML phylogeny. These values will be used as thresholds in the identification of the most suitable alignments for phylogenetic inference with BEAST2.
-
-* To exit the interactive R environment and return to the command line, type this command:
-
-		quit(save="no")
-
-* To filter the alignment blocks according to the criteria calculated above, we can use the Ruby script [`filter_blocks.rb`](src/filter_blocks.rb). This script expects the following five command-line arguments:
-	* the name of the `block_stats.txt` file,
-	* the maximum proportion of missing data,
-	* the minimum number of parsimony-informative sites,
-	* the minimum bootstrap node-support value,
-	* the minimum p-value for rejecting the null hypothesis of no recombination within the alignment.
+	(to quit the R environment, type `quit(save="no")`). This should produce the plot shown below, written to file [`block_stats.pdf`](res/block_stats.pdf), where the black line indicates the diagonal:<p align="center"><img src="img/block_stats.png" alt="Block stats" width="600"></p> The fact that some points lie above the diagonal means the these alignments have more hemiplasies than parsimony-informative, which can only be explained by site patterns that require more than three changes on even the most parsimonious phylogeny. These results suggest that none of the alignments are free of recombination; therefore, the phylogenies that will be inferred from these alignments may not be completely reliable. Selecting shorter alignment blocks could help to reduce within-alignment recombination; however, this would also further reduce the informativeness of the alignments, which is already low in the current alignments.
 	
- Test a couple of parameter combinations for filtering with the script `filter_blocks.rb` to see how these affect the number of alignment blocks remaining in the filtered dataset. For example, test the following combinations:
-
-		ruby filter_blocks.rb block_stats.txt 0.8 400 80 0.05 | wc -l
-		ruby filter_blocks.rb block_stats.txt 0.9 100 60 0.01 | wc -l
-		ruby filter_blocks.rb block_stats.txt 0.8 250 70 0.05 | wc -l
-
-	As mentioned above, we are goint to use 0.8, 250, and 70 as threshold values for the proportion of missing data, the number of parsimony-informative sites, and the mean node support. In addition we will use the standard alpha value of 0.05 as a threshold for the p-value for absence of recombination. Thus, the parameter combination for filtering corresponds to that used in the last of the three examples above. The number of alignment blocks passing this filter should be around 140.
+	Given the above plot, a reasonable choice for filtering the most suitable alignments may be to exclude those with less than 15 parsimony-informative sites, those with more than 30 hemiplasies, and those in which the difference between the numbers of parsimony-informative sites and hemiplasies is less than 5. The added lines in the plot below indicate the selected region of the block (the region to the bottom-right of the three lines):p align="center"><img src="img/block_stats_region.png" alt="Block stats" width="600"></p>
 	
-* Generate a reduced version of file `block_stats.txt`, containing only those alignments that pass the applied filters:
-
-		ruby filter_blocks.rb block_stats.txt 0.8 250 70 0.05 > block_stats_filtered.txt
-			
-* Next, make a new directory named `alignment_blocks_filtered` and copy those alignment that pass the filters into separate subdirectories of this new directory. This can be done with the following set of commands:
-
-		for i in `cat block_stats_filtered.txt | tail -n +2 | cut -f 1`
+* Remove all block alignments that are considered unsuitable according to these thresholds for the numbers of parsimony-informative sites and hemiplasies as well as the difference between them. Use the following set of commands to do so:
+	
+		cat block_stats.txt | tail -n +2 > tmp.txt
+		while read line
 		do
-			mkdir -p alignment_blocks_filtered/${i}
-			cp alignment_blocks/${i}.nex alignment_blocks_filtered/${i}
-		done
-
-	The directory `alignment_blocks_filtered` should now contain about 140 subdirectories named according to alignment-block IDs (e.g. `NC_031969_02066951_02116950`), and in each of these subdirectories should be just a single alignment file with the same ID (e.g. `NC_031969_02066951_02116950.nex`).
-
-<a name="beast2"></a>
-## Automating BEAST2 analyses
-
-While you may have run BEAST2 on the command line in some of the other tutorials (for example in tutorial [Bayesian Species-Tree Inference](../bayesian_species_tree_inference/README.md)), we always used the graphical user interface of BEAUti to generate the XML input files for BEAST2. However, to estimate time calibrated phylogenies for each of the ~140 alignment blocks, setting up all the XML files for these analyses individually with BEAUti would be far too time-consuming as well as error-prone; therefore, it would be convenient if this could also be done on the command line. With the complex settings required for most BEAST2 analyses, command-line tools to generate the BEAST2 XML files are not widely used; however, some such tools exist, including the [BEASTmasteR](https://github.com/nmatzke/BEASTmasteR) R package by Nicholas Matzke and the [babette](https://github.com/richelbilderbeek/babette) R package by [Bilderbeek and Etienne (2018)](https://www.biorxiv.org/content/early/2018/05/17/271866). In this part of the tutorial we are going to use another command-line utility to produce XML input files for BEAST2, the Ruby script [`beauti.rb`](src/beauti.rb). In addition, we are also going to use the R package [coda](https://cran.r-project.org/web/packages/coda/index.html) ([Plummer et al. 2006](http://oro.open.ac.uk/22547/)) as a command-line tool replacing Tracer to assess stationarity of the MCMC chain run by BEAST2.
-
-* Have a look at the options available for script [`beauti.rb`](src/beauti.rb), by typing the following command:
-
-		ruby beauti.rb -h
-		
-	You'll see that a wide range of analyses can be set up with this script, including analyses with StarBEAST2 ([Ogilvie et al. 2017](https://academic.oup.com/mbe/article/34/8/2101/3738283)) and model comparison based on path sampling ([Baele et al. 2012](https://academic.oup.com/mbe/article/29/9/2157/1075653)). For some of these settings, the XML files produced with `beauti.rb` may not work with the latest versions of the BEAST2 add-on packages, but the XML files for the standard analyses of BEAST2 do work as expected. Of the options available for `beauti.rb`, only few will need to be specified for our analyses. These are
-	* an ID for the analyses, to be specified with `-id`,
-	* the name of a directory with input files in Nexus format, specified with `-n`,
-	* the name of an output directory to which the XML file will be written, specified with `-o`,
-	* the name of a file with constraints in XML format, to be specified with option `-c`.
-
-	Read the help text of `beauti.rb` for these four options.
-
-* The file with age constraints required by `beauti.rb` is somewhat equivalent to the file used to specify age constraints for script `snapp_prep.rb` in tutorial [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md); however, instead of the relatively simple format used for script `snapp_prep.rb`, the more complicated XML format is used. The code in XML format is exactly as it would be if it was part of a larger XML file written by the GUI version of BEAUti; thus, one way to generate code in this format would be to write an XML file with the GUI interface and remove all parts of that XML file except the part for the age constraint. Here, however, this is not necessary because you can use the ready-made XML code shown in the box below. Copy this code to a new file named `constraints.xml`:
-
-						<distribution id="All.prior" monophyletic="true" spec="beast.math.distributions.MRCAPrior" tree="@tree.t:Species">
-							<taxonset id="All" spec="TaxonSet">
-								<taxon idref="IZC5_A"/>
-								<taxon idref="IZC5_B"/>
-								<taxon idref="AUE7_A"/>
-								<taxon idref="AUE7_B"/>
-								<taxon idref="JBD6_A"/>
-								<taxon idref="JBD6_B"/>
-								<taxon idref="JUH9_A"/>
-								<taxon idref="JUH9_B"/>
-								<taxon idref="LJC9_A"/>
-								<taxon idref="LJC9_B"/>
-								<taxon idref="KHA7_A"/>
-								<taxon idref="KHA7_B"/>
-								<taxon idref="IVE8_A"/>
-								<taxon idref="IVE8_B"/>
-								<taxon idref="JWH2_A"/>
-								<taxon idref="JWH2_B"/>
-								<taxon idref="JWG9_A"/>
-								<taxon idref="JWG9_B"/>
-								<taxon idref="JWH4_A"/>
-								<taxon idref="JWH4_B"/>
-								<taxon idref="JWH6_A"/>
-								<taxon idref="JWH6_B"/>
-								<taxon idref="ISB3_A"/>
-								<taxon idref="ISB3_B"/>
-								<taxon idref="ISA8_A"/>
-								<taxon idref="ISA8_B"/>
-								<taxon idref="KFD2_A"/>
-								<taxon idref="KFD2_B"/>
-							</taxonset>
-							<LogNormal meanInRealSpace="true" name="distr" offset="0.0">
-								<parameter estimate="false" name="M">6.2666</parameter>
-								<parameter estimate="false" name="S">0.13</parameter>
-							</LogNormal>
-						</distribution>
-						
-						<distribution id="Outgroup.prior" monophyletic="true" spec="beast.math.distributions.MRCAPrior" tree="@tree.t:Species">
-							<taxonset id="Outgroup" spec="TaxonSet">
-								<taxon idref="IZC5_A"/>
-								<taxon idref="IZC5_B"/>
-							</taxonset>
-						</distribution>
-
-						<distribution id="Ingroup.prior" monophyletic="true" spec="beast.math.distributions.MRCAPrior" tree="@tree.t:Species">
-							<taxonset id="Ingroup" spec="TaxonSet">
-								<taxon idref="AUE7_A"/>
-								<taxon idref="AUE7_B"/>
-								<taxon idref="JBD6_A"/>
-								<taxon idref="JBD6_B"/>
-								<taxon idref="JUH9_A"/>
-								<taxon idref="JUH9_B"/>
-								<taxon idref="LJC9_A"/>
-								<taxon idref="LJC9_B"/>
-								<taxon idref="KHA7_A"/>
-								<taxon idref="KHA7_B"/>
-								<taxon idref="IVE8_A"/>
-								<taxon idref="IVE8_B"/>
-								<taxon idref="JWH2_A"/>
-								<taxon idref="JWH2_B"/>
-								<taxon idref="JWG9_A"/>
-								<taxon idref="JWG9_B"/>
-								<taxon idref="JWH4_A"/>
-								<taxon idref="JWH4_B"/>
-								<taxon idref="JWH6_A"/>
-								<taxon idref="JWH6_B"/>
-								<taxon idref="ISB3_A"/>
-								<taxon idref="ISB3_B"/>
-								<taxon idref="ISA8_A"/>
-								<taxon idref="ISA8_B"/>
-								<taxon idref="KFD2_A"/>
-								<taxon idref="KFD2_B"/>
-							</taxonset>
-						</distribution>
-
-	As you recognize, the above code defines three different sets of taxa, all of which are constrained to be monophyletic. The three sets of taxa contain
-	* the IDs of all phased sequences included in the dataset,
-	* only the IDs of the phased sequences of the *Astatotilapia burtoni* sample "IZC5" ("IZC5\_A" and "IZC5\_B"), which will be used as an outgroup,
-	* the IDs of all phased sequences of all other species; these will be used as the ingroup.
-	
-	The definition of the latter two taxon sets would not have been necessary as BEAST2 would likely have inferred an outgroup position for the *Astatotilapia burtoni* sequences anyway. However, defining these two taxon sets may help to reach MCMC stationarity slightly faster than without. The definition of the first taxon set including all sequences is also not necessary to constrain their monophyly, as this most inclusive clade is going to be monophyletic anyway. However, the specification of this taxon set also allows placing an age constraint on the age of the most recent common ancestor of the group, which in our case is the most practical way to time calibrate the phylogeny. As an age constraint for the divergence of *Astatotilapia burtoni*, the above code specifies the same prior density that was already used for time calibration in tutorial [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md) according to the results of the analysis with the multi-species coalescent model in tutorial [Bayesian Species-Tree Inference](../bayesian_species_tree_inference/README.md): a lognormally-distributed prior density with a mean (in real space) of 6.2666 Ma and a standard deviation of 0.13. This prior density was defined in this part of the above XML code:
-	
-								<LogNormal meanInRealSpace="true" name="distr" offset="0.0">
-									<parameter estimate="false" name="M">6.2666</parameter>
-									<parameter estimate="false" name="S">0.13</parameter>
-								</LogNormal>
-
-	If you would use the script `beauti.rb` for other analyses and you would like to recycle the above XML code for the constraint definitions, you would have to change
-	
-	* the taxon labels (obviously),
-	* the age constraint,
-	* and probably also the IDs of the individuals constraints and taxon sets, which are labelled "All", "All.prior", "Outgroup", "Outgroup.prior", "Ingroup", and "Ingroup.prior" in the code given above.
-
-* In addition to the options `-id`, `-n`, `-o`, and `-c` explained above, we are also going to specify an MCMC chain length of 500,000 iterations with option `-l` (the default would be ten time longer), and we will specify that the HKY substitution model without among-site rate heterogeneity should be used with option `-m`. We use both of these settings to reduce the run time of the BEAST2 analysis, but for a more thorough analysis, you should probably run a longer chain with a more complex substitution model (ideally the [bModelTest](https://github.com/BEAST2-Dev/bModelTest) model of [Bouckaert and Drummond 2017](https://bmcevolbiol.biomedcentral.com/articles/10.1186/s12862-017-0890-6); see tutorial [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.md)). Importantly, you should also run replicate analyses for each dataset to check whether both MCMC chains not only reach stationarity but also converge to the same posterior distribution.<br>To generate XML files for all alignment blocks with the settings and constraints described above, use the following set of commands:
-
-		for i in alignment_blocks_filtered/*
-		do
-			run_id=`basename ${i}`
-			ruby beauti.rb -id ${run_id} -n ${i} -o ${i} -c constraints.xml -l 500000 -m HKY
-		done
-		
-* XML input files for BEAST2 should now have been added to each subdirectory of directory `alignment_blocks_filtered`. To check if this is the case, use the `ls` command:
-
-		ls 	alignment_blocks_filtered/*/*.xml
-		
-* We are now ready to run BEAST2 analyses with all of the XML files written in the last step. To automatically run one analysis after another, we also use the command-line version of BEAST2 instead of the GUI version that was used in other tutorials. You will find the command-line version of BEAST2 in the `bin` subdirectory of the BEAST2 directory. Depending on the path of the BEAST2 directory on your computer, you will probably have to replace `/Applications/Beast/2.5.0/` in the commands below with the actual path to your BEAST directory. Then, execute this set of commands:
-
-		home=`pwd`
-		for i in alignment_blocks_filtered/*
-		do
-			block_id=`basename ${i}`
-			cd ${i}
-			/Applications/Beast/2.5.0/bin/beast ${block_id}.xml
-			cd ${home}
-		done
-
-	These BEAST2 analyses should take about one to two hours. To shorten the run time and distribute the analyses to four different CPUs, you could open four different Terminal windows, and execute the above code in each window separately after replacing this line
-	
-		for i in alignment_blocks_filtered/*
-		
-	with always a different one of these four lines:
-	
-		for i in alignment_blocks_filtered/NC_031969_0*
-		for i in alignment_blocks_filtered/NC_031969_1*
-		for i in alignment_blocks_filtered/NC_031969_2*
-		for i in alignment_blocks_filtered/NC_031969_3*
-
-	This will cause all alignment blocks starting between position 1 and 9,999,999 to be analyzed in the first Terminal window, those starting between positions 10,000,000 and 19,999,999 to be analysed in the second Terminal window, aligment blocks starting between positions 20,000,000 and 29,999,999 will be analyzed in the third Terminal window, and those starting between position 30,000,000 and 34,628,617 (the end of the chromosome) will be analyzed at the same time in the fourth Terminal window. Assuming that alignment blocks are more or less evenly distributed across the chromosome, this would split the set of input files roughly into four equally-sized sets. There are certainly smarter ways to distribute analyses to different CPUs, but the simple parallelization that we're doing here should at least divide the overall run time by three.
-
-* While the BEAST2 analysis is running, monitor the screen output, particularly the the third column named "ESS(posterior)".
-
-	**Question 2:** Do most or all analyses reach ESS values above 200 for the posterior probability? [(see answer)](#q2)
-
-* Even though the screen output indicated stationarity of the MCMC chains in most analyses, this should be confirmed with a closer look at at least one of the log files written by BEAST2, and by an analysis of the ESS values of all model parameters in all other log files. However, if we would use the program Tracer for this assessment of stationarity as in tutorial [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.md) and other tutorials, we would have to manually open and investigate all ~140 log files. Therefore, we are once again going to use a command-line tool instead of GUI programs, so that the assessment of MCMC chain stationarity can be at least partly automated. An excellent tool that allows this assessment from the command line is the R package [coda](https://cran.r-project.org/web/packages/coda/index.html) ([Plummer et al. 2006](http://oro.open.ac.uk/22547/)), which is here going to be our tool of choice. To see how coda works, and to investigate the MCMC chain of one analysis in more detail, start the R environment on the command line by typing `R`, or by opening R Studio or a similar tool if you are familiar with these. Then, use the following set of commands, to load the coda library, read the log file [`NC_031969_02066951_02116950.log`](res/NC_031969_02066951_02116950.log) from directory `alignment_blocks_filtered/NC_031969_02066951_02116950`, and obtain a summary of the estimates for all model parameters:
-
-		# Load the coda library.
-		library(coda)
-		
-		# Read the log file as a table.
-		t <- read.table("alignment_blocks_filtered/NC_031969_02066951_02116950/NC_031969_02066951_02116950.log", header=T)
-		
-		# Get the chain length as the number of rows in the table.
-		chain_length = dim(t)[1]
-		
-		# Convert the table into a mcmc object.
-		MCMCdata = mcmc(data=t, start=1, end=chain_length, thin=1)
-		
-		# Make a subset of the mcmc object, removing the burning and some parameter traces.
-		MCMCsub <- as.mcmc(MCMCdata[(chain_length/10):chain_length, c(2, 3, 4, 8, 9, 10)])
-		
-		# Show a summary of the parameter estimates.
-		summary(MCMCsub)
-	
-	**Question 3:** Can you identify, for example, the mean estimate for the mutation rate? [(see answer)](#q3)
-
-* Next, calculate the ESS values for all parameters with the following command:
-
-		# Calculate effective sample sizes for all parameters.
-		effectiveSize(MCMCsub)
-		
-* The smalles of all these ESS values can be obtained with this command:
-		
-		# Find the lowest effective sample size.
-		min(effectiveSize(MCMCsub))
-	
-	**Question 4:** Based on the ESS values, would you say that the MCMC chain of this analysis has reached stationarity? [(see answer)](#q4)
-		
-* To also assess stationarity of this MCMC chain visually, we can also generate trace plots of the individual parameters, similar to those produced by Tracer. Use the following set of commands to write trace plots in pdf format to a new file named `mcmc_traces.pdf`:
-
-		# Make a pdf plot of the selected parameter traces.
-		pdf("mcmc_traces.pdf", height=7, width=7)
-		plot(MCMCsub, trace=TRUE, density=FALSE, smooth=TRUE, auto.layout=TRUE)
-		dev.off()
-		
-	These trace plots should look as in the figure below:
-	<p align="center"><img src="img/mcmc_traces.png" alt="Coda" width="600"></p>
-	
-	As you'll see from the above figure, all trace plots take the shape of the "hairy caterpillar" and thus confirm that the MCMC chain has reached stationarity.
-	
-* Then, quit the R environment with this command:
-
-		quit(save="no")
-
-* To find the minimum ESS value in all log files, we'll write some of the R code used above to a new file, and we will then execute this script from the command line. Write the following code to a new file named `get_min_ess.r`:
-
-		# Load the coda library.
-		library(coda)
-		
-		# Get the command-line arguments.
-		args <- commandArgs(trailingOnly = TRUE)
-		log_file_name <- args[1]
-
-		# Read the log file as a table.
-		t <- read.table(log_file_name, header=T)
-		
-		# Get the chain length as the number of rows in the table.
-		chain_length = dim(t)[1]
-		
-		# Convert the table into a mcmc object.
-		MCMCdata = mcmc(data=t, start=1, end=chain_length, thin=1)
-
-		# Make a subset of the mcmc object, removing the burning and some parameter traces.
-		MCMCsub <- as.mcmc(MCMCdata[(chain_length/10):chain_length, c(2, 3, 4, 8, 9, 10)])
-		
-		# Find the lowest effective sample size.
-		cat(min(effectiveSize(MCMCsub)), "\n")
-		
-* Test the R script `get_min_ess.r` with the log file [`NC_031969_02066951_02116950.log`](res/NC_031969_02066951_02116950.log) that was already used above:
-
-		Rscript get_min_ess.r alignment_blocks_filtered/NC_031969_02066951_02116950/NC_031969_02066951_02116950.log
-		
-	This should again result in the same mimimum ESS value, 674.6717, as before.
-
-* Then, use script `get_min_ess.r` to find the lowest ESS value of each log file, with the following set of commands:
-
-		for i in alignment_blocks_filtered/*/*.log
-		do
-			echo -n -e "${i}\t"
-			Rscript get_min_ess.r ${i} | tail -n 1
-		done
-
-	You should see that the minimum ESS value of only few analyses is below 200.
-
-* For a more thorough investigation, we could selectively resume those MCMC chains that had ESS values below 200. A simpler solution, however, that we are going to use here, is to completely remove those alignment blocks with particularly low ESS values. To remove the directories of all blocks with ESS values below 100, use the following set of commands:
-
-		for i in alignment_blocks_filtered/*/*.log
-		do
-			block_id=`basename ${i%.log}`
-			min_ess=`Rscript get_min_ess.r ${i} | tail -n 1 | cut -d "." -f 1`
-			if [[ ${min_ess} -lt 100 ]]
+		    id=`echo ${line} | cut -d " " -f 1`
+		    n_pi_sites=`echo ${line} | cut -d " " -f 2`
+		    n_hemiplasies=`echo ${line} | cut -d " " -f 3`
+			if (( ${n_pi_sites} < 15 )) || (( ${n_hemiplasies} > 30 )) || (( ${n_pi_sites} < ${n_hemiplasies} + 5 ))
 			then
-				rm -r alignment_blocks_filtered/${block_id}
-				echo "Deleted directory alignment_blocks_filtered/${block_id}."
+				echo "Removing file blocks/${id}.nex"
+				rm blocks/${id}.nex
 			fi
-		done
-		
-	**Question 5:** How many alignment blocks remain in directory `alignment_blocks_filtered`? [(see answer)](#q5)
-		
-* For the analyses of introgression based on divergence times and tree topologies, we are going to account for phylogenetic uncertainty by using the posterior tree distributions resulting from BEAST2 analyses instead of only summary trees. For the purpose of visualizing the phylogenetic variation among all alignment blocks, however, we will now also generate maximum-clade-credibility summary trees for each alignment block. If you already followed tutorial [Bayesian Species-Tree Inference](../bayesian_species_tree_inference/README.md) or [Bayesian Analysis of Species Networks](../bayesian_analysis_of_species_networks/README.md), you may be familiar with the use of the command-line version of TreeAnnotator. Here, we will again use this command-line version to generate summary trees, with a burnin percentage of 10% and mean ages as node heights, as specified in the following set of commands (make sure to replace `/Applications/Beast/2.5.0` with the actual BEAST2 directory on your computer):
+		done < tmp.txt
+		rm tmp.txt
 
-		for i in alignment_blocks_filtered/*/*.trees
+	**Question 3:** How many block alignments remain in the `blocks` directory after applying these thresholds? [(see answer)](#q3)
+
+
+<a name="iqtree"></a>
+##Inferring block phylogenies with IQ-TREE
+
+In this part of the tutorial, we are going to infer phylogenies for each remaining alignment block; the set of inferred phylogenies will subsequently be used to determine asymmetries in the topologies of species trios which can serve as an indicator for introgression. Note that it may in fact be important for this subsequent test that the set of phylogenies is generated based on maximum likelihood, without assuming a clock model as in BEAST analyses. While this should probably be tested in more detail, I found in preliminary analyses that clock-rate variation among species may influence the frequencies of species-trio topologies in time-calibrated analyses, but that it has no or only weak effect on maximum-likelihood inference without a clock model. As a result, I also do not recommend any longer to use the related approach of [Meyer et al. (2017)](https://academic.oup.com/sysbio/article/66/4/531/2670093).
+
+* As in tutorials [Maximum-Likelihood Phylogenetic Inference](../ml_phylogeny_inference/README.md) and [Maximum-Likelihood Species-Tree Inference](../ml_species_tree_inference/README.md), we are going to use IQ-TREE for maximum-likelihood phylogenetic inference, and we do not specify a substitution model, allowing IQ-TREE to automatically select the best model itself. No bootstrap replicates are required this time, but we will need to specify the sample ID for the included individual of *Astatotilapia burtoni*, IZC5, as the outgroup, so the resulting trees are rooted. To run IQ-TREE with for all alignments use the following command:
+
+		for i in blocks/*.nex
 		do
-			/Applications/Beast/2.5.0/bin/treeannotator -burnin 10 -heights mean ${i} ${i%.trees}.tre
-		done
-
-* Before plotting the summary trees, first have a look at how well supported each of these trees is. To do so, we can calculate once again the mean node support of each tree with the Python script [`get_mean_node_support.py`](src/get_mean_node_support.py):
-
-		for i in alignment_blocks_filtered/*/*.tre
-		do
-			echo -ne "${i}\t"
-			python3 get_mean_node_support.py ${i}
-		done
-
-	You should see that most trees are extremely well supported, with mean Bayesian posterior probabilities above 0.9 in almost all cases. 	
-	**Question 6:** How can we explain that these support values are so high whereas hardly any bootstrap support values in the RAxML analyses were above 90% (see the plots shown above in the tutorial part [Identifying alignment blocks for phylogenetic analysis](#alignments))? [(see answer)](#q6)
-
-* To plot all maximum-clade-credibility trees jointly, we'll use the program DensiTree that has already been used in tutorial [Bayesian Analysis of Species Networks](../bayesian_analysis_of_species_networks/README.md) and other tutorials. But since DensiTree requires that all trees are included in a single input file, we'll first use the Python script [`logcombiner.py`](src/logcombiner.py) to combine all trees into one file, using the following commands:
-
-		ls alignment_blocks_filtered/*/*.tre > mcc_trees.txt
-		python3 logcombiner.py mcc_trees.txt mcc_trees.trees
-
-* Then, open file [`mcc_trees.trees`](res/mcc_trees.trees) in DensiTree. You should see a plot of the maximum-clade-credibility trees for each alignment block, as shown in this figure:
-	<p align="center"><img src="img/densitree1.png" alt="DensiTree" width="600"></p>
-	
-	As you can see from this DensiTree plot, different regions of the chromosome have apparently diverged at different times and also in different orders, which could be due to either incomplete lineage sorting or introgression. We are going to attempt to disentangle these two processes in the next part of the tutorial.
-	
-<a name="disentangle"></a>
-## Disentangling incomplete lineage sorting and introgression
-
-Both incomplete lineage sorting and introgression lead to variation among the phylogenies inferred from different parts of the genome. However, the patterns of variation produced by the two processes differ in several ways, which therefore allow to discriminate between them with a large number of local phylogenies. For example, the relationships among three taxa would be assumed to be "symmetric" in the absence of introgression, meaning that the species-tree topology should be the one that is most frequently observed and that the two possible alternative rooted topologies should have similar frequencies. In contrast, introgression should lead to asymmetry in the frequencies of the three possible topologies, meaning that one of the two alternative topologies should have a higher frequency than the other one (the logic behind these assumptions about symmetric and asymmetric topology frequencies is similar to that of the ABBA-BABA test; see tutorial [Analysis of Introgression with SNP Data](../analysis_of_introgression_with_snp_data/README.md))
-
-In addition to different patterns of topology frequencies, incomplete lineage sorting and introgression also have a different influence on the divergence times of local phylogenies. With incomplete lineage sorting alone, the divergence times of certain regions of the genome will always be older than the divergence times of the species tree. In contrast, introgression can only occur after species have already diverged and thus leads to divergence times in certain regions of the genome that are younger than the divergence times in the species tree.
-
-Based on the expected decrease in divergence times, we developed a method to identify putative introgression events from sets of time-calibrated phylogenies in [Meyer et al. (2017; Fig. 1)](https://academic.oup.com/sysbio/article/66/4/531/2670093). This method measures the mean divergence time between two species in sets of time-calibrated local phylogenies, and the phylogenetic uncertainty can be taken into account by using the posterior tree distributions instead of summary trees. When pairwise divergence times are measured in this way for a set of three species, say "A", "B", and "C", then three different estimates are obtained; the divergence of "A" and "B", the divergence of "A" and "C", and the divergence of "B" and "C". With incomplete lineage sorting alone, the two older of these estimates are expected to be similar. Thus, if "A" and "B" are sisters in the species tree, then the mean divergence time of "A" and "C" should be similar to that of "B" and "C". If on the other hand, introgression occurred from "C" to "A", then some regions of the genome of these species should have a more recent divergence time than the same regions in species "B" and "C", and the mean divergence time between "A" and "C" should also be reduced compared to "B" and "C". In the method of [Meyer et al. (2017)](https://academic.oup.com/sysbio/article/66/4/531/2670093), the absolute reduction between the mean divergence time of "B" and "C" and the mean divergence time of "A" and "C" is calculated for all possible ways in which the species included in the dataset can be assigned to the positions of "A", "B", and "C". Thus, a three-dimensional matrix is calculated where each cell of the matrix contains this absolute age reduction for a particular combination of three species. The three-dimensional matrix is then reduced to a two-dimensional matrix by keeping only the maximum of all cells that have the same position in the first and second dimension but differ in their position in third dimension. This means that for a certain combination of species "A" and "C", all other species of the dataset are considered as a possible species "B", and only the maximum absolute age reduction obtained with any species "B" is recorded. The two-dimensional matrix then has on the x-axis the species used as species "A", the species used as "C" are listed on the y-axis, and the values in the matrix cells are the maximum age reductions observed with any of the other species as "B". Finally, the matrix is plotted as a heatmap, where the darker areas indicate a greater age reduction and thus possible introgression from species "C" into species "A".
-
-In this part of the tutorial, we are going to apply the method of [Meyer et al. (2017)](https://academic.oup.com/sysbio/article/66/4/531/2670093) to the set of time-calibrated phylogenies obtained for the 14 cichlid species to identify putative past introgression events. We will then assess the support for these events in more detail based on asymmetry of topology frequencies.
-
-* As a first step, to reduce the computational demand of the analyses, we are going to reduce the posterior tree distributions for each alignment block by sampling 100 out of the 2,000 trees stored in the tree log files. This can be done with the Python script [`logcombiner.py`](src/logcombiner.py), using the following command:
-
-		for i in alignment_blocks_filtered/*/*.trees
-		do
-			python3 logcombiner.py -b 10 -n 100 --remove-comments ${i} ${i%.trees}.100.trees
-		done 
-
-	For each of the original tree log files in directory `alignment_blocks_filtered`, there should now be a second file ending in `.100.trees`.
-
-* Then, we use the R script [`get_mrca_table.r`](src/get_mrca_table.r) to write a text file for each tree file, with separate tables for the the node ages of the 100 trees included in the tree file. All these text files will be written to a new directory named `node_ages`. To make this directory and run th R script [`get_mrca_table.r`](src/get_mrca_table.r), use the following set of commands:
-
-		mkdir node_ages
-		for i in alignment_blocks_filtered/*/*.100.trees
-		do
-			block_id=`basename ${i%.100.trees}`
-			echo -n "Reading node ages from file ${block_id}.100.trees..."
-			Rscript get_mrca_table.r ${i} > node_ages/${block_id}.txt
-			echo " done."
-			echo "Wrote file node_ages/${block_id}.txt."
+			iqtree -s ${i} -o IZC5
 		done
 
-	These commands might take a few minutes to finish.
+	IQ-TREE should require around 10 minutes to finish the phylogenetic analysis for all block alignments.
+	
+* Combine all inferred phylogenies into a single file, using the following command:
 
-* Have a look at the content of the new directory named `node_ages`, for example using the `ls` command:
-
-		ls node_ages
+		cat blocks/*.treefile > block_phylogenies.trees
 		
-* Also have a look at the format of these text files by opening one of them in a text editor, or by using the `less -S` command:
+* You could then remove all output files produced by IQ-TREE to clean up the directory:
 
-		less -S node_ages/NC_031969_02066951_02116950.txt 
+		rm blocks/*.nex.*
+
+* Before analyzing asymmetry in the topologies of species trios in the next section, we'll first replace the sample IDs in the tree file [`block_phylogenies.trees`](res/block_phylogenies.trees) with the corresponding species names; this will facilitate the interpretation of the results. To prepare this translation, write the following table of sample IDs and species names to a new file named `samples.txt` (note that the content of this file is different from other files with the same name used in other tutorials):
+
+		IZC5	astbur
+		AUE7	altfas
+		JBD6	telvit
+		JUH9	neobri
+		LJC9	neocan
+		KHA7	neochi
+		IVE8	neocra
+		JWH2	neogra
+		JWG9	neohel
+		JWH4	neomar
+		JWH6	neooli
+		ISB3	neopul
+		ISA8	neosav
+		KFD2	neowal
 		
-	You'll see that for each of the 100 trees in the corresponding tree file, this text file actually contains two tables, the first of which is labelled "#ancestors" and the second is labelled "node_ages". The "#ancestors" specifies the node ID for the most recent common ancestor of each pair of taxa, and the second table contains the node ages for these common ancestors.
+	(make sure that the last line end with a line break).
+
+* To then replace all sample IDs in the tree file [`block_phylogenies.trees`](res/block_phylogenies.trees) and write a new file named `block_phylogenies.renamed.trees`, you can use the following set of commands:
+
+		cp block_phylogenies.trees tmp.trees
+		while read line
+		do
+			sample_id=`echo ${line} | cut -d " " -f 1`
+			species_name=`echo ${line} | cut -d " " -f 2`
+			cat tmp.trees | sed "s/${sample_id}/${species_name}/g" > tmp2.trees
+			mv -f tmp2.trees tmp.trees
+		done < samples.txt
+		mv tmp.trees block_phylogenies.renamed.trees
+
+* You may want to browse through some of the block phylogenies to get a feeling of how reliable they could be. To do so, open file [`block_phylogenies.renamed.trees`](res/block_phylogenies.renamed.trees) in FigTree. The first phylogeny should look as shown in the screenshot below:<p align="center"><img src="img/figtree1.png" alt="FigTree" width="600"></p> This block phylogeny is rather different from the species tree inferred with SNAPP in tutorial [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md). For comparison, this species tree is shown in the next screenshot:<p align="center"><img src="img/figtree2.png" alt="FigTree" width="600"></p> For example, the species tree strongly supports monophyly of *Neolamprologus chitamwebwai* ("neochi") and *N. walteri* ("neowal"), but the latter species is closer to *Telmatochromis vittatus* ("telvit") in the block phylogeny. Such differences can of course be due to incomplete lineage sorting, but they could also arise from low information content of the alignment. Brownse through some of the other block phylogenies contained in file [`block_phylogenies.renamed.trees`](res/block_phylogenies.renamed.trees) by clicking on on arrows at the top right of the FigTree window.
+
+* Finally, we could quantify the differences between all block phylogenies and the species tree generated with SNAPP. The [Robinson-Foulds distance](https://en.wikipedia.org/wiki/Robinson–Foulds_metric), measuring the number of nodes that one would need to change to convert one tree into the other, would be suitable to quantify this differene and can quickly be calculated with IQ-TREE (as in tutorial [Maximum-Likelihood Phylogenetic Inference](ml_phylogeny_inference)). To do so, use file [`snapp.nwk`](data/snapp.nwk), which is a version of the species tree in Newick format. Then, calculate the Robinson-Foulds distance between all block phylogenies and the species tree with the following command:
+
+		iqtree -t block_phylogenies.renamed.trees -rf snapp.nwk
+
+	The screen output should indicate that the results were written to a file named `block_phylogenies.renamed.trees.rfdist`.
 	
-* To summarize the information from all files in directory `node_ages` and all tables in each of these files into one single table with only the pairwise mean node ages, we can use the Ruby script [`summarize_mrca_tables.rb`](src/summarize_mrca_tables.rb). This script expects two arguments:
-	* the name of a directory with text files written by script `get_mrca_table.r`,
-	* the name of an output file to which the summary table will be written.
+* Have a look at file [`block_phylogenies.renamed.trees.rfdist`](res/block_phylogenies.renamed.trees.rfdist), for example with the `less` command. This should show that most block phylogenies have a Robinson-Foulds distance from the species tree around 20. This is quite high and indicates either very pervasive incomplete lineage sorting, very low information content in the alignments, or both. But as we will see, the collection of block phylogenies will nevertheless be very useful to identify introgression.
 
-	Thus, use the following command to read analyze all files in directory `node_ages` and write the resulting matrix to a new file name `mean_node_ages.txt`:
 
-		ruby summarize_mrca_tables.rb node_ages mean_node_ages.txt
+<a name="asymmetry"></a>
+##Analyzing asymmetry of trio topologies
 
-* Have a quick look at the pairwise mean divergence times recorded in file [`mean_node_ages.txt`](res/mean_node_ages.txt).
+Analogous to the logic behind the ABBA-BABA test in tutorial [Analysis of Introgression with SNP Data](../analysis_of_introgression_with_snp_data/README.md), asymmetry in the topologies of species trios can be used to identify past introgression. In the absence of introgression, we would expect that local phylogenies of three species P1, P2, and P3 most frequently support the topology of the true species tree (e.g. a clade formed by P1 and P2 if these are in fact sister species), and that the two alternative topologies (e.g. a clade formed by P1 and P3 or a clade formed by P2 and P3) should occur equally frequently. A significant difference in the frequencies of the two alternative topologies is therefore not compatible with a null hypothesis of no introgression, meaning that such a significant difference would support the occurrence of past introgression. An important difference to the ABBA-BABA test may be that the analysis of tree asymmetry could be more robust to rate variation among species; however, this hypothesis remains to be tested with simulations.
 
-* Next, we can visualize the pairwise mean divergence times in the form of a heatmap by typing the following set of `R` commands:
+To analyze the frequencies of alternative trio topologies in the set of block phylogenies, we can use the Ruby script [`analyze_tree_asymmetry.rb`](src/analyze_tree_asymmetry.rb). This script should work well with any file that contains a set of trees in Newick format. It determines the set of species in these trees, and then tests for each possible species trio how often two of the three species form a pair relative to the third species. These frequencies are then used to place the three species in positions P1, P2, and P3 so that
 
-		R
-		table <- read.table("mean_node_ages.txt")
-		matrix <- as.matrix(table)
-		col_palette <- colorRampPalette(c("#848e79","#6b857a","#537b7c","#3b727d","#2a667b","#255771","#204768","#1b385f","#162955","#111a4c","#0d133d","#0a0e2d"),space="rgb")(n = 25)
-		col_breaks=seq(0,max(matrix),length=26)
-		pdf("mean_node_ages.pdf", height=7, width=7)
-		heatmap(matrix, Rowv=T, symm=T, scale="none", col=col_palette, breaks=col_breaks)
-		dev.off()
-		quit(save="no")
+*N*<sub>(P1,P2)</sub> > *N*<sub>(P2,P3)</sub> > *N*<sub>(P1,P3)</sub>,
 
-	The above commands should have written a new file named [`mean_node_ages.pdf`](res/mean_node_ages.pdf). This file should contain a heatmap plot as shown below:
-	<p align="center"><img src="img/mean_node_ages.png" alt="Mean node ages" width="600"></p>
-	In this plot, the darkest cells represent the oldest pairwise mean divergence time (6.64 Ma), which is found (unsurprisingly) between the *Astatotilapia burtoni* sequences "IZC5_A" and "IZC5_B" and all other sequences. The cells in lighter colors indicate more recent divergence times, which are found mainly within four clusters of sequences. The dendrograms shown at the top and on the left were computed with a simple clustering algorithm by the R function `heatmap()`. These are only included for orientation and should not be seen as actual phylogenies.
+where *N*<sub>(P1,P2)</sub> is the frequency at which P1 and P2 form a pair, *N*<sub>(P2,P3)</sub> is the frequency of pairs formed by P2 and P3, and *N*<sub>(P1,P3)</sub> is the frequency of pairs formed by P1 and P3. An equivalent to the *D*-statistic is then calculated as
 
-* As you will have noticed, the file [`mean_node_ages.txt`](res/mean_node_ages.txt) as well as the heatmap generated from it in the last step use the individual sequences as units rather than the species. In order to investigate species-level introgression, it would, however, be more convenient to average over the different sequences of each species. To do so, we can use the Ruby script [`shrink_matrix.rb`](src/shrink_matrix.rb). This script expects the following three arguments:
-	* the name of an input text file containing a matrix,
-	* the name of a file assigning the units used in the matrix (e.g. sequence or sample IDs) to larger units (e.g. species IDs),
-	* the name of a new output file to which the reduced matrix will be written.
+*D* = (*N*<sub>(P2,P3)</sub> - *N*<sub>(P1,P3)</sub>) / (*N*<sub>(P2,P3)</sub> + *N*<sub>(P1,P3)</sub>)
 
-	We therefore first need to write a file assigning sequence IDs to species IDs. To do so, copy the below text to a new file, and name this new file `species.txt`:
+and a *p*-value for the null hypothesis of no imbalance between *N*<sub>(P1,P3)</sub> and *N*<sub>(P2,P3)</sub> is calculated based on a [binomial test](https://en.wikipedia.org/wiki/Binomial_coefficient).
 
-		IZC5_A	astbur
-		IZC5_B	astbur
-		AUE7_A	altfas
-		AUE7_B	altfas
-		JBD6_A	telvit
-		JBD6_B	telvit
-		JUH9_A	neobri
-		JUH9_B	neobri
-		LJC9_A	neocan
-		LJC9_B	neocan
-		KHA7_A	neochi
-		KHA7_B	neochi
-		IVE8_A	neocra
-		IVE8_B	neocra
-		JWH2_A	neogra
-		JWH2_B	neogra
-		JWG9_A	neohel
-		JWG9_B	neohel
-		JWH4_A	neomar
-		JWH4_B	neomar
-		JWH6_A	neooli
-		JWH6_B	neooli
-		ISB3_A	neopul
-		ISB3_B	neopul
-		ISA8_A	neosav
-		ISA8_B	neosav
-		KFD2_A	neowal
-		KFD2_B	neowal
+* To quantify tree asymmetry, run the script [`analyze_tree_asymmetry.rb`](src/analyze_tree_asymmetry.rb) with the tree file [`block_phylogenies.renamed.trees`](res/block_phylogenies.renamed.trees), and specify that the output should be written to a new file named `block_topology_frequencies.txt`, using the following command:
 
-* Then, we can apply the script [`shrink_matrix.rb`](src/shrink_matrix.rb) with the input files `mean_node_ages.txt` and `species.txt`, and naming the output file `mean_node_ages_species.txt`:
+		ruby analyze_tree_asymmetry.rb block_phylogenies.renamed.trees block_topology_frequencies.txt
 
-		ruby shrink_matrix.rb mean_node_ages.txt species.txt mean_node_ages_species.txt
+* Have a look at the file [`block_topology_frequencies.txt`](res/block_topology_frequencies.txt) produced by script `analyze_tree_asymmetry.rb`, for example using the `less` command:
 
-* For comparison with the first heatmap, we can generate another heatmap for the pairwise mean divergence times averaged per species comparison, using the following set of `R` commands:
+		less block_topology_frequencies.txt
 
-		R
-		table <- read.table("mean_node_ages_species.txt")
-		matrix <- as.matrix(table)
-		col_palette <- colorRampPalette(c("#848e79","#6b857a","#537b7c","#3b727d","#2a667b","#255771","#204768","#1b385f","#162955","#111a4c","#0d133d","#0a0e2d"),space="rgb")(n = 25)
-		col_breaks=seq(0,max(matrix),length=26)
-		pdf("mean_node_ages_species.pdf", height=7, width=7)
-		heatmap(matrix, Rowv=T, symm=T, scale="none", col=col_palette, breaks=col_breaks)
-		dev.off()
-		quit(save="no")
-
-	These commands should have written the heatmap plot to the new file [`mean_node_ages_species.pdf`](res/mean_node_ages_species.pdf). The heatmap should look as shown in the figure below:
-	<p align="center"><img src="img/mean_node_ages_species.png" alt="Mean node ages" width="600"></p>
+	The content of this file should show the following:
 	
-	You may notice that one of the cells on the diagonal is much darker than all others. This cell represents the mean divergence time between two sequences that are both assigned to the species *Neolamprologus cancellatus* ("neocan"), indicating that the within-species genetic variation in *Neolamprologus cancellatus* is much greater than in other species.
+		p1        p2        p3         n(p1,p2)  n(p2,p3)  n(p1,p3)    d         p
+		neobri    altfas    astbur           66         0         0    0.000    1.00000000
+		neocan    altfas    astbur          183         0         0    0.000    1.00000000
+		neochi    altfas    astbur           66         0         0    0.000    1.00000000
+		neocra    altfas    astbur           61         0         0    0.000    1.00000000
+		neogra    altfas    astbur           62         0         0    0.000    1.00000000
+		neohel    altfas    astbur           61         0         0    0.000    1.00000000
+		neomar    altfas    astbur           67         0         0    0.000    1.00000000
+		neooli    altfas    astbur           63         0         0    0.000    1.00000000
+		neopul    altfas    astbur           67         0         0    0.000    1.00000000
+		neosav    altfas    astbur           60         0         0    0.000    1.00000000
+		neowal    altfas    astbur           67         0         0    0.000    1.00000000
+		telvit    altfas    astbur           76         0         0    0.000    1.00000000
+		altfas    neocan    neobri          171        60         7    0.791    0.00000000
+		neobri    neochi    altfas          162        43        33    0.132    0.30187249
+		neocra    neobri    altfas          204        19        15    0.118    0.60759136
+		...
+
+	The format of this file is similar to that written by the program Dsuite in tutorial [Analysis of Introgression with SNP Data](../analysis_of_introgression_with_snp_data/README.md). Each row includes results for one species trio, with the frequencies of the three alternative topologies in columns 4 to 6, followed by the equivalent to the *D*-statistic in the seventh column and the *p*-value in the last. The trios in the first couple of rows include *Astatotilapia burtoni* ("astbur"), and because that species is the outgroup, it is not surprising that the frequencies *N*<sub>(P1,P3)</sub> and *N*<sub>(P2,P3)</sub> are 0. The reason why only a proportion of the 238 phylogenies support *N*<sub>(P1,P2)</sub> is that, as in the screenshot of a block phylogeny shown above, IQ-TREE places the outgroup with another species in a polytomy at the root, and the script [`analyze_tree_asymmetry.rb`](src/analyze_tree_asymmetry.rb) ignores trios connected by polytomies. But since the frequencies of topologies in species trios that include the outgroup are by definition never asymmetric, those comparisons could be ignored anyway. More conclusive results are shown in the subsequent rows of the table, for example for the trio of "altfas", "neocan", and "neobri", where 171 block phylogenies pair "altfas" and "neocan" and 60 phylogenies pair "neocan" and "neobri", but only 7 phylogenies pair "altfas" and "neobri". As indicated by *D*-statistic of 0.791 and the *p*-value of 0, this asymmetry can not be explained by incomplete lineage sorting alone. **Question 4:** Which species trio has the highest *D* value in this table? [(see answer)](#q4)
+
+* A good way of plotting the asymmetry among alternative trio topologies, and the significance of this asymmetry, is in the form of a heatmap, just like the results of the Dsuite analyses were plotted in tutorial [Analysis of Introgression with SNP Data](../analysis_of_introgression_with_snp_data/README.md). This heatmap plot can be generated with the Ruby script [`plot_tree_asymmetry.rb`](src/plot_tree_asymmetry.rb). This script requires the following three command-line arguments:
+
+	* the name of the file produced by script `analyze_tree_asymmetry.rb`,
+	* the name of a file that lists the order in which the species should be listed along the heatmap axes,
+	* the maximum *D*-statistic to be shown in the plot,
+	* the name of the output file, which will be in scalable vector graphic (SVG) format.
+
+	Thus, the only input that is missing is the file specifying the order in which species should be plotted. To generate this file, simply copy the list below and save it in a file named `species_order.txt`:
+
+		astbur
+		altfas
+		neocan
+		neochi
+		neowal
+		telvit
+		neosav
+		neocra
+		neomar
+		neogra
+		neohel
+		neobri
+		neooli
+		neopul
+
+* Use script [`plot_tree_asymmetry.rb`](src/plot_tree_asymmetry.rb) with files [`block_topology_frequencies.txt`](res/block_topology_frequencies.txt) and [`species_order.txt`](res/species_order.txt) as input, specify a maximum *D*-statistic of 0.7, and name the output file `block_topology_frequencies.svg`:
+
+		ruby plot_tree_asymmetry.rb block_topology_frequencies.txt species_order.txt 0.7 block_topology_frequencies.svg
+
+	Open the output file [`block_topology_frequencies.svg`](res/block_topology_frequencies.svg) file with a program capable of reading files in SVG format, for example with a browser such as Firefox or with Adobe Illustrator. The heatmap plot should look as shown below:<p align="center"><img src="img/asymmetry.png" alt="Heatmap D" width="600"></p>
+
+	Clearly the by far strongest signal is shown for comparisons of *Neolamprologus cancellatus* ("neocan") and either other species of the genus or *Telmatochromis vittatus* ("telvit"). While this heatmap does not allow us to tell whether "neocan" was in the P2 or P3 position in those trios that produced these large *D*-statistics, a comparison with file [`block_topology_frequencies.txt`](res/block_topology_frequencies.txt) reveals that the largest *D*-statistics result from trios that have "neocan" in the P2 position. This can be confirmed e.g. with the following command:
 	
-* Have a look at the text file from which the last heatmap was generated, the file `mean_node_ages_species.txt`.
+		cat block_topology_frequencies.txt | tail -n +2 | sort -n -k 7 -r | less
 
-	**Question 7:** What is the age estimate for the divergence of the sequences within *Neolamprologus cancellatus* ("neocan")? [(see answer)](#q7)
+	The patterns of topology asymmetry therefore strongly support introgression between *Neolamprologus cancellatus* ("neocan") and either another *Neolamprologus* or *Telmatochromis vittatus* ("telvit"). Given that the highest *D*-statistic is found for the trio with *Telmatochromis vittatus*, these results therefore corroborate those obtained in tutorial [Analysis of Introgression with SNP Data](../analysis_of_introgression_with_snp_data/README.md), according to which *Neolamprologus cancellatus* is formed by hybridization between *Altolamprologus fasciatus* and *Telmatochromis vittatus*.
 
-* As you certainly noticed, the heatmaps generated above are not the type of heatmap used by [Meyer et al. (2017; Fig. 1)](https://academic.oup.com/sysbio/article/66/4/531/2670093) to identify introgression events, instead they rather represent its raw material as they visualize pairwise mean divergence times instead of the age reductions in species trios that were used by [Meyer et al. (2017; Fig. 1)](https://academic.oup.com/sysbio/article/66/4/531/2670093). The maximum age reductions in species trios, as described above, can, however, easily be  calculated from the pairwise mean divergence times, using the Ruby script [`get_age_reduction.rb`](src/get_age_reduction.rb). This script expects two arguments; these are
-	* only the name of an input file with a matrix of divergence times,
-	* the name of a new file to which the matrix with maximum age reductions will be written.
 
-	Thus, to use file [`mean_node_ages_species.txt`](res/mean_node_ages_species.txt) as input and write the output to a new file named `age_reductions.txt`, run the script `get_age_reduction.rb` with the following command:
 
-		ruby get_age_reduction.rb mean_node_ages_species.txt age_reductions.txt
+##XXX
 
-* Have a look at the content of file [`age_reductions.txt`](res/age_reductions.txt) by opening it in a text editor or with the `less` command:
 
-		less age_reductions.txt
+		ruby extract_blocks.rb NC_031969.f5.masked.fasta blocks 1000 0.75
 
-	The content of this file should look more or less like this:
-	
-		        altfas  astbur  neobri  neocan  neochi  neocra  neogra  neohel  neomar  neooli  neopul  neosav  neowal  telvit  
-		altfas  0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     
-		astbur  0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     
-		neobri  0.0     0.0     0.0     0.0     0.0     0.065   0.0975  0.05    0.13    0.0475  0.0     0.1625  0.0     0.0     
-		neocan  0.0     0.0     0.685   0.0     0.72    0.685   0.685   0.69    0.685   0.685   0.685   0.69    0.72    1.455   
-		neochi  0.02    0.0     0.0     0.055   0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.08    
-		neocra  0.0     0.0     0.145   0.0     0.01    0.0     0.0775  0.135   0.0     0.0675  0.1275  0.055   0.01    0.0     
-		neogra  0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0825  0.01    0.0     0.0     0.0     0.0     
-		neohel  0.0     0.0     0.0     0.005   0.01    0.01    0.0375  0.0     0.085   0.0     0.0     0.165   0.01    0.01    
-		neomar  0.0     0.0     0.0     0.0     0.01    0.0     0.0     0.0     0.0     0.0     0.0     0.02    0.01    0.0     
-		neooli  0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0575  0.0     0.0     0.13    0.0     0.0     
-		neopul  0.0     0.0     0.24    0.0     0.0     0.035   0.0375  0.095   0.1175  0.0     0.0     0.185   0.0     0.0     
-		neosav  0.0     0.0     0.0     0.005   0.03    0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.03    0.02    
-		neowal  0.02    0.0     0.0     0.055   0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.0     0.08    
-		telvit  0.06    0.0     0.685   0.0     0.71    0.685   0.685   0.69    0.685   0.685   0.685   0.7     0.71    0.0     
 
-	As you'll see, most of the cells in this matrix are zero, meaning regardless of which species is used as the third species, the older two of the three mean divergence times are identical. For example consider the two species *Astatotilapia burtoni* ("astbur") and *Altolamprologus fasciatus* ("altfas"), for which a maximum age reduction of zero (thus, no age reduction at all) was inferred. This means that regardless of which species is used as the third species ("B"), the mean divergence time between *Astatotilapia burtoni* ("C") and *Altolamprologus fasciatus* ("A") is identical to the mean divergence time between *Astatotilapia burtoni* ("C") and that third species. Thus, no signs of introgression are found between the two species *Astatotilapia burtoni* and *Altolamprologus fasciatus* (which does not mean that introgression can be excluded though).
 
-* For a better overview of the information in file [`age_reductions.txt`](res/age_reductions.txt), also generate a heatmap for it with the following commands:
 
-		R
-		table <- read.table("age_reductions.txt")
-		matrix <- as.matrix(table)
-		max(matrix)
-		col_palette <- colorRampPalette(c("#848e79","#6b857a","#537b7c","#3b727d","#2a667b","#255771","#204768","#1b385f","#162955","#111a4c","#0d133d","#0a0e2d"),space="rgb")(n = 25)
-		col_breaks=seq(0,max(matrix),length=26)
-		pdf("age_reductions.pdf", height=7, width=7)
-		heatmap(matrix, Rowv=NA, Colv=NA, symm=F, scale="none", col=col_palette, breaks=col_breaks, xlab="Taxon C (donor)", ylab="Taxon A (recipient)", margins = c(6, 6))
-		dev.off()
-		quit(save="no")
 
-	The above commands should have written the heatmap plot to a new file named [`age_reductions.pdf`](res/age_reductions.pdf). The plot should look as shown in the figure below:
-	<p align="center"><img src="img/age_reductions.png" alt="Age reductions" width="600"></p>
-	
-	As you can see, the heatmap is dominated by two dark bars that span most of the comparisons involving the species *Neolamprologus cancellatus* ("neocan") or *Telmatochromis vittatus* ("telvit") in the position of species "A". The darkest cell of the heatmap, however, is found for *Telmatochromis vittatus* ("telvit") in position of the donor species "C" and *Neolamprologus cancellatus* ("neocan") as the recipient of introgression, species "A". The maximum age reduction for this comparison is 1.455 million years, as we can see from file [`age_reductions.txt`](res/age_reductions.txt).
-	
-	**Question 8:** Using the information on pairwise mean divergence times in file [`mean_node_ages_species.txt`](res/mean_node_ages_species.txt), can you figure out which third species ("B"), together with *Telmatochromis vittatus* ("telvit") as species "C" and *Neolamprologus cancellatus* ("neocan") as species "A" is included in the species trio for which this maximum age reduction of 1.455 million years was found? [(see answer)](#q8)
-	
-* Even though the strongest signal of introgression is thus found between *Telmatochromis vittatus* ("telvit") and *Neolamprologus cancellatus* ("neocan"), the two dark bars in the heatmap seems to additionally support introgression from most *Neolamprologus* species into both *Telmatochromis vittatus* ("telvit") and *Neolamprologus cancellatus* ("neocan"). However, a comparison with the pairwise mean divergence times in file [`mean_node_ages_species.txt`](res/mean_node_ages_species.txt) reveals that this is an artifact resulting from the introgression between *Telmatochromis vittatus* ("telvit") and *Neolamprologus cancellatus* ("neocan"): For example, in the species trio *Telmatochromis vittatus* ("telvit"; as species "A"), *Neolamprologus cancellatus* ("neocan"; as species "B"), and *Neolamprologus walteri* ("neowal"; as species "C") (see the second cell in the top right of the heatmap), the mean divergence time between species the two *Neolamprologus* species ("C" and "B") is 3.78 Ma, whereas it is 3.07 and 3.005 Ma between these two species and *Telmatochromis vittatus* ("telvit"; species "A"). This could be explained by a sister-group relationship between *Telmatochromis vittatus* ("telvit") and *Neolamprologus cancellatus* ("neocan") in combination with introgression from *Neolamprologus walteri* ("neowal") into *Telmatochromis vittatus* ("telvit"); however, given that an even stronger signal of supports introgression from a more diverged species (*Altolamprologus fasciatus*; "altfas") into *Neolamprologus cancellatus* ("neocan"), it is likely that the mean divergence times for *Neolamprologus cancellatus* ("neocan") in these comparisons are the result of its *Altolamprologus fasciatus* ancestry.
 
-	This shows how the use of maximum age reductions in species trios can be misleading if one of these species is influenced by introgression from outside the trio. However, a good way to account for this potentially misleading influence is to iteratively remove those species with the strongest signals of introgression. To do so, we can run the Ruby script [`get_age_reduction.rb`](src/get_age_reduction.rb) once more, this time with the species ID of *Neolamprologus cancellatus*, "neocan", as an optional third argument. The script will then calculate the maximum age reduction in all other trios while ignoring *Neolamprologus cancellatus* ini all comparisons (also as species "B"). Thus, use the following command to recalculate maximum age reductions without *Neolamprologus cancellatus* ("neocan"):
 
-		ruby get_age_reduction.rb mean_node_ages_species.txt age_reductions_sub1.txt neocan
-
-	The new matrix without *Neolamprologus cancellatus* ("neocan") should then be written to a file named [`age_reductions_sub1.txt`](res/age_reductions_sub1.txt)
-
-* Make a new heatmap plot for the matrix without *Neolamprologus cancellatus* ("neocan"), using the following set of `R` commands:
-
-		R
-		table <- read.table("age_reductions_sub1.txt")
-		matrix <- as.matrix(table)
-		max(matrix)
-		col_palette <- colorRampPalette(c("#848e79","#6b857a","#537b7c","#3b727d","#2a667b","#255771","#204768","#1b385f","#162955","#111a4c","#0d133d","#0a0e2d"),space="rgb")(n = 25)
-		col_breaks=seq(0,max(matrix),length=26)
-		pdf("age_reductions_sub1.pdf", height=7, width=7)
-		heatmap(matrix, Rowv=NA, Colv=NA, symm=F, scale="none", col=col_palette, breaks=col_breaks, xlab="Taxon C (donor)", ylab="Taxon A (recipient)", margins = c(6, 6))
-		dev.off()
-		quit(save="no")
-
-	The new heatmap plot should then be written to file [`age_reductions_sub1.pdf`](res/age_reductions_sub1.pdf) and it should look as shown in the figure below:
-	<p align="center"><img src="img/age_reductions_sub1.png" alt="Age reductions" width="600"></p>
-	
-	As you can see, the dark bar in the top row for *Telmatochromis vittatus* ("telvit") in the position of the recipient has now completely disappeared, further suggesting that its presence in the previous heatmap was an artifact caused by introgression into *Neolamprologus cancellatus* ("neocan"). Other cells in the heatmap now appear darker; this, however is mostly due to adjusting the color scheme to the new maximal value.
-	
-	The darkest cell in the heatmap is now the one for the comparison of *Neolamprologus brichardi* ("neobri") as the donor species "C" and *Neolamprologus pulcher* ("neopul") as the recipient species "A", with a maximum age reduction of 0.24 million years according to the information in file [`age_reductions_sub1.txt`](res/age_reductions_sub1.txt). This observation agrees with the resuls of [Gante et al. (2016)](https://onlinelibrary.wiley.com/doi/abs/10.1111/mec.13767), where we also inferred introgression from *Neolamprologus brichardi* ("neobri") into *Neolamprologus pulcher* ("neopul").
-
-* To see how removing *Neolamprologus brichardi* ("neobri"), in addition to *Neolamprologus cancellatus* ("neocan"), influences the signals of introgression among the other species, we'll run the script `get_age_reduction.rb` once more, this time with "neocan,neopul" as the third argument (the script will recognize that multiple species IDs are specified):
-
-		ruby get_age_reduction.rb mean_node_ages_species.txt age_reductions_sub2.txt neocan,neopul
-		
-	The script should now have written another matrix of maximum age reductions in species trios, to a new file named [`age_reductions_sub2.txt`](res/age_reductions_sub2.txt).
-
-* Use the new file [`age_reductions_sub2.txt`](res/age_reductions_sub2.txt) for a third heatmap plot of maximum age reductions, this time without both *Neolamprologus brichardi* ("neobri") and *Neolamprologus cancellatus* ("neocan"):
-
-		R
-		table <- read.table("age_reductions_sub2.txt")
-		matrix <- as.matrix(table)
-		max(matrix)
-		col_palette <- colorRampPalette(c("#848e79","#6b857a","#537b7c","#3b727d","#2a667b","#255771","#204768","#1b385f","#162955","#111a4c","#0d133d","#0a0e2d"),space="rgb")(n = 25)
-		col_breaks=seq(0,max(matrix),length=26)
-		pdf("age_reductions_sub2.pdf", height=7, width=7)
-		heatmap(matrix, Rowv=NA, Colv=NA, symm=F, scale="none", col=col_palette, breaks=col_breaks, xlab="Taxon C (donor)", ylab="Taxon A (recipient)", margins = c(6, 6))
-		dev.off()
-		quit(save="no")
-
-	The new plot should be written to file [`age_reductions_sub2.pdf`](res/age_reductions_sub2.pdf), and it should look as shown below:
-	
-	<p align="center"><img src="img/age_reductions_sub2.png" alt="Age reductions" width="600"></p>
-
-	A comparison of this heatmap with the previous one shows that removing *Neolamprologus brichardi* ("neobri") did not affect the pattern for other comparisons strongly. The largest value now found in the matrix in file [`age_reductions_sub2.txt`](res/age_reductions_sub2.txt) corresponds to a maximum age reduction of 0.165 million years in the comparison with *Neolamprologus savoryi* ("neosav") as the donor species "C" and *Neolamprologus helianthus* ("neohel") as the recipient species "A"; however, whether this value still supports introgression or whether it results from stochasticity in the phylogenetic inference may be questioned.
-
-	In any case, because the approach of [Meyer et al. (2017)](https://academic.oup.com/sysbio/article/66/4/531/2670093) based on mean divergence times in species trios does not represent a formal test of introgression, the results obtained with this approach should generally be seen as indicating putative introgression events rather than providing strong support for these. This approach is thus very useful to build hypotheses of where in the phylogeny introgression events could have occurred so that these hypotheses can be further investigated with, e.g., the ABBA-BABA test, or with approaches for species-network reconstruction such as the Species Network model for BEAST2 (see tutorial [Analysis of Introgression with SNP Data](../analysis_of_introgression_with_snp_data/README.md)) or similar models implemented in the programs [PhyloNet](https://bioinfocs.rice.edu/phylonet) ([Than et al. 2008](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-322); [Wen et al. 2016](http://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006006)) or [SNAQ](https://github.com/crsl4/PhyloNetworks.jl) ([Solís-Lemus and Ané 2016](http://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1005896)).
-	
-* Additional evidence for putative introgression events can also be obtained from patterns of symmetry or assymetry in the topologies of species trios. To further investigate for example the putative introgression event from *Neolamprologus brichardi* ("neobri") into *Neolamprologus pulcher* ("neopul") we could test if this introgression event is also supported by asymmetry in the topologies of the two species plus a third species that is phylogenetically closer to the recipient species than the presumed donor. Based on the species-tree analysis with SNAPP in tutorial [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md), a suitable third species for this comparison would be *Neolamprologus olivaceous* ("neooli"), which appeared as the sister to *Neolamprologus pulcher* ("neopul") in the resulting species tree.
-
-	Frequencies of tree topologies can be extracted from sets of tree files in a convenient way with the Python script [`get_topologies.py`](src/get_topologies.py). Have a look at the help text of this script by typing the following command:
-	
-		python3 get_topologies.py -h
-	
-	As you can see from this help text, the script uses as input one or more tree files specified with option `-t` as well as one or more species IDs specified with option `-s`. Instead of species IDs, the name of a file assigning sequence or sample IDs to species IDs can also be specified with the `-s` option; in that case the frequencies of species topologies will be calculated by weighing the topologies of the individual sequences.
-
-* Write the following text assigning sample IDs to species IDs for the three species *Neolamprologus brichardi* ("neobri"), *Neolamprologus olivaceous* ("neooli"), and *Neolamprologus pulcher* ("neopul") to a new file named `species_trio1.txt`:
-
-		JUH9_A	neobri
-		JUH9_B	neobri
-		JWH6_A	neooli
-		JWH6_B	neooli
-		ISB3_A	neopul
-		ISB3_B	neopul
-
-* Then, execute the script [`get_topologies.py`](src/get_topologies.py) to count the frequencies of the three different possible topologies for the species trio *Neolamprologus brichardi* ("neobri"), *Neolamprologus olivaceous* ("neooli"), and *Neolamprologus pulcher* ("neopul") in the set of reduced tree files in directory `alignment_blocks_filtered`:
-
-		python3 get_topologies.py -t alignment_blocks_filtered/*/*.100.trees -s species_trio1.txt
-		
-	**Question 9:** Are the topology frequencies asymmetric, supporting introgression between *Neolamprologus brichardi* and *Neolamprologus pulcher*? [(see answer)](#q9)
-		
-* Repeat the same with another species trio to test another putative introgression event indicated by the heatmap in file [`age_reductions_sub2.pdf`](res/age_reductions_sub2.pdf). When selecting a third species for the comparison, try to use one that is phylogenetically closer to the putative recipient of introgression than it is to the donor, based on the species tree inferred with SNAPP in tutorial [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md). This species tree is shown in the figure below:
-
-	<p align="center"><img src="img/figtree1.png" alt="FigTree" width="600"></p>
-	
-	For this new text, you will need to write file similar to `species_trio1.txt` but with different species and sequence IDs. This new file could be named `species_trio2.txt`.
-	
-	**Question 10:** Did you identify further examples of asymmetry in the topology frequencies? [(see answer)](#q10)
-	
 As we have seen in this part of the tutorial, both divergence times in local phylogenies as well as topology frequencies support several instances of introgression among the cichlid species included in our dataset. In the extreme case of *Neolamprologus cancellatus*, the hypothesis of introgression from *Telmatochromis vittatus* was strongly supported by the results obtained in tutorial [Analysis of Introgression with SNP Data](../analysis_of_introgression_with_snp_data/README.md), which even suggested that the *Neolamprologus cancellatus* samples are first-generation hybrids between *Telmatochromis vittatus* and *Altolamprologus fasciatus*. However, some of the other introgression events suggested here by patterns of mean divergence times and and topology frequencies have not yet been explicitly tested (with e.g. the ABBA-BABA test) and might need to be further investigated. Considering that we only used data from a single chromosome and just a single sample per species, more definite conclusions could certainly be gained from more extensive analyses!
 
 
@@ -1342,80 +593,28 @@ There are some reasons why the lengths of c-genes and single-topology tracts may
 		NC_031969       141908  .       G       A       .       PASS    .       GT      1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1
 
 
+<a name="q2"></a>
+
+* **Question 2:** The script `extract_blocks.rb` should report on the command line that 493 alignment blocks were written while 7,114 were excluded due to a high proportion of missing data. Thus, we could have obtained a larger number of alignments if we had allowed a greater proportion of missing data; however, these additional blocks would have been less suitable for phylogenetic analysis. Alternatively, less strict filters for quality and depth could have been chosen in variant calling, which would have led to an overall lower proportion of missing data. This, however, could also have compromised the reliability of the resulting alignments. Of course, if we wouldn't be limited to the use of a single chromosome as in this tutorial, but would use data from across the whole genome, the number of suitable block alignments could be much larger. Nevertheless, it may be worthwhile to aim for a higher coverage and better quality already at the sequencing stage (here, an Illumina read coverage around 10&times; was used) to increase the proportion of the dataset that can ultimately be used for phylogenetic analyses.
 
 
+<a name="q3"></a>
+
+* **Question 3:** Executing the command `ls blocks/*.nex | wc -l` indicates that 238 block alignments remain in the `blocks` directory.
 
 
+<a name="q4"></a>
 
+* **Question 4:** The trio with the highest *D*-statistic can be identified with the following command:
 
+		cat block_topology_frequencies.txt | tail -n +2 | sort -n -k 7 -r | head -n 1
 
-
+	This should show that the trio of "altfas", "neocan", and "telvit" have a *D*-statistic of 0.842.
 
 
 
 XXX
 
-
-<a name="q1"></a>
-
-* **Question 1:** The filtering of alignment blocks based on the proportion of missing data should have removed about 200 alignment files from directory `alignment_blocks`. In my analysis, there were 672 alignment files before filtering and 477 files remained after removing those that had more than 90% missing data.
-
-
-<a name="q2"></a>
-
-* **Question 2:** Almost all BEAST2 analyses should reach rather high ESS values for the posterior probability, usually between 300 and 1,000. This is one indication that the MCMC chains of these analyses have reached stationarity, but it does not tell us if all model parameters have similarly high ESS values.
-
-
-<a name="q3"></a>
-
-* **Question 3:** With the command that we used, `summary()`, displays two tables. The first of these contains the mean and standard deviation for the estimates of all model parameters, and the second table shows the 2.5%, 25%, 50% (the median), 75%, and 97.5% quantiles. The mutation-rate parameter is named "mutationRate.s.NC_031969_02066951_02116950" and its mean estimate should be around 7.5e-04 (7.547e-04 in my analysis).
-
-
-<a name="q4"></a>
-
-* **Question 4:** Given that all ESS values are above 600, the MCMC chain of this analysis appears to have reached a high degree of stationarity. Nevertheless, for a more thorough investigation at least on replicate analysis of the same XML file should be performed to test if multiple chains also converge to the same posterior distribution.
-
-
-<a name="q5"></a>
-
-* **Question 5:** After removing alignment blocks with low ESS values, about 130 blocks should be left in directory `alignment_blocks_filtered` (131 in my analysis).
-
-
-<a name="q6"></a>
-
-* **Question 6:** Good question! The difference between Bayesian posterior probabilities and Bootstrap support values could on the one hand indicate that the HKY model used for BEAST2 analyses is too constrained and that summary trees would be less strongly supported if we had used a more flexible substitution model instead. Alternatively, this difference could be due to the different ways in which Bayesian posterior probabilities and Boostrap support values are calculated. Recall that bootstrapping is based on randomly drawing (with replacement) alignment sites from the original alignment to fill a new alignment, followed by phylogenetic analysis with this new alignment. With the large proportion of missing data in all alignment blocks (up to 80%), this means that many of the alignments generated by bootstrapping have an even higher proportion of missing data. As a result, many of the 100 bootstrap phylogenies used to assess node support will have a weaker phylogenetic signal, which could reduce the inferred node support. In contrast, sites that are completely missing are simply ignored in analyses with BEAST2.
-
-
-<a name="q7"></a>
-
-* **Question 7:** The age estimate for the divergence of the two *Neolamprologus cancellatus* sequences ("LJC9_A" and "LJC9_B") is over 2 Ma (2.23 Ma in my analysis). This is remarkable given that the two sequences were sampled from one and the same individual fish ("LJC9").
-
-
-<a name="q8"></a>
-
-* **Question 8:** This third species is *Altolamprologus fasciatus* ("altfas"): The mean divergence time between *Telmatochromis vittatus* ("telvit"; species "C") and *Altolamprologus fasciatus* ("altfas", species "B") is 4.46 Ma, whereas the mean divergence times between *Neolamprologus cancellatus* ("neocan"; species "A") and both of these species are 3.005 Ma and 2.6 Ma, respectively. Thus, the second-oldest mean divergence time in this trio (3.005 Ma) is 1.455 million years younger than the oldest divergence time (4.46 Ma). This confirms the results obtained in tutorial [Analysis of Introgression with SNP Data](../analysis_of_introgression_with_snp_data/README.md) according to which *Neolamprologus cancellatus* is formed by hybridization between *Altolamprologus fasciatus* and *Telmatochromis vittatus*.
-
-
-<a name="q9"></a>
-
-* **Question 9:** The topology frequencies for the three species *Neolamprologus brichardi* ("neobri"), *Neolamprologus olivaceous* ("neooli"), and *Neolamprologus pulcher* ("neopul") are in fact very asymmetric according to the output of the script `get_topologies.py` shown below:
-
-		(neobri,(neooli,neopul)): 61.2825
-		(neooli,(neobri,neopul)): 58.9650
-		(neopul,(neobri,neooli)): 10.7525
-		
-	This shows that about 60 of the 131 alignment blocks (the numbers are weighed to account phylogenetic uncertainty) support a sister-group relationship between *Neolamprologus olivaceous* ("neooli") and *Neolamprologus pulcher* ("neopul"), and about the same number also supports a sister group relationship between *Neolamprologus brichardi* ("neobri") and *Neolamprologus pulcher* ("neopul"). In contrast, only about ten alignment blocks support a sister-group relationship between *Neolamprologus brichardi* ("neobri") and *Neolamprologus olivaceous* ("neooli"). Given that with incomplete lineage sorting alone, the topology of the true species tree would be expected to be most frequent while the other two topologies should have similar frequencies, the pattern observed here can not be explained with incomplete lineage sorting. Therefore, this pattern supports introgression between *Neolamprologus brichardi* ("neobri") and *Neolamprologus pulcher* ("neopul"), corroborating the results based on mean divergence times.
-	
-
-<a name="q10"></a>
-
-* **Question 10:** You might have found further examples of asymmetry in topology frequencies. One such example is the species trio *Neolamprologus savoryi* ("neosav"), *Neolamprologus helianthus* ("neohel"), and *Neolamprologus gracilis* ("neogra"), the topology frequencies of which are shown below:
-
-		(neosav,(neogra,neohel)): 65.4775
-		(neogra,(neohel,neosav)): 48.8475
-		(neohel,(neogra,neosav)): 16.6750
-		
-		
 <a name="q11"></a>
 
 * **Question 11:** Unfortunately, the mean lengths of c-genes and single-topology tracts are extremely short: between 13 and 26 bp. Consequently, the probability that a 50 kb alignment contains just one c-gene or single-topology tract is 0. Instead, alignments of this length contain on average around 3680 c-genes and about 1850 single-topology tracts. This means that if our assumptions for the species tree, the recombination rate, and the population size were correct, all the phylogenies inferred for block alignments in fact averaged over a large number of different topologies.

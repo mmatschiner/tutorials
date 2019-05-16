@@ -16,19 +16,17 @@ A list of the installations required for the tutorials
 
 ## Libraries
 
-* **Libraries for Python 3.x:** Some libraries for Python v.3.x may need to be installed separately. The required libraries are [numpy](http://www.numpy.org), [scipy](https://www.scipy.org), [msprime](https://msprime.readthedocs.io/en/stable/index.html) [(Kelleher et al. 2016)](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004842), and [dendropy](https://www.dendropy.org) ([Sukumaran and Holder 2010](https://academic.oup.com/bioinformatics/article/26/12/1569/287181)). These can be installed with pip for Python 3, using the following commands:
+* **Libraries for Python 3.x:** Some libraries for Python v.3.x may need to be installed separately. The required libraries are [numpy](http://www.numpy.org), [scipy](https://www.scipy.org), and [msprime](https://msprime.readthedocs.io/en/stable/index.html) [(Kelleher et al. 2016)](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004842). These can be installed with pip for Python 3, using the following commands:
 
 		python3 -m pip install --user numpy
 		python3 -m pip install --user scipy
 		python3 -m pip install --user msprime
-		python3 -m pip install --user dendropy
 		
 	And the installations can be tested with these commands:
 	
 		python3 -c 'import numpy'
 		python3 -c 'import scipy'
 		python3 -c 'import msprime'
-		python3 -c 'import dendropy'
 
 
 * **Libraries for R:** Two R libraries will be required for analyses of introgression; these are [ape](https://cran.r-project.org/web/packages/ape/index.html) ([Paradis et al. 2004](https://academic.oup.com/bioinformatics/article/20/2/289/204981)) and [coda](https://cran.r-project.org/web/packages/coda/index.html) ([Plummer et al. 2006](http://oro.open.ac.uk/22547/)). If you're already familiar with R, just install these packages in the usual way. If not, the easiest way to do so might be via the command line. Type `R` to open the R environment interactively. Then, run the following commands:

@@ -93,7 +93,7 @@ As input for the species-tree analyses with ASTRAL, sets of gene trees are requi
 
 	(the "-m" option specifies the maximally allowed proportion of missing data per sequence; setting it to 0.9 thus removes all sequences that are less than 10% complete).
 
-* We can now use IQ-TREE to generate maximum-likelihood gene trees for all alignments. To be able to later use bootstrapping with ASTRAL, we will also generate sets of trees from bootstrapped gene alignments in the same IQ-TREE analysis, by using the option "-bb" as in tutorial [Maximum-Likelihood Phylogenetic Inference](../ml_phylogeny_inference/README.md). Unlike in the other tutorial, however, we will now ensure that the bootstrap trees are actually written to a file, and not just summarized in the output, by specifying the option `--wbt`. To start IQ-TREE in a loop so that it analyzes one gene alignment after the other, use the following commands:
+* We can now use IQ-TREE to generate maximum-likelihood gene trees for all alignments. To be able to later use bootstrapping with ASTRAL, we will also generate sets of trees from bootstrapped gene alignments in the same IQ-TREE analysis, by using the option `-bb` as in tutorial [Maximum-Likelihood Phylogenetic Inference](../ml_phylogeny_inference/README.md). Also as in this other tutorial, we do not specify a substition model with the `-m` option and therefore allow IQ-TREE to automatically select the best-fitting model. Unlike in the other tutorial, however, we will now ensure that the bootstrap trees are actually written to a file, and not just summarized in the output, by specifying the option `--wbt`. To start IQ-TREE in a loop so that it analyzes one gene alignment after the other, use the following commands:
 
 		for i in 09/*.nex
 		do

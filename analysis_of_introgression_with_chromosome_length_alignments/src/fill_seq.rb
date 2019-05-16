@@ -5,6 +5,11 @@ vcf_input_file_name = ARGV[0]
 ref_seq_file_name = ARGV[1]
 mask_file_name = ARGV[2]
 outfile_name = ARGV[3]
+genotypes = ARGV[4]
+unless ["1","2","both"].include?(genotypes)
+	puts "ERROR: Expected '1', '2', or 'both' as values for the fifth argument (specifying which of the two phased sequences should be included in the output), but found #{genotypes}!"
+	exit 1
+end
 
 # Read the reference sequence file.
 ref_seq_file = File.open(ref_seq_file_name)
@@ -52,8 +57,14 @@ mask_lines.each do |l|
 end
 
 # Duplicate the outseq array.
-out_seq_ary1 = out_seq_ary
-out_seq_ary2 = out_seq_ary.dup
+if genotypes == "1"
+	out_seq_ary1 = out_seq_ary
+elsif genotypes == "2"
+	out_seq_ary2 = out_seq_ary
+else
+	out_seq_ary1 = out_seq_ary
+	out_seq_ary2 = out_seq_ary.dup
+end
 
 # Read the vcf input file and update the output sequence according to SNP information.
 vcf_input_file = File.open(vcf_input_file_name)
@@ -96,42 +107,60 @@ vcf_lines.each do |l|
 			puts "ERROR: Expected two alleles per genotype but found #{alleles.size} alleles!"
 			exit 1
 		end
-		if alleles[0] != "0"
-			if alleles[0] == "."
-				out_seq_ary1[pos-1] = "N"
-			else
-				if alleles[0].to_i > alts.size
-					puts "ERROR: Expected #{alts.size} alternate alleles at pos #{pos} but found #{alleles[0].to_i}!"
-					exit 1
+		if genotypes == "1" or genotypes == "both"
+			if alleles[0] != "0"
+				if alleles[0] == "."
+					out_seq_ary1[pos-1] = "N"
+				else
+					if alleles[0].to_i > alts.size
+						puts "ERROR: Expected #{alts.size} alternate alleles at pos #{pos} but found #{alleles[0].to_i}!"
+						exit 1
+					end
+					out_seq_ary1[pos-1] = alts[alleles[0].to_i-1]
 				end
-				out_seq_ary1[pos-1] = alts[alleles[0].to_i-1]
 			end
 		end
-		if alleles[1] != "0"
-			if alleles[1] == "."
-				out_seq_ary2[pos-1] = "N"
-			else
-				if alleles[1].to_i > alts.size
-					puts "ERROR: Expected #{alts.size} alternate alleles at pos #{pos} but found #{alleles[1].to_i}!"
-					exit 1
+		if genotypes == "2" or genotypes == "both"
+			if alleles[1] != "0"
+				if alleles[1] == "."
+					out_seq_ary2[pos-1] = "N"
+				else
+					if alleles[1].to_i > alts.size
+						puts "ERROR: Expected #{alts.size} alternate alleles at pos #{pos} but found #{alleles[1].to_i}!"
+						exit 1
+					end
+					out_seq_ary2[pos-1] = alts[alleles[1].to_i-1]
 				end
-				out_seq_ary2[pos-1] = alts[alleles[1].to_i-1]
 			end
 		end
 	end
 end
 
 # Prepare the output string in fasta format.
-outstring = ">#{sample_id}_A\n"
-out_seq_ary1.each do |i|
-	outstring << i
+if genotypes == "1"
+	outstring = ">#{sample_id}\n"
+	out_seq_ary1.each do |i|
+		outstring << i
+	end
+	outstring << "\n"
+elsif genotypes == "2"
+	outstring = ">#{sample_id}\n"
+	out_seq_ary2.each do |i|
+		outstring << i
+	end
+	outstring << "\n"
+else
+	outstring = ">#{sample_id}_A\n"
+	out_seq_ary1.each do |i|
+		outstring << i
+	end
+	outstring << "\n"
+	outstring << ">#{sample_id}_B\n"
+	out_seq_ary2.each do |i|
+		outstring << i
+	end
+	outstring << "\n"
 end
-outstring << "\n"
-outstring << ">#{sample_id}_B\n"
-out_seq_ary2.each do |i|
-	outstring << i
-end
-outstring << "\n"
 
 # Write the output string to a fasta file.
 outfile = File.open(outfile_name,"w")
