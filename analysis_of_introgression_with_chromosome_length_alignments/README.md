@@ -357,8 +357,8 @@ As the length of each block, we here use 5 kbp, assuming that this length is a g
 		rm tmp.txt
 
 	**Question 3:** How many block alignments remain in the `blocks` directory after applying these thresholds? [(see answer)](#q3)
-	
-	XXX 
+
+XXX 
 
 
 <a name="iqtree"></a>
