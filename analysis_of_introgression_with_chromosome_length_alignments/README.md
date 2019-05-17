@@ -327,19 +327,7 @@ As the length of each block, we here use 5 kbp, assuming that this length is a g
 		...
 
 	It appears that the two values are closely correlated: the more parsimony-informative sites an alignment has the more hemiplasies is contains. This is in part expected because without parsimony-informative sites there could be no hemiplasies. It means, however, that a compromise will need to be made between too little information and too many hemiplasies, indicating within-alignment recombination.
-	
-* To allow us to decide on appropriate thresholds for the numbers of parsimony-informative sites and hemiplasies, let's plot the two values. In the R environment, you could use the following commands to do so (just type `R` to enter the R environment from the command line):
 
-		table <- read.table("block_stats.txt", header=T)
-		pdf("block_stats.pdf", height=7, width=7)
-		plot(table$n_pi_sites, table$n_hemiplasies, xlim=c(0,70), ylim=c(0,70), xlab="Parsimony-informative sites", ylab="Hemiplasies")
-		abline(a=0, b=1)
-		dev.off()
-
-	(to quit the R environment, type `quit(save="no")`). This should produce the plot shown below, written to file [`block_stats.pdf`](res/block_stats.pdf), where the black line indicates the diagonal:<p align="center"><img src="img/block_stats.png" alt="Block stats" width="600"></p> The fact that some points lie above the diagonal means the these alignments have more hemiplasies than parsimony-informative sites, which can only be explained by site patterns that require more than three changes on even the most parsimonious phylogeny. These results suggest that none of the alignments are free of recombination; therefore, the phylogenies that will be inferred from these alignments may not be completely reliable. Selecting shorter alignment blocks could help to reduce within-alignment recombination; however, this would also further reduce the informativeness of the alignments, which is already low in the current alignments.
-	
-	Given the above plot, a reasonable choice for filtering the most suitable alignments may be to exclude those with less than 15 parsimony-informative sites, those with more than 30 hemiplasies, and those in which the difference between the numbers of parsimony-informative sites and hemiplasies is less than 5. The added lines in the plot below indicate the selected region of the block (the region to the bottom-right of the three lines):p align="center"><img src="img/block_stats_region.png" alt="Block stats" width="600"></p>
-	
 
 <a name="iqtree"></a>
 ##Inferring block phylogenies with IQ-TREE
