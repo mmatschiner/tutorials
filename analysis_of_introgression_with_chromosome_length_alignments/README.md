@@ -340,23 +340,6 @@ As the length of each block, we here use 5 kbp, assuming that this length is a g
 	
 	Given the above plot, a reasonable choice for filtering the most suitable alignments may be to exclude those with less than 15 parsimony-informative sites, those with more than 30 hemiplasies, and those in which the difference between the numbers of parsimony-informative sites and hemiplasies is less than 5. The added lines in the plot below indicate the selected region of the block (the region to the bottom-right of the three lines):p align="center"><img src="img/block_stats_region.png" alt="Block stats" width="600"></p>
 	
-* Remove all block alignments that are considered unsuitable according to the thresholds for the numbers of parsimony-informative sites and hemiplasies and the threshold for the difference between these two numbers. Use the following set of commands to do so:
-	
-		cat block_stats.txt | tail -n +2 > tmp.txt
-		while read line
-		do
-		    id=`echo ${line} | cut -d " " -f 1`
-		    n_pi_sites=`echo ${line} | cut -d " " -f 2`
-		    n_hemiplasies=`echo ${line} | cut -d " " -f 3`
-			if (( ${n_pi_sites} < 15 )) || (( ${n_hemiplasies} > 30 )) || (( ${n_pi_sites} < ${n_hemiplasies} + 5 ))
-			then
-				echo "Removing file blocks/${id}.nex"
-				rm blocks/${id}.nex
-			fi
-		done < tmp.txt
-		rm tmp.txt
-
-	**Question 3:** How many block alignments remain in the `blocks` directory after applying these thresholds? [(see answer)](#q3)
 
 <a name="iqtree"></a>
 ##Inferring block phylogenies with IQ-TREE
