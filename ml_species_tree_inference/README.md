@@ -47,20 +47,7 @@ The dataset used in this tutorial is the set of alignments for 72 genes produced
 <a name="requirements"></a>
 ## Requirements
 
-* **IQ-TREE:** Source code for Mac OS X and Linux, as well as precompiled executables for Windows, can be found on [http://www.iqtree.org/#download](http://www.iqtree.org/#download). To install IQ-TREE on any of these systems, download the version for your operating system, and decompress this file on your machine if necessary. In the decompressed directory, you'll find a subdirectory named `bin` and inside of this subdirectory should be a file named `iqtree` or `iqtree.exe`. To easily access this executable from the command line, place it somewhere on your computer where your system can find it (i.e. in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))). One way to guarantee this on Mac OS X or Linux is to place the executable in `/usr/local/bin`, for example using this command:
-	
-		mv iqtree /usr/local/bin
-		
-	(on Windows, just use `move` instead of `mv`).
-	To verify that the IQ-TREE executable can be found by your system, type the following command:
-	
-		which iqtree
-		
-	(on Windows, `where` instead of `which` should do the same). If this command outputs a path such as `/usr/local/bin/iqtree`, the executable can be found. As a second test if IQ-TREE is working as it should, type this:
-	
-		iqtree -version
-		
-	You should then see the version number as well as a list of contributing developers. If you do, you're ready to use IQ-TREE.
+* **IQ-TREE:** Precompiled binaries for Mac OS X, Linux, and Windows are available on [http://www.iqtree.org/#download](http://www.iqtree.org/#download). To install IQ-TREE on any of these systems, download the version for your operating system, and decompress this file on your machine if necessary. In the decompressed directory, you'll find a subdirectory named `bin` and inside of this subdirectory should be a file named `iqtree` or `iqtree.exe`. To easily access this executable from the command line, also place it in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))).
 
 * **ASTRAL:** The program [ASTRAL](https://github.com/smirarab/ASTRAL) ([Zhang et al. 2017](https://link.springer.com/chapter/10.1007%2F978-3-319-67979-2_4)) allows efficient and accurate estimation of the species tree based on a set of gene trees. The latest release of ASTRAL can be obtained from [https://github.com/smirarab/ASTRAL/releases](https://github.com/smirarab/ASTRAL/releases). Click on the link for "Source code (zip)" to download the full release including the source code as well as the compiled program as a Java jar file. Within the downloaded directory you'll find a zip file with the program name and its version number. Uncompress this file and open the uncompressed directory, there you should find the ASTRAL jar file, named `astral.5.5.6.jar` or similar. Rename this file so that it is simply named `astral.jar` and place it in a convenient location on your computer.
 

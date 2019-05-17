@@ -33,20 +33,7 @@ The data used in this tutorial are the filtered versions of the alignments gener
 <a name="requirements"></a>
 ## Requirements
 
-* **IQ-TREE:** Source code for Mac OS X and Linux, as well as precompiled executables for Windows, can be found on [http://www.iqtree.org/#download](http://www.iqtree.org/#download). To install IQ-TREE on any of these systems, download the version for your operating system, and decompress this file on your machine if necessary. In the decompressed directory, you'll find a subdirectory named `bin` and inside of this subdirectory should be a file named `iqtree` or `iqtree.exe`. To easily access this executable from the command line, place it somewhere on your computer where your system can find it (i.e. in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))). One way to guarantee this on Mac OS X or Linux is to place the executable in `/usr/local/bin`, for example using this command:
-	
-		mv iqtree /usr/local/bin
-		
-	(on Windows, just use `move` instead of `mv`).
-	To verify that the IQ-TREE executable can be found by your system, type the following command:
-	
-		which iqtree
-		
-	(on Windows, `where` instead of `which` should do the same). If this command outputs a path such as `/usr/local/bin/iqtree`, the executable can be found. As a second test if IQ-TREE is working as it should, type this:
-	
-		iqtree -version
-		
-	You should then see the version number as well as a list of contributing developers. If you do, you're ready to use IQ-TREE.
+* **IQ-TREE:** Precompiled binaries for Mac OS X, Linux, and Windows are available on [http://www.iqtree.org/#download](http://www.iqtree.org/#download). To install IQ-TREE on any of these systems, download the version for your operating system, and decompress this file on your machine if necessary. In the decompressed directory, you'll find a subdirectory named `bin` and inside of this subdirectory should be a file named `iqtree` or `iqtree.exe`. To easily access this executable from the command line, also place it in a directory that is included in your [PATH](https://en.wikipedia.org/wiki/PATH_(variable))).
 	
 * **FigTree:** The program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) by Andrew Rambaut is a very intuitive and useful tool for the visualization and (to a limited extent) manipulation of phylogenies encoded in [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) format. Executables for Mac OS X, Linux, and Windows are provided on [https://github.com/rambaut/figtree/releases](https://github.com/rambaut/figtree/releases).
 
