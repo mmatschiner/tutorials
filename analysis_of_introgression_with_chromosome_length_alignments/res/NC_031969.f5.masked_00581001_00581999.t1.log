@@ -1,0 +1,112 @@
+IQ-TREE 1.7-beta12 built May  6 2019
+
+Input file name: blocks/NC_031969.f5.masked_00581001_00581999.nex
+Type of analysis: tree reconstruction
+Random seed number: 942082
+
+REFERENCES
+----------
+
+To cite IQ-TREE please use:
+
+Lam-Tung Nguyen, Heiko A. Schmidt, Arndt von Haeseler, and Bui Quang Minh
+(2015) IQ-TREE: A fast and effective stochastic algorithm for estimating
+maximum likelihood phylogenies. Mol Biol Evol, 32:268-274.
+https://doi.org/10.1093/molbev/msu300
+
+SEQUENCE ALIGNMENT
+------------------
+
+Input data: 14 sequences with 1000 nucleotide sites
+Number of constant sites: 951 (= 95.1% of all sites)
+Number of invariant (constant or ambiguous constant) sites: 951 (= 95.1% of all sites)
+Number of parsimony informative sites: 10
+Number of distinct site patterns: 80
+
+SUBSTITUTION PROCESS
+--------------------
+
+Model of substitution: GTR+F
+
+Rate parameter R:
+
+  A-C: 0.9495
+  A-G: 3.7209
+  A-T: 0.0001
+  C-G: 0.8081
+  C-T: 1.7735
+  G-T: 1.0000
+
+State frequencies: (empirical counts from alignment)
+
+  pi(A) = 0.1758
+  pi(C) = 0.2971
+  pi(G) = 0.2406
+  pi(T) = 0.2865
+
+Rate matrix Q:
+
+  A    -1.215     0.291    0.9238  2.955e-05
+  C    0.1722   -0.8969    0.2006    0.5241
+  G    0.6749    0.2477    -1.218    0.2955
+  T  1.814e-05    0.5436    0.2483   -0.7919
+
+Model of rate heterogeneity: Uniform
+
+MAXIMUM LIKELIHOOD TREE
+-----------------------
+
+Log-likelihood of the tree: -1404.8564 (s.e. 58.5720)
+Unconstrained log-likelihood (without tree): -2346.5347
+Number of free parameters (#branches + #model parameters): 33
+Akaike information criterion (AIC) score: 2875.7128
+Corrected Akaike information criterion (AICc) score: 2878.0358
+Bayesian information criterion (BIC) score: 3037.6687
+
+Total tree length (sum of branch lengths): 0.0788
+Sum of internal branch lengths: 0.0176 (22.3416% of tree length)
+
+WARNING: 4 near-zero internal branches (<0.0010) should be treated with caution
+         Such branches are denoted by '**' in the figure below
+
+NOTE: Tree is UNROOTED although outgroup taxon 'AUE7' is drawn at root
+
++--AUE7
+|
+|                +--ISA8
+|             +**|
+|             |  |     +----IVE8
+|             |  |  +--|
+|             |  |  |  |  +--JWG9
+|             |  |  |  +--|
+|             |  |  |     +**JWH2
+|             |  +--|
+|             |     |  +---------JUH9
+|             |     +--|
+|             |        +**KFD2
+|          +**|
+|          |  +**JWH4
+|       +**|
+|       |  |  +**ISB3
+|       |  +**|
+|       |     +--JWH6
++-------|
+|       |     +--------------------------------------------IZC5
+|       |  +--|
+|       |  |  +----KHA7
+|       +--|
+|          +------JBD6
+|
++**LJC9
+
+Tree in newick format:
+
+(AUE7:0.0013332382,((((ISA8:0.0013640092,((IVE8:0.0041416697,(JWG9:0.0020058728,JWH2:0.0000010000):0.0020033765):0.0013195333,(JUH9:0.0075499945,KFD2:0.0000010000):0.0018655579):0.0013359841):0.0000020179,JWH4:0.0000010000):0.0000010000,(ISB3:0.0000010000,JWH6:0.0013434081):0.0000010000):0.0000010000,((IZC5:0.0335775693,KHA7:0.0042559918):0.0016539328,JBD6:0.0055850141):0.0027432022):0.0066690635,LJC9:0.0000010000);
+
+TIME STAMP
+----------
+
+Date and time: Fri May 17 01:05:01 2019
+Total CPU time used: 0.46368 seconds (0h:0m:0s)
+Total wall-clock time used: 0.468822 seconds (0h:0m:0s)
+
