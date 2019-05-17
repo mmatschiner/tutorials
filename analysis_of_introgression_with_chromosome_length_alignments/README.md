@@ -221,16 +221,6 @@ In this part of the tutorial, we are going to prepare a single chromosome-length
 
 After having generated a chromosome-length alignment, we can now apply a sliding-window approach to identify blocks of the alignment that are suitable for phylogenetic analysis. Ideally, the blocks used for phylogenetic analysis should have as little missing data as possible, be as informative as possible, and show no signs of within-block recombination. Thus, we are going to filter alignment blocks based on informativeness and signals of recombination after extracting them from the chromosome-length alignment, and the extraction itself will exclude blocks with a high proportion of missing data.
 
-As the length of each block, we here use 5 kbp, assuming that this length is a good compromise between increasing probability of undetected recombination with longer blocks and decreasing phylogenetic signal with shorter blocks. For a more thorough analysis, however, it might be worth testing this assumption with different block sizes.
-
-* To extract alignment blocks from the chromosome-length alignment, we can use the Ruby script [`extract_blocks.rb`](src/extract_blocks.rb). This script expects four command-line arguments; these are
-	* the name of the chromosome-length alignment in Fasta format,
-	* the name of a new directory to which all block-alignment files will be written in Nexus format,
-	* the size of the alignment blocks,
-	* (optionally) a maximum proportion of missing data allowed in alignment blocks.
-
-	Thus, to name the output directory `blocks`, use a block size 5,000 bp, and allow maximally half of the block alignment to consist of missing data, run the script with the following command:
-	
-##Inferring block phylogenies with IQ-TREE
+## Inferring block phylogenies with IQ-TREE
 
 In this part of the tutorial, we are going to infer phylogenies for each remaining alignment block; the set of inferred phylogenies will subsequently be used to determine asymmetries in the topologies of species trios which can serve as an indicator for introgression. Note that it may in fact be important for this subsequent test that the set of phylogenies is generated based on maximum likelihood, without assuming a clock model as in BEAST analyses. While this should probably be tested in more detail, I found in preliminary analyses that clock-rate variation among species may influence the frequencies of species-trio topologies in time-calibrated analyses, but that it has no or only weak effect on maximum-likelihood inference without a clock model. As a result, I also do not recommend any longer to use the related approach of [Meyer et al. (2017)](https://academic.oup.com/sysbio/article/66/4/531/2670093).
