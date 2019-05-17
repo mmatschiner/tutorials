@@ -328,8 +328,6 @@ As the length of each block, we here use 5 kbp, assuming that this length is a g
 
 	It appears that the two values are closely correlated: the more parsimony-informative sites an alignment has the more hemiplasies is contains. This is in part expected because without parsimony-informative sites there could be no hemiplasies. It means, however, that a compromise will need to be made between too little information and too many hemiplasies, indicating within-alignment recombination.
 
-
-<a name="iqtree"></a>
 ##Inferring block phylogenies with IQ-TREE
 
 In this part of the tutorial, we are going to infer phylogenies for each remaining alignment block; the set of inferred phylogenies will subsequently be used to determine asymmetries in the topologies of species trios which can serve as an indicator for introgression. Note that it may in fact be important for this subsequent test that the set of phylogenies is generated based on maximum likelihood, without assuming a clock model as in BEAST analyses. While this should probably be tested in more detail, I found in preliminary analyses that clock-rate variation among species may influence the frequencies of species-trio topologies in time-calibrated analyses, but that it has no or only weak effect on maximum-likelihood inference without a clock model. As a result, I also do not recommend any longer to use the related approach of [Meyer et al. (2017)](https://academic.oup.com/sysbio/article/66/4/531/2670093).
