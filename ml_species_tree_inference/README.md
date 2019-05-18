@@ -84,7 +84,7 @@ As input for the species-tree analyses with ASTRAL, sets of gene trees are requi
 
 		for i in 09/*.nex
 		do
-			iqtree -s ${i} -bb 1000 --wbt
+			iqtree -s ${i} -B 1000 --wbt
 		done
 
 	The 72 IQ-TREE analyses should finish within a few minutes.

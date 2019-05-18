@@ -415,7 +415,7 @@ In this part of the tutorial, we are going to infer phylogenies for each remaini
 
 * Finally, we could quantify the differences between all block phylogenies and the species tree generated with SNAPP. The [Robinson-Foulds distance](https://en.wikipedia.org/wiki/Robinson–Foulds_metric), measuring the number of nodes that one would need to change to convert one tree into the other, would be suitable to quantify this differene and can quickly be calculated with IQ-TREE (as in tutorial [Maximum-Likelihood Phylogenetic Inference](ml_phylogeny_inference)). To do so, use file [`snapp.nwk`](data/snapp.nwk), which is a version of the species tree in Newick format. Then, calculate the Robinson-Foulds distance between all block phylogenies and the species tree with the following command:
 
-		iqtree -t block_phylogenies.renamed.trees -rf snapp.nwk
+		iqtree -t block_phylogenies.renamed.trees --tree-dist2 snapp.nwk
 
 	The screen output should indicate that the results were written to a file named `block_phylogenies.renamed.trees.rfdist`.
 	
@@ -578,26 +578,26 @@ In this part of the tutorial, we are going to apply genealogy interrogation to i
 		echo "(IZC5,AUE7,JBD6,LJC9,KHA7,IVE8,JWH2,JWG9,JWH4,ISA8,KFD2,ISB3,(JWH6,JUH9));" > t3.tre
 
 
-* We are then ready to run IQ-TREE with each alignment and each topological constraint. To allow the resulting likelihoods to be comparable, we will ensure that the same substitution model is used in all analyses rather than using IQ-TREE's automatic model selection; therefore, we specify the GTR substitution model with the `-m` option in all analyses. In addition, we need to specify the topological constraint file with the `-g` option, and we turn off the verbose screen output of IQ-TREE with the `-quiet` option. Thus, the set of commands to run IQ-TREE with all alignments and constraints is the following:
+* We are then ready to run IQ-TREE with each alignment and each topological constraint. To allow the resulting likelihoods to be comparable, we will ensure that the same substitution model is used in all analyses rather than using IQ-TREE's automatic model selection; therefore, we specify the GTR substitution model with the `-m` option in all analyses. In addition, we need to specify the topological constraint file with the `-g` option, and we turn off the verbose screen output of IQ-TREE with the `--quiet` option. Thus, the set of commands to run IQ-TREE with all alignments and constraints is the following:
 
 		for i in short_blocks/*.nex
 		do
 			# Run iqtree with the t1 hypothesis.
-			iqtree -s ${i} -m GTR -g t1.tre -quiet
+			iqtree -s ${i} -m GTR -g t1.tre --quiet
 			
 			# Rename the main output and remove unneeded output files.
 			mv ${i}.iqtree ${i%.iqtree}.t1.log
 			rm ${i}.*
 			
 			# Run iqtree with the t2 hypothesis.
-			iqtree -s ${i} -m GTR -g t2.tre -quiet
+			iqtree -s ${i} -m GTR -g t2.tre --quiet
 			
 			# Rename the main output and remove unneeded output files.
 			mv ${i}.iqtree ${i%.iqtree}.t2.log
 			rm ${i}.*
 			
 			# Run iqtree with the t3 hypothesis.
-			iqtree -s ${i} -m GTR -g t3.tre -quiet
+			iqtree -s ${i} -m GTR -g t3.tre --quiet
 			
 			# Rename the main output and remove unneeded output files.
 			mv ${i}.iqtree ${i%.iqtree}.t3.log
