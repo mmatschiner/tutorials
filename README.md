@@ -39,5 +39,8 @@ A collection of tutorials on phylogenetic and phylogenomic analyses
 
 * [Analysis of Introgression with SNP Data](analysis_of_introgression_with_snp_data/README.md)<br>A tutorial on the analysis of hybridization and introgression with SNP data
 
-* [Analysis of Introgression with Chromosome-Length Alignments](analysis_of_introgression_with_chromosome_length_alignments/README.md)<br>A tutorial on the analysis of hybridization and introgression with whole-chromosome alignments <!-- Saguaro, Phi-Test, c-genie, Sliding-window BEAST2 analyses -->
+* [Analysis of Introgression with Chromosome-Length Alignments](analysis_of_introgression_with_chromosome_length_alignments/README.md)<br>A tutorial on the analysis of hybridization and introgression with whole-chromosome alignments
 
+## Ancestral-recombination-graph inference
+
+* [Genome-Wide Genealogy Estimation With SNP Data](genome_wide_genealogy_estimation_with_snp_data/README.md)<br>A tutorial on the inference and analysis of genome-wide genealogies through ancestral recombination graphs.
