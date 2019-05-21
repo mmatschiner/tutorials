@@ -13,7 +13,7 @@ fossil_list_lines = fossil_list_file.readlines
 fossil_list_lines[1..-1].each do |l|
 	line_ary = l.split
 	fossil_ids << line_ary[0]
-	fossil_ages << (line_ary[1].to_f + rand * (line_ary[2].to_f-line_ary[1].to_f)).round(2)
+	fossil_ages << (line_ary[1].to_f + 0.5 * (line_ary[2].to_f-line_ary[1].to_f)).round(2)
 end
 
 # Read the nexus input file and compose an output string.
