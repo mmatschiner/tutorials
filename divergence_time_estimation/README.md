@@ -274,13 +274,13 @@ Note that a far more extensive tutorial on divergence-time estimation with the F
 
 * You'll find the string encoding all monophyly constraints in Newick format below. As you'll see, this string is basically a tree string but it does not contain branch-length information and it includes several unresolved nodes.
 
-		((((((((Heros_appendictulatusA_0.00,Plesioheros_chauliodus_41.07),(Cichla_temensisA_0.00,Palaeocichla_longirostrum_16.94)),((Oreochromis_niloticus_0.00,Mahengechromis_spp_45.51),(Heterochromis_sp_29.6,Heterochromis_multidensA_0.00))),Etroplus_maculatusA_0.00),(Oryzias_latipes_0.00,Rhamphexocoetus_volans_49.33)),(Trachinotus_carolinusA_0.00,Trachicaranx_tersus_55.85),((Channa_striataA_0.00,Osphronemus_goramy_48.5),Monopterus_albusA_0.00),(Gasterosteus_acuC_0.00,Cretatriacanthus_guidottii_98.75),(Astrapogon_stellatusA_0.00,Gobius_gracilis_32.36),(Aulostomus_chinensisA_0.00,Prosolenostomus_lessinii_49.12),(Thunnus_albacaresA_0.00,Eutrichiurides_opiensis_63.1),(Porichthys_notatusA_0.00,Louckaichthys_novosadi_32.29),(Diplacanthopoma_brunneaA_0.00,Eolamprogrammus_senectus_57.14)),(Sargocentron_cornutumA_0.00,Caproberyx_pharsus_98.0),Rondeletia_loricataA_0.00,Monocentris_japonicaA_0.00),(Polymixia_japonicaA_0.00,Homonotichthys_rotundus_94.64),((Percopsis_omiscomaycusA_0.00,Mcconichthys_longipinnis_64.85),(Zenopsis_conchiferaB_0.00,Cretazeus_rinaldii_71.55),(Gadus_morhua_0.00,Protacodus_sp_60.69),Stylephorus_chordatusB_0.00),Regalecus_Glesne_0.00)
+		((((((((Heros_appendictulatusA_0.00,Plesioheros_chauliodus_42.45),(Cichla_temensisA_0.00,Palaeocichla_longirostrum_14.18)),((Oreochromis_niloticus_0.00,Mahengechromis_spp_45.5),(Heterochromis_sp_24.94,Heterochromis_multidensA_0.00))),Etroplus_maculatusA_0.00),(Oryzias_latipes_0.00,Rhamphexocoetus_volans_49.25)),(Trachinotus_carolinusA_0.00,Trachicaranx_tersus_56.52),((Channa_striataA_0.00,Osphronemus_goramy_48.1),Monopterus_albusA_0.00),(Gasterosteus_acuC_0.00,Cretatriacanthus_guidottii_91.55),(Astrapogon_stellatusA_0.00,Gobius_gracilis_32.3),(Aulostomus_chinensisA_0.00,Prosolenostomus_lessinii_49.25),(Thunnus_albacaresA_0.00,Eutrichiurides_opiensis_61.32),(Porichthys_notatusA_0.00,Louckaichthys_novosadi_30.86),(Diplacanthopoma_brunneaA_0.00,Eolamprogrammus_senectus_56.52)),(Sargocentron_cornutumA_0.00,Caproberyx_pharsus_98.45),Rondeletia_loricataA_0.00,Monocentris_japonicaA_0.00),(Polymixia_japonicaA_0.00,Homonotichthys_rotundus_94.75),((Percopsis_omiscomaycusA_0.00,Mcconichthys_longipinnis_63.57),(Zenopsis_conchiferaB_0.00,Cretazeus_rinaldii_72.8),(Gadus_morhua_0.00,Protacodus_sp_61.25),Stylephorus_chordatusB_0.00),Regalecus_Glesne_0.00)
 
 	If you copy this string and paste it into a new FigTree window, you'll see a cladogram visualizing all specified monophyly constraints, as shown in the screenshot below. Each resolved branch in this cladogram represents a clade for which the monophyly is constrained. Also note that each pair of sister taxa in this phylogeny groups one extant representative of a clade with the oldest fossil of that clade. The set of monophyly constraints defined by this Newick string is effectively identical to the the assignment of fossil taxa to taxonomic groups as we did it before in the analysis with the CladeAge model.<p align="center"><img src="img/figtree1.png" alt="BEAUti" width="600"></p>Thus, copy the Newick string and paste it into the "Newick" field below "MultiMonophyleticConstraint.t:enc_1st, as in the next screenshot.<p align="center"><img src="img/beauti48.png" alt="BEAUti" width="700"></p>
 
 * We also still need to add a starting tree, because the random generation of a starting tree would most likely fail again as it did in the earlier analyses with the CladeAge model. The difference to when we added the starting tree for the CladeAge analyses is that now the starting tree also has to include all fossil species, and that therefore preparing a Newick string for the starting tree by hand is a bit more tedious. This prepared Newick string is as follows:
 
-		(((((((((((((((Oreochromis_niloticus_0.00:47,Mahengechromis_spp_45.51:1.49):3,(Heterochromis_sp_29.6:0.4,Heterochromis_multidensA_0.00:30):20):10,((Cichla_temensisA_0.00:20,Palaeocichla_longirostrum_16.94:3.06):30,(Heros_appendictulatusA_0.00:45,Plesioheros_chauliodus_41.07:3.93):5):10):10,Etroplus_maculatusA_0.00:70):30,(Oryzias_latipes_0.00:60,Rhamphexocoetus_volans_49.33:10.67):40):10,((Trachinotus_carolinusA_0.00:60,Trachicaranx_tersus_55.85:4.15):10,((Channa_striataA_0.00:50,Osphronemus_goramy_48.5:1.5):10,Monopterus_albusA_0.00:60):10):40):10,(Gasterosteus_acuC_0.00:100,Cretatriacanthus_guidottii_98.75:1.25):20):10,(Astrapogon_stellatusA_0.00:40,Gobius_gracilis_32.36:7.64):90):10,((Aulostomus_chinensisA_0.00:60,Prosolenostomus_lessinii_49.12:10.88):20,(Thunnus_albacaresA_0.00:70,Eutrichiurides_opiensis_63.1:6.9):10):60):10,(Porichthys_notatusA_0.00:40,Louckaichthys_novosadi_32.29:7.71):10):10,(Diplacanthopoma_brunneaA_0.00:60,Eolamprogrammus_senectus_57.14:2.86):100):10,(Sargocentron_cornutumA_0.00:100,Caproberyx_pharsus_98.0:2):70):10,(Rondeletia_loricataA_0.00:100,Monocentris_japonicaA_0.00:100):80):10,(Polymixia_japonicaA_0.00:100,Homonotichthys_rotundus_94.64:5.36):90):10,(((((Gadus_morhua_0.00:65,Protacodus_sp_60.69:4.31):5,Stylephorus_chordatusB_0.00:70):10,(Zenopsis_conchiferaB_0.00:75,Cretazeus_rinaldii_71.55:3.45):5):10,(Percopsis_omiscomaycusA_0.00:70,Mcconichthys_longipinnis_64.85:5.15):20):10,Regalecus_Glesne_0.00:100):100)
+		(((((((((((((((Oreochromis_niloticus_0.00:47,Mahengechromis_spp_45.5:1.49):3,(Heterochromis_sp_24.94:0.4,Heterochromis_multidensA_0.00:30):20):10,((Cichla_temensisA_0.00:20,Palaeocichla_longirostrum_14.18:3.06):30,(Heros_appendictulatusA_0.00:45,Plesioheros_chauliodus_42.45:3.93):5):10):10,Etroplus_maculatusA_0.00:70):30,(Oryzias_latipes_0.00:60,Rhamphexocoetus_volans_49.25:10.67):40):10,((Trachinotus_carolinusA_0.00:60,Trachicaranx_tersus_56.52:4.15):10,((Channa_striataA_0.00:50,Osphronemus_goramy_48.1:1.5):10,Monopterus_albusA_0.00:60):10):40):10,(Gasterosteus_acuC_0.00:100,Cretatriacanthus_guidottii_91.55:1.25):20):10,(Astrapogon_stellatusA_0.00:40,Gobius_gracilis_32.3:7.64):90):10,((Aulostomus_chinensisA_0.00:60,Prosolenostomus_lessinii_49.25:10.88):20,(Thunnus_albacaresA_0.00:70,Eutrichiurides_opiensis_61.32:6.9):10):60):10,(Porichthys_notatusA_0.00:40,Louckaichthys_novosadi_30.86:7.71):10):10,(Diplacanthopoma_brunneaA_0.00:60,Eolamprogrammus_senectus_56.52:2.86):100):10,(Sargocentron_cornutumA_0.00:100,Caproberyx_pharsus_98.45:2):70):10,(Rondeletia_loricataA_0.00:100,Monocentris_japonicaA_0.00:100):80):10,(Polymixia_japonicaA_0.00:100,Homonotichthys_rotundus_94.75:5.36):90):10,(((((Gadus_morhua_0.00:65,Protacodus_sp_61.25:4.31):5,Stylephorus_chordatusB_0.00:70):10,(Zenopsis_conchiferaB_0.00:75,Cretazeus_rinaldii_72.8:3.45):5):10,(Percopsis_omiscomaycusA_0.00:70,Mcconichthys_longipinnis_63.57:5.15):20):10,Regalecus_Glesne_0.00:100):100)
 		
 	If curious, you could copy and paste this string into a FigTree window to see how this starting tree with fossils looks like. Enter the starting tree as before for the CladeAge analysis, by activating and using the starting tree panel.
 	
@@ -321,43 +321,43 @@ Note that a far more extensive tutorial on divergence-time estimation with the F
 
 		    <operator spec='SampledNodeDateRandomWalker' windowSize="1"  tree="@Tree.t:enc_1st" weight="10">
 				<taxonset spec="TaxonSet">
-					<taxon id="Heterochromis_sp_29.6" spec="Taxon"/>
-					<taxon id="Mahengechromis_spp_45.51" spec="Taxon"/>
-					<taxon id="Palaeocichla_longirostrum_16.94" spec="Taxon"/>
-					<taxon id="Plesioheros_chauliodus_41.07" spec="Taxon"/>
-					<taxon id="Rhamphexocoetus_volans_49.33" spec="Taxon"/>
-					<taxon id="Trachicaranx_tersus_55.85" spec="Taxon"/>
-					<taxon id="Osphronemus_goramy_48.5" spec="Taxon"/>
-					<taxon id="Cretatriacanthus_guidottii_98.75" spec="Taxon"/>
-					<taxon id="Gobius_gracilis_32.36" spec="Taxon"/>
-					<taxon id="Prosolenostomus_lessinii_49.12" spec="Taxon"/>
-					<taxon id="Eutrichiurides_opiensis_63.1" spec="Taxon"/>
-					<taxon id="Louckaichthys_novosadi_32.29" spec="Taxon"/>
-					<taxon id="Eolamprogrammus_senectus_57.14" spec="Taxon"/>
-					<taxon id="Caproberyx_pharsus_98.0" spec="Taxon"/>
-					<taxon id="Homonotichthys_rotundus_94.64" spec="Taxon"/>
-					<taxon id="Mcconichthys_longipinnis_64.85" spec="Taxon"/>
-					<taxon id="Cretazeus_rinaldii_71.55" spec="Taxon"/>
-					<taxon id="Protacodus_sp_60.69" spec="Taxon"/>
+					<taxon id="Heterochromis_sp_24.94" spec="Taxon"/>
+					<taxon id="Mahengechromis_spp_45.5" spec="Taxon"/>
+					<taxon id="Palaeocichla_longirostrum_14.18" spec="Taxon"/>
+					<taxon id="Plesioheros_chauliodus_42.45" spec="Taxon"/>
+					<taxon id="Rhamphexocoetus_volans_49.25" spec="Taxon"/>
+					<taxon id="Trachicaranx_tersus_56.52" spec="Taxon"/>
+					<taxon id="Osphronemus_goramy_48.1" spec="Taxon"/>
+					<taxon id="Cretatriacanthus_guidottii_91.55" spec="Taxon"/>
+					<taxon id="Gobius_gracilis_32.3" spec="Taxon"/>
+					<taxon id="Prosolenostomus_lessinii_49.25" spec="Taxon"/>
+					<taxon id="Eutrichiurides_opiensis_61.32" spec="Taxon"/>
+					<taxon id="Louckaichthys_novosadi_30.86" spec="Taxon"/>
+					<taxon id="Eolamprogrammus_senectus_56.52" spec="Taxon"/>
+					<taxon id="Caproberyx_pharsus_98.45" spec="Taxon"/>
+					<taxon id="Homonotichthys_rotundus_94.75" spec="Taxon"/>
+					<taxon id="Mcconichthys_longipinnis_63.57" spec="Taxon"/>
+					<taxon id="Cretazeus_rinaldii_72.8" spec="Taxon"/>
+					<taxon id="Protacodus_sp_61.25" spec="Taxon"/>
 				</taxonset>
-				<samplingDates id="samplingDate1" spec="beast.evolution.tree.SamplingDate" taxon="Heterochromis_sp_29.6" upper="33.9" lower="15.97"/>
-				<samplingDates id="samplingDate2" spec="beast.evolution.tree.SamplingDate" taxon="Mahengechromis_spp_45.51" upper="46.0" lower="45.0"/>
-				<samplingDates id="samplingDate3" spec="beast.evolution.tree.SamplingDate" taxon="Palaeocichla_longirostrum_16.94" upper="23.03" lower="5.332"/>
-				<samplingDates id="samplingDate4" spec="beast.evolution.tree.SamplingDate" taxon="Plesioheros_chauliodus_41.07" upper="45.0" lower="39.9"/>
-				<samplingDates id="samplingDate5" spec="beast.evolution.tree.SamplingDate" taxon="Rhamphexocoetus_volans_49.33" upper="49.4" lower="49.1"/>
-				<samplingDates id="samplingDate6" spec="beast.evolution.tree.SamplingDate" taxon="Trachicaranx_tersus_55.85" upper="57.23" lower="55.8"/>
-				<samplingDates id="samplingDate7" spec="beast.evolution.tree.SamplingDate" taxon="Osphronemus_goramy_48.5" upper="50.7" lower="45.5"/>
-				<samplingDates id="samplingDate8" spec="beast.evolution.tree.SamplingDate" taxon="Cretatriacanthus_guidottii_98.75" upper="99.6" lower="83.5"/>
-				<samplingDates id="samplingDate9" spec="beast.evolution.tree.SamplingDate" taxon="Gobius_gracilis_32.36" upper="33.9" lower="30.7"/>
-				<samplingDates id="samplingDate10" spec="beast.evolution.tree.SamplingDate" taxon="Prosolenostomus_lessinii_49.12" upper="49.4" lower="49.1"/>
-				<samplingDates id="samplingDate11" spec="beast.evolution.tree.SamplingDate" taxon="Eutrichiurides_opiensis_63.1" upper="66.043" lower="56.6"/>
-				<samplingDates id="samplingDate12" spec="beast.evolution.tree.SamplingDate" taxon="Louckaichthys_novosadi_32.29" upper="33.9" lower="27.82"/>
-				<samplingDates id="samplingDate13" spec="beast.evolution.tree.SamplingDate" taxon="Eolamprogrammus_senectus_57.14" upper="57.23" lower="55.8"/>
-				<samplingDates id="samplingDate14" spec="beast.evolution.tree.SamplingDate" taxon="Caproberyx_pharsus_98.0" upper="99.1" lower="97.8"/>
-				<samplingDates id="samplingDate15" spec="beast.evolution.tree.SamplingDate" taxon="Homonotichthys_rotundus_94.64" upper="96.0" lower="93.5"/>
-				<samplingDates id="samplingDate16" spec="beast.evolution.tree.SamplingDate" taxon="Mcconichthys_longipinnis_64.85" upper="66.043" lower="61.1"/>
-				<samplingDates id="samplingDate17" spec="beast.evolution.tree.SamplingDate" taxon="Cretazeus_rinaldii_71.55" upper="76.4" lower="69.2"/>
-				<samplingDates id="samplingDate18" spec="beast.evolution.tree.SamplingDate" taxon="Protacodus_sp_60.69" upper="62.8" lower="59.7"/>
+				<samplingDates id="samplingDate1" spec="beast.evolution.tree.SamplingDate" taxon="Heterochromis_sp_24.94" upper="33.9" lower="15.97"/>
+				<samplingDates id="samplingDate2" spec="beast.evolution.tree.SamplingDate" taxon="Mahengechromis_spp_45.5" upper="46.0" lower="45.0"/>
+				<samplingDates id="samplingDate3" spec="beast.evolution.tree.SamplingDate" taxon="Palaeocichla_longirostrum_14.18" upper="23.03" lower="5.332"/>
+				<samplingDates id="samplingDate4" spec="beast.evolution.tree.SamplingDate" taxon="Plesioheros_chauliodus_42.45" upper="45.0" lower="39.9"/>
+				<samplingDates id="samplingDate5" spec="beast.evolution.tree.SamplingDate" taxon="Rhamphexocoetus_volans_49.25" upper="49.4" lower="49.1"/>
+				<samplingDates id="samplingDate6" spec="beast.evolution.tree.SamplingDate" taxon="Trachicaranx_tersus_56.52" upper="57.23" lower="55.8"/>
+				<samplingDates id="samplingDate7" spec="beast.evolution.tree.SamplingDate" taxon="Osphronemus_goramy_48.1" upper="50.7" lower="45.5"/>
+				<samplingDates id="samplingDate8" spec="beast.evolution.tree.SamplingDate" taxon="Cretatriacanthus_guidottii_91.55" upper="99.6" lower="83.5"/>
+				<samplingDates id="samplingDate9" spec="beast.evolution.tree.SamplingDate" taxon="Gobius_gracilis_32.3" upper="33.9" lower="30.7"/>
+				<samplingDates id="samplingDate10" spec="beast.evolution.tree.SamplingDate" taxon="Prosolenostomus_lessinii_49.25" upper="49.4" lower="49.1"/>
+				<samplingDates id="samplingDate11" spec="beast.evolution.tree.SamplingDate" taxon="Eutrichiurides_opiensis_61.32" upper="66.043" lower="56.6"/>
+				<samplingDates id="samplingDate12" spec="beast.evolution.tree.SamplingDate" taxon="Louckaichthys_novosadi_30.86" upper="33.9" lower="27.82"/>
+				<samplingDates id="samplingDate13" spec="beast.evolution.tree.SamplingDate" taxon="Eolamprogrammus_senectus_56.52" upper="57.23" lower="55.8"/>
+				<samplingDates id="samplingDate14" spec="beast.evolution.tree.SamplingDate" taxon="Caproberyx_pharsus_98.45" upper="99.1" lower="97.8"/>
+				<samplingDates id="samplingDate15" spec="beast.evolution.tree.SamplingDate" taxon="Homonotichthys_rotundus_94.75" upper="96.0" lower="93.5"/>
+				<samplingDates id="samplingDate16" spec="beast.evolution.tree.SamplingDate" taxon="Mcconichthys_longipinnis_63.57" upper="66.043" lower="61.1"/>
+				<samplingDates id="samplingDate17" spec="beast.evolution.tree.SamplingDate" taxon="Cretazeus_rinaldii_72.8" upper="76.4" lower="69.2"/>
+				<samplingDates id="samplingDate18" spec="beast.evolution.tree.SamplingDate" taxon="Protacodus_sp_61.25" upper="62.8" lower="59.7"/>
 			</operator>
 
 	In the above code block, the first half does nothing else than define "taxon" elements with the IDs of the fossil species exactly as they are in the Nexus-format alignment file [`Near_et_al_red_fossils.nex`](data/Near_et_al_red_fossils.nex). The second half then refers to these definitions and adds a "samplingDates" element for each fossil, with an upper and a lower value that represent the range of uncertainty for the age of that fossil.
