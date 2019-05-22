@@ -75,10 +75,10 @@ In this part of the tutorial we are going to use BLAST searches to identify sets
 
 		wget https://raw.githubusercontent.com/uio-cees/teleost_genomes_immune/master/S11_S14_ortholog_detection_and_filtering/data/queries/nuclear/exons.fasta
 
-* Download the genome assemblies for ten of the eleven cichlid species listed in the table above. To do so, use the following commands:
+* Download the genome assemblies for ten of the eleven cichlid species listed in the table above. To do so, use the following commands (if the `wget` command should not be available on your system, you could try `curl` instead, but then add `>`, followed by the filename after the command):
 
 		# Download the genome assembly of Amphilophus citrinellus.
-		wget wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/751/415/GCA_000751415.1_Midas_v5/GCA_000751415.1_Midas_v5_genomic.fna.gz
+		wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/751/415/GCA_000751415.1_Midas_v5/GCA_000751415.1_Midas_v5_genomic.fna.gz
 		gunzip GCA_000751415.1_Midas_v5_genomic.fna.gz
 		mv GCA_000751415.1_Midas_v5_genomic.fna ampcit.fasta
 		
