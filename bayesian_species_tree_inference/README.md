@@ -184,11 +184,11 @@ We are now going to compare the time-calibrated species trees estimated with the
 
 * Uncompress the directory with the following command:
 
-	tar -xzf starbeast_gene_trees.tgz
+		tar -xzf starbeast_gene_trees.tgz
 
 * Then, move the tree files from that directory to the current directory with the following command:
 
-	mv starbeast_gene_trees/*.trees .
+		mv starbeast_gene_trees/*.trees .
 
 * To visualize the variation among the gene trees, we'll also generate maximum-clade-credibility summary trees for each of the twelve gene trees. We could do so again using the GUI verson of TreeAnnotator, but it will be faster to do so with the command-line version of the program instead. If your BEAST2 installation is located in `/Applications/Beast/2.5.2`, you should be able to use the following command to run TreeAnnotator for all gene trees; if not, you will have to adjust the path given in this command:
 
