@@ -72,13 +72,6 @@ In the part of the tutorial, we are going to use the multi-species-coalescent mo
 
 	**Question 1:** How many alignments are left after this filtering step? [(see answer)](#q1)
 
-* Convert the remaining alignments into Nexus format using the following command:
-
-		for i in 10/*.fasta
-		do
-			python3 convert.py ${i} ${i%.fasta}.nex -f nexus
-		done
-
 * Open BEAUti and click on "Manage Packages" in the "File" menu. This should open the BEAST2 Package Manager in a new window as shown in the next screenshot. Scroll to the bottom of the list of available packages, select "StarBEAST2", and click on "Install/Upgrade". Also make sure that the bModelTest package is installed, which should be the case if you did the tutorial on [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.md) earlier (you can tell that a package is installed if a version number is listed for it in the second column of the table). The CladeAge package is not going to be needed for this tutorial, so you could uninstall it now if you installed it earlier.<p align="center"><img src="img/beauti1.png" alt="BEAUti" width="700"></p>
 
 * You may notice that the interface of BEAUti apparently has not yet changed after installing the StarBEAST2 package. This is because we still need to load one of several BEAUti templates that are provided by StarBEAST2. If you hover with the mouse over "Template" in BEAUti's "File" menu, you'll see that several templates are now available that apparently are connected to StarBEAST2, as shown in the next screenshot.<p align="center"><img src="img/beauti2.png" alt="BEAUti" width="700"></p>The templates provided by StarBEAST2 are "SpeciesTreeUCED", "SpeciesTreeRLC", "StarBeast2", and "SpeciesTreeUCLN" (the template named "StarBeast" refers to the older version of StarBEAST that is installed by default). Of the four templates for StarBEAST2, the one named "StarBeast2" implements a strict-clock model, the two templates named "SpeciesTreeUCED" and "SpeciesTreeUCLN" implement relaxed-clock models with exponentially or lognormally distributed rate variation, respectively, and the template named "SpeciesTreeRLC" implements a random local clock. In contrast to the first version of StarBEAST (\*BEAST), rate variation is modelled in StarBEAST2 as a species trait that applies to all genes instead of being estimated individually for each gene; this is one of the reasons why StarBEAST2 is much faster than StarBEAST (\*BEAST). The different clock models and their implementations are described in detail in [Ogilvie et al. (2017)](https://academic.oup.com/mbe/article/34/8/2101/3738283).
