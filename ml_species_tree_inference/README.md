@@ -138,7 +138,7 @@ ASTRAL infers the species tree by searching for the topology that agrees with th
 		
 	The output file named [`species_pp.tre`](res/species_pp.tre) now contains just a single species tree, annotated with posterior probabilities as node support.
 	
-* Since we are interested only in the last of the trees from file [`species_pp.tre`](res/species_pp.tre) as well as the tree from file [`species_pp.tre`](res/species_pp.tre), we'll generate a new file named `species.trees` that contains both of these two trees using the following commands:
+* Since we are interested only in the last of the trees from file [`species_boot.trees `](res/species_boot.trees) as well as the tree from file [`species_pp.tre`](res/species_pp.tre), we'll generate a new file named `species.trees` that contains both of these two trees using the following commands:
 		
 		tail -n 1 species_boot.trees > species.trees
 		cat species_pp.tre >> species.trees
