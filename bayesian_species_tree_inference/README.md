@@ -180,6 +180,16 @@ We are now going to compare the time-calibrated species trees estimated with the
 
 * If you display the "posterior" instead of the node ages as the node labels in both trees, you'll see that generally the support values are higher when based on concatenation. **Question 5:** Given these differences, which phylogeny do you consider more reliable? [(see answer)](#q5)
 
+* If you did not fully run the StarBEAST2 analysis yourself but used the prepared log and tree files to continue the tutorial, you will also now need to download the results files for the individual gene trees. These can be found in a compressed directory named [`starbeast_gene_trees.tgz`](res/starbeast_gene_trees.tgz). Download this compressed directory.
+
+* Uncompress the directory with the following command:
+
+	tar -xzf starbeast_gene_trees.tgz
+
+* Then, move the tree files from that directory to the current directory with the following command:
+
+	mv starbeast_gene_trees/*.trees .
+
 * To visualize the variation among the gene trees, we'll also generate maximum-clade-credibility summary trees for each of the twelve gene trees. We could do so again using the GUI verson of TreeAnnotator, but it will be faster to do so with the command-line version of the program instead. If your BEAST2 installation is located in `/Applications/Beast/2.5.2`, you should be able to use the following command to run TreeAnnotator for all gene trees; if not, you will have to adjust the path given in this command:
 
 		for i in starbeast_ENSDARG*.trees
