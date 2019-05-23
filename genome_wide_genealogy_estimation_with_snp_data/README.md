@@ -235,6 +235,152 @@ Once the genome-wide genealogies are inferred and mutations are mapped to them w
 		PATH_TO_SCRIPT/EstimatePopulationSize.sh -i NC_031969.f5.sub1.phased.renamed -m 3.5e-9 --poplabels samples.poplabels --years_per_gen 3 --threshold 100 -o NC_031969.f5.sub1.phased.renamed.reestimated
 
 	This script should take around 10 minutes to finish.
+	
+* The above command should have written a file named [`NC_031969.f5.sub1.phased.renamed.reestimated.coal`](res/NC_031969.f5.sub1.phased.renamed.reestimated.coal). Have a look at this file, for example with the `less` command and it `-S` option:
+
+		less -S NC_031969.f5.sub1.phased.renamed.reestimated.coal
+	
+	You should something like the following content:
+	
+		altfas astbur neobri neocan neochi neocra neogra neohel neomar neooli neopul neosav 
+		0 333.333 463.165 643.566 894.232 1242.53 1726.49 2398.95 3333.33 4631.65 6435.66 89
+		0 0 0 0 2.57399e-06 4.62849e-06 1.47129e-06 5.73394e-07 6.22856e-07 2.50653e-05 4.15
+		0 1 0 0 0 0 0 0 0 0 4.92089e-09 7.08465e-09 2.5501e-09 3.12072e-08 6.24374e-08 7.039
+		0 2 0 0 0 0 0 0 0 0 3.44468e-08 1.41698e-08 3.18787e-08 1.30831e-07 1.66938e-07 2.72
+		0 3 0 0 3.09884e-07 5.86596e-07 4.49828e-07 1.65144e-07 1.56979e-07 2.44754e-07 6.49
+		0 4 0 0 0 0 0 0 0 0 0 2.83387e-08 3.5704e-08 1.07411e-07 2.20839e-07 2.83034e-07 4.2
+		0 5 0 0 0 0 0 0 0 2.05218e-08 1.96839e-08 1.50554e-08 4.33556e-08 1.30382e-07 1.8216
+		0 6 0 0 0 0 0 0 0 0 3.93676e-08 2.47971e-08 2.2953e-08 1.10169e-07 1.60652e-07 2.646
+		0 7 0 0 0 0 0 0 0 3.42029e-08 2.46053e-08 1.417e-08 4.71819e-08 1.20277e-07 1.63636e
+		0 8 0 0 0 0 0 0 0 0 1.96835e-08 2.12542e-08 5.61064e-08 1.78136e-07 1.79224e-07 2.85
+		0 9 0 0 0 0 0 0 0 0 3.93679e-08 2.47972e-08 2.04028e-08 1.03738e-07 1.59654e-07 2.66
+		0 10 0 0 0 0 0 0 0 4.10434e-08 1.96843e-08 1.59414e-08 4.0807e-08 1.15687e-07 1.6726
+		0 11 0 0 0 0 0 0 0 0 4.92094e-08 2.1255e-08 2.86915e-08 1.48281e-07 1.93087e-07 3.04
+		0 12 0 0 0 0 0 0 0 0 0 2.83387e-08 3.18786e-08 1.12002e-07 2.1787e-07 2.79706e-07 4.
+		0 13 0 0 0 0 0 0 0 0 1.96835e-08 1.7712e-08 9.88328e-08 2.35569e-07 3.97802e-07 4.71
+		1 0 0 0 0 0 0 0 0 0 4.92089e-09 7.08465e-09 2.5501e-09 3.12072e-08 6.24374e-08 7.039
+		1 1 0 0 0 0 0 8.80312e-09 2.78919e-07 1.51536e-05 9.85812e-06 1.73112e-06 5.52349e-0
+		1 2 0 0 0 0 0 0 0 6.84063e-09 0 7.08465e-09 2.5501e-09 1.65213e-08 7.59808e-08 6.991
+		...
+		
+	In this file, the first two lines specify the names of the analyzed populations and the discrete time slices in numbers of generations within which coalescence rates have been estimated. In our analysis, the script `EstimatePopulationSize.sh` apparently used one time slice between the present and 333.3 generations ago, another time slice for the period between 333.3 generations ago and 463.2 generations ago, and so on. The breakpoints between these time slices are chosen automatically by the script and the number of time slices is by default set to 30, but we could have changed that number with the `--num_bins` option for `EstimatePopulationSize.sh`.
+
+	The lines after the second line report in the first two columns two numbers corresponding to a population pair, and in the columns following these the estimated coalescence rates per time slice. The numbers used to indicate populations are according to the order in which population names were specified on the very first row of this file. So, for example, the fourth line of the [`NC_031969.f5.sub1.phased.renamed.reestimated.coal`](res/NC_031969.f5.sub1.phased.renamed.reestimated.coal) reports the coalescence rates for a pair of populations labeled on this line with "0" and "1". This means that the first and the second population from the list on the first line, "altfas" and "altbur" are compared. The coalescence rate is 0 in this pair in the first eight time slices, and 4.92089 &times; 10<sup>-9</sup> in the ninth time slice, and thus between 3333.3 generations ago and 4631.7 generations ago. The format of output files with the ending `.coal` is explained on the [Relate website](https://myersgroup.github.io/relate/modules.html#CoalescenceRate).
+	
+	The script `EstimatePopulationSize.sh` should also have written a file in PDF format named [`NC_031969.f5.sub1.phased.renamed.reestimated.pdf`](res/NC_031969.f5.sub1.phased.renamed.reestimated.pdf), in which changes in population sizes are plotted. However, the format of the plot, shown below, does not seem to be optimized for the numbers of populations in our dataset:<p align="center"><img src="img/NC_031969.f5.sub1.phased.renamed.reestimated.png" alt="FigTree" width="600"></p> The populations sizes shown in the above plot are calcualted as half of the inverse of the coalescence rate in a given time slice.
+	
+* As file [`NC_031969.f5.sub1.phased.renamed.reestimated.coal`](res/NC_031969.f5.sub1.phased.renamed.reestimated.coal) reports not only among-population coalescence rates but also within-population coalescence rates (for example in the third line, where population "0" is compared with population "0", itself), these plots can indeed inform about populations-size changes over time. For among-population comparisons, howver, it might be more meaningful to plot directly the inferred changes in coalescence rates, as these could tell us something about the divergence times between species. To prepare tables that can then be plotted in the R environment, use the Ruby script [`extract_coalescence_rates.rb`](src/extract_coalescence_rates.rb). This script expects the following four command-line arguments:
+
+	* the name of the input file with ending `coal`.
+	* the generation time,
+	* the name of a species (population) for which coalescence times with all other species (populations) should be plotted,
+	* the name of the output file to which a table will be written in a format that is more easily read with R.
+
+	As a first test, we'll plot coalescence rates between *Astatotilapia burtoni* and all other species. As *Astatotilapia burtoni* is the outgroup species in our dataset, we expect that it has similar coalescence rates with all other species. Thus, execute the script with the following command:
+	
+		ruby extract_coalescence_rates.rb NC_031969.f5.sub1.phased.renamed.reestimated.coal 3 astbur coal_rates_astbur.txt
+		
+	(note that this script also replaces the breakpoints of time slices with the center of each time slice).
+		
+* Then, open the R environment, either using R Studio or another graphical user interface, or by typing `R` on the command line.
+
+* Next, type the following commands in the R environment to read the table that we just wrote to file `coal_rates_astbur.txt` and produce a plot:
+
+		table <- read.table("coal_rates_astbur.txt")
+		pdf("coal_rates_astbur.pdf", height=7, width=7)
+		plot(table$V1, table$V2, type="l", xlim=c(0,10000000), ylim=c(0,1E-5), xlab="Time", ylab="Coalescence rate", main="astbur")
+		lines(table$V1, table$V3)
+		lines(table$V1, table$V4)
+		lines(table$V1, table$V5)
+		lines(table$V1, table$V6)
+		lines(table$V1, table$V7)
+		lines(table$V1, table$V8)
+		lines(table$V1, table$V9)
+		lines(table$V1, table$V10)
+		lines(table$V1, table$V11)
+		lines(table$V1, table$V12)
+		lines(table$V1, table$V13)
+		lines(table$V1, table$V14)
+		dev.off()
+		
+* Quit the R environment with `quit(save="no")`. The R commands should have written a plot named [`coal_rates_astbur.pdf`](res/coal_rates_astbur.pdf). This plot should look as shown below:<p align="center"><img src="img/coal_rates_astbur.png" alt="Relate" width="600"></p> As we can see, the coalescence rates between *Astatotilapia burtoni* and all other species in fact appear almost identical. There seems to be more variation with older ages, though, which could result from greater uncertainty in those estimates.
+
+* For comparison, repeat the above steps with a species that is nested within the genus *Neolamprologus*, such as *N. olivaceous*. We would expect that the coalescence rates between *N. olivaceous* and other species of the dataset show much greater variation. Run the Ruby script `ruby extract_coalescence_rates.rb` again, but this time with `neooli` as the third argument, and with `coal_rates_neooli.txt` as the fourth argument:
+
+		ruby extract_coalescence_rates.rb NC_031969.f5.sub1.phased.renamed.reestimated.coal 3 neooli coal_rates_neooli.txt
+
+* Then, use the R environment again to produce a plot for *N. olivaceous*, using the following commands (unless you use R Studio or a similar tool, enter the R environment again by typing `R` and exit afterwards with `quit(save="no")`):
+
+		table <- read.table("coal_rates_neooli.txt")
+		pdf("coal_rates_neooli.pdf", height=7, width=7)
+		plot(table$V1, table$V2, type="l", xlim=c(0,10000000), ylim=c(0,3E-5), xlab="Time", ylab="Coalescence rate", main="neooli")
+		lines(table$V1, table$V3)
+		lines(table$V1, table$V4)
+		lines(table$V1, table$V5)
+		lines(table$V1, table$V6)
+		lines(table$V1, table$V7)
+		lines(table$V1, table$V8)
+		lines(table$V1, table$V9)
+		lines(table$V1, table$V10)
+		lines(table$V1, table$V11)
+		lines(table$V1, table$V12)
+		lines(table$V1, table$V13)
+		lines(table$V1, table$V14)
+		dev.off()
+
+	This should have produced a plot named [`coal_rates_neooli.pdf`](res/coal_rates_neooli.pdf). This plot should look as shown below:<p align="center"><img src="img/coal_rates_neooli.png" alt="Relate" width="600"></p> As you can see, this plot shows far more variation, with some very young peaks and others that are even older than those seen with *Astatotilapia burtoni*. **Question 2:** What could have caused the strong peak in the coalescence rate around 6e+06, 6 million years ago? [(see answer)](#q1) Obviously, the format in which trees are saved in this file is not the Newick format. **Question 3:** Can you identify from the plot which peak shows the coalescence rates between *Neolamprologus olivaceous* and *Astatotilapia burtoni*?
+
+In the next part of the tutorial, we will extract a set of the most reliable trees from the result files written by Relate. We will then generate a species trees from this set of "gene" trees, once again using ASTRAL.
+
+* First, we will generate a subset of the results that contains those trees supported by a large number of mutations, for which we will set a minimum of 1,000 mutations. To generate this subset, use the following command:
+
+		RelateExtract --mode RemoveTreesWithFewMutations --anc NC_031969.f5.sub1.phased.renamed.reestimated.anc --mut NC_031969.f5.sub1.phased.renamed.reestimated.mut --threshold 1000 -o NC_031969.f5.sub1.phased.renamed.reestimated.subset
+	
+* Have a look a the second line in the newly generated file `NC_031969.f5.sub1.phased.renamed.reestimated.subset.anc` to find out how many trees remain in the dataset after applying the above filter. To do so, you could use the following command:
+
+		head -n 2 NC_031969.f5.sub1.phased.renamed.reestimated.subset.anc
+
+* You should see that about 13,000 trees remain in the dataset. From these, we will randomly select 100 trees for conversion into Newick format. This could be done for a larger subset; however, the number of 100 trees will be sufficient for this tutorial. To convert 100 randomly selected trees into Newick format, use the following command:
+
+		for i in `cat NC_031969.f5.sub1.phased.renamed.reestimated.subset.mut | tail -n +2 | cut -d ";" -f 2 | sort -R | head -n 100`
+		do
+			RelateExtract \
+				--mode TreeAtSNPAsNewick \
+				--anc NC_031969.f5.sub1.phased.renamed.reestimated.subset.anc \
+				--mut NC_031969.f5.sub1.phased.renamed.reestimated.subset.mut \
+				--bp_of_interest ${i} -o tree
+		done
+
+* Comine all trees in Newick format that were written in the previous step, using the following command:
+	
+		cat tree_at_*.newick > extracted.trees
+	
+* To clean up the directory, you could then remove the original tree files in Newick format, using this command:
+
+		rm tree_at_*.newick
+
+* Each of the trees in Newick has four tips per species, for the two haplotypes of each of the two individuals per species. Tips are labeled by numbers, which correspond to the order of species in the file [`NC_031969.f5.sub1.phased.renamed.sample`](res/NC_031969.f5.sub1.phased.renamed.sample) that was generated by RelateFileFormats earlier. To tell ASTRAL how haplotypes map to species, write the following text to a file named `samples.txt`:
+	
+		astbur: 0,1,2,3
+		altfas: 4,5,6,7
+		telvit: 8,9,10,11
+		neobri: 12,13,14,15
+		neocan: 16,17,18,19
+		neochi: 20,21,22,23
+		neocra: 24,25,26,27
+		neogra: 28,29,30,31
+		neohel: 32,33,34,35
+		neomar: 36,37,38,39
+		neooli: 40,41,42,43
+		neopul: 44,45,46,47
+		neosav: 48,49,50,51
+		neowal: 52,53,54,55
+
+* Finally, provide use the set of "gene" trees in file `extracted.trees` together with the list haplotypes and sample IDs in file `samples.txt` to ASTRAL to estimate the species tree. To do so, use the following command:
+	
+		java -jar astral.jar -i extracted.trees -a samples.txt -o species.tre
+
+	This command should have resulted in the species tree shown below:<p align="center"><img src="img/figtree2.png" alt="FigTree" width="600"></p> This tree is largely congruent with the species trees determined with SVDQuartets in tutorial [Maximum-Likelihood Species Tree Inference](../ml_species_tree_inference/README.md) and SNAPP in tutorial [Divergence Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md).
 
 <br><hr>
 
@@ -245,3 +391,13 @@ Once the genome-wide genealogies are inferred and mutations are mapped to them w
 <a name="q1"></a>
 
 * **Question 1:** Out dataset included 2 samples of each of 14 species, therefore 28 samples. For each sample, two phased sequences (= haplotypes) are included in the dataset, therefore there are 56 haplotypes in total.
+
+
+<a name="q2"></a>
+
+* **Question 2:** Given that also the first plot for *Astatotilapia burtoni* showed more variation in the rate estimates for older species that seemed to result only from stochasticity in the estimation, I suspect that the same could be responsible for the peak around 6 million years ago. Without further analyses, however, we can not exclude that it actually shows a true biological signal, such as possible introgression from a species that diverged as early as 6 million years ago from the other *Neolamprologus* species.
+
+
+<a name="q3"></a>
+
+* **Question 3:** The line for the coalescence rate between *Neolamprologus olivaceous* and *Astatotilapia burtoni* should be the only one that is present in both plots; therefore, it has to be the one that peaks just a bit later than 2e+06, 2 million years ago.
