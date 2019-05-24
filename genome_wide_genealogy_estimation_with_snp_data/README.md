@@ -240,7 +240,7 @@ Once the genome-wide genealogies are inferred and mutations are mapped to them w
 
 		less -S NC_031969.f5.sub1.phased.renamed.reestimated.coal
 	
-	You should something like the following content:
+	You should see something like the following content:
 	
 		altfas astbur neobri neocan neochi neocra neogra neohel neomar neooli neopul neosav 
 		0 333.333 463.165 643.566 894.232 1242.53 1726.49 2398.95 3333.33 4631.65 6435.66 89
@@ -376,7 +376,7 @@ In the next part of the tutorial, we will extract a set of the most reliable tre
 		neosav: 48,49,50,51
 		neowal: 52,53,54,55
 
-* Finally, provide use the set of "gene" trees in file `extracted.trees` together with the list haplotypes and sample IDs in file `samples.txt` to ASTRAL to estimate the species tree. To do so, use the following command:
+* Finally, provide use the set of "gene" trees in file [`extracted.trees`](res/extracted.trees) together with the list haplotypes and sample IDs in file `samples.txt` to ASTRAL to estimate the species tree. To do so, use the following command:
 	
 		java -jar astral.jar -i extracted.trees -a samples.txt -o species.tre
 
