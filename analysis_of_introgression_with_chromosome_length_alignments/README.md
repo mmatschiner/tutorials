@@ -525,7 +525,7 @@ As the probability of recombination depends on many factors, including the recom
 
 		chmod +x c-genie
 
-* Then, have a look at the help text of c-genie with this command:
+* Then, have a look at the help text of c-genie with this command (this is only going to work if your `python3` is installed in `/usr/local/bin` - if `python3` is in another location, use `python3 c-genie -h`*):
 
 		./c-genie -h
 		
