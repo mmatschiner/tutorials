@@ -229,7 +229,7 @@ As the length of each block, we here use 5 kbp, assuming that this length is a g
 	* the size of the alignment blocks,
 	* (optionally) a maximum proportion of missing data allowed in alignment blocks.
 
-	Thus, to name the output directory `blocks`, use a block size 5,000 bp, and allow maximally half of the block alignment to consist of missing data, run the script with the following command:
+	Thus, to name the output directory `blocks` (if you did not generate this directory yourself you can download it in compressed form: [blocks.tgz](res/blocks.tgz)), use a block size 5,000 bp, and allow maximally half of the block alignment to consist of missing data, run the script with the following command:
 	
 		ruby extract_blocks.rb NC_031969.f5.masked.fasta blocks 5000 0.5
 		
