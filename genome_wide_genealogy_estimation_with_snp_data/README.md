@@ -93,7 +93,7 @@ The SNP data used in this tutorial is the phased and imputed dataset generated i
 
 Relate expects the input in the haplotype format used by the phasing program [SHAPEIT](https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.html) ([Delaneau et al. 2012](https://www.nature.com/articles/nmeth.1785)), but Relate also comes with scripts that allow the conversion from VCF format into SHAPEIT's haplotype format. As these scripts, however, expect chromosomes to be named only with integers, we first need to replace the chromosome name "NC_031969" in the VCF file.
 
-* To replace the chromosome name "NC_031969" in file [`NC_031969.f5.sub1.phased.vcf.gz`](../data/NC_031969.f5.sub1.phased.vcf.gz) with the number "5" (because the chromosome is in fact chromosome 5 of tilapia) and write a new file named `NC_031969.f5.sub1.phased.renamed.vcf.gz`, use the `sed` command:
+* To replace the chromosome name "NC_031969" in file [`NC_031969.f5.sub1.phased.vcf.gz`](data/NC_031969.f5.sub1.phased.vcf.gz) with the number "5" (because the chromosome is in fact chromosome 5 of tilapia) and write a new file named `NC_031969.f5.sub1.phased.renamed.vcf.gz`, use the `sed` command:
 
 		gunzip -c NC_031969.f5.sub1.phased.vcf.gz | sed "s/NC_031969/5/g" | gzip > NC_031969.f5.sub1.phased.renamed.vcf.gz
 
