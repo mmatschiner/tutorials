@@ -24,7 +24,7 @@ table_file_name = ARGV[1]
 # Read the tree file.
 tree_file = File.open(tree_file_name)
 trees = []
-tree_file.readlines.each { |l| trees << l.strip.gsub(/:\d+\.\d+/,"").chomp(";") }
+tree_file.readlines.each { |l| trees << l.strip.gsub(/:[\.0-9eE\-]*,/,",").gsub(/:[\.0-9eE\-]*\)/,")").chomp(";") }
 
 # Get the complete set of taxa.
 taxa = []
@@ -43,6 +43,17 @@ table_file = File.open(table_file_name, "w")
 outstring = "p1        p2        p3         n(p1,p2)  n(p2,p3)  n(p1,p3)    d         p\n"
 table_file.write(outstring)
 
+# Get the number of trios to be analyzed.
+trio_count = 0
+total_count = 0
+sorted_taxa.size.times do |x|
+	(x+1).upto(sorted_taxa.size-1) do |y|
+		(y+1).upto(sorted_taxa.size-1) do |z|
+			total_count += 1
+		end
+	end
+end
+
 # Pick a trio for the analysis.
 sorted_taxa.size.times do |x|
 	taxon1 = sorted_taxa[x]
@@ -50,6 +61,10 @@ sorted_taxa.size.times do |x|
 		taxon2 = sorted_taxa[y]
 		(y+1).upto(sorted_taxa.size-1) do |z|
 			taxon3 = sorted_taxa[z]
+
+			# Feedback.
+			trio_count += 1
+			print "Analyzing trio #{taxon1}, #{taxon2}, #{taxon3} (trio #{trio_count} / #{total_count})..."
 
 			# Analyze all trees.
 			n_taxa12_monophyletic = 0
@@ -185,6 +200,9 @@ sorted_taxa.size.times do |x|
 			elsif sorted_n_monophyletic == [n_taxa23_monophyletic,n_taxa13_monophyletic,n_taxa12_monophyletic]
 				outstring << "#{taxon2.ljust(10)}#{taxon3.ljust(10)}#{taxon1.ljust(10)} #{sorted_n_monophyletic[0].to_s.rjust(8)}  #{sorted_n_monophyletic[1].to_s.rjust(8)}  #{sorted_n_monophyletic[2].to_s.rjust(8)} #{('%.3f' % d).rjust(8)}  #{('%.8f' % pr).rjust(12)}\n"
 			end
+
+			# Feedback.
+			puts " done."
 
 			# Write the output.
 			table_file.write(outstring)
