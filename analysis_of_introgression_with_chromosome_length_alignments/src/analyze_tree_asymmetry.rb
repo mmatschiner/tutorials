@@ -29,7 +29,7 @@ tree_file.readlines.each { |l| trees << l.strip.gsub(/:[\.0-9eE\-]*,/,",").gsub(
 # Get the complete set of taxa.
 taxa = []
 trees.each do |t|
-	taxa_this_tree = t.scan(/[A-Za-z][A-Za-z]+/)
+	taxa_this_tree = t.scan(/[A-Za-z0-9][A-Za-z0-9]+/)
 	taxa_this_tree.each do |ttt|
 		taxa << ttt
 	end
