@@ -71,33 +71,43 @@ File.open(vcf_file_name) do |f|
             parent1_alleles = []
             parent2_alleles = []
             parent1_indices.each do |x|
-                gt = line_ary[x].split(":")[0]
-                if gt.include?("/")
-                    gt1 = gt.split("/")[0]
-                    gt2 = gt.split("/")[1]
-                    gt1, gt2 = gt2, gt1 if gt1 > gt2
-                elsif gt.include?("|")
-                    gt1 = gt.split("|")[0]
-                    gt2 = gt.split("|")[1]
+                if line_ary[x] == "."
+                    gt1 = "."
+                    gt2 = "."
                 else
-                    puts "ERROR: Expected genotypes to be separated with either '/' or '|' but found '#{gt}'!"
-                    exit 1
+                    gt = line_ary[x].split(":")[0]
+                    if gt.include?("/")
+                        gt1 = gt.split("/")[0]
+                        gt2 = gt.split("/")[1]
+                        gt1, gt2 = gt2, gt1 if gt1 > gt2
+                    elsif gt.include?("|")
+                        gt1 = gt.split("|")[0]
+                        gt2 = gt.split("|")[1]
+                    else
+                        puts "ERROR: Expected genotypes to be separated with either '/' or '|' but found '#{gt}'!"
+                        exit 1
+                    end
                 end
                 parent1_alleles << gt1 unless gt1 == "."
                 parent1_alleles << gt2 unless gt2 == "."
             end
             parent2_indices.each do |x|
-                gt = line_ary[x].split(":")[0]
-                if gt.include?("/")
-                    gt1 = gt.split("/")[0]
-                    gt2 = gt.split("/")[1]
-                    gt1, gt2 = gt2, gt1 if gt1 > gt2
-                elsif gt.include?("|")
-                    gt1 = gt.split("|")[0]
-                    gt2 =gt.split("|")[1]
+                if line_ary[x] == "."
+                    gt1 = "."
+                    gt2 = "."
                 else
-                    puts "ERROR: Expected genotypes to be separated with either '/' or '|' but found '#{gt}'!"
-                    exit 1
+                    gt = line_ary[x].split(":")[0]
+                    if gt.include?("/")
+                        gt1 = gt.split("/")[0]
+                        gt2 = gt.split("/")[1]
+                        gt1, gt2 = gt2, gt1 if gt1 > gt2
+                    elsif gt.include?("|")
+                        gt1 = gt.split("|")[0]
+                        gt2 =gt.split("|")[1]
+                    else
+                        puts "ERROR: Expected genotypes to be separated with either '/' or '|' but found '#{gt}'!"
+                        exit 1
+                    end
                 end
                 parent2_alleles << gt1 unless gt1 == "."
                 parent2_alleles << gt2 unless gt2 == "."
