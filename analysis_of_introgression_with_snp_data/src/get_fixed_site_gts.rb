@@ -146,15 +146,27 @@ File.open(vcf_file_name) do |f|
                         fixedness_count += 1
                         string = "#{chromosome}\t#{position}\t#{parent1_allele}\t#{parent2_allele}"
                         parent1_indices.each do |x|
-                            gt = line_ary[x].split(":")[0]
+                            if line_ary[x] == "."
+                                gt = "./."
+                            else
+                                gt = line_ary[x].split(":")[0]
+                            end
                             string << "\t#{gt}"
                         end
                         hybrid_indices.each do |x|
-                            gt = line_ary[x].split(":")[0]
+                            if line_ary[x] == "."
+                                gt = "./."
+                            else
+                                gt = line_ary[x].split(":")[0]
+                            end
                             string << "\t#{gt}"
                         end
                         parent2_indices.each do |x|
-                            gt = line_ary[x].split(":")[0]
+                            if line_ary[x] == "."
+                                gt = "./."
+                            else
+                                gt = line_ary[x].split(":")[0]
+                            end
                             string << "\t#{gt}"
                         end 
                         string << "\n"
