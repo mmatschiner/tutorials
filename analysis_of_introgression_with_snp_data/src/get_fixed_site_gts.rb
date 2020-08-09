@@ -85,6 +85,7 @@ File.open(vcf_file_name) do |f|
                         gt2 = gt.split("|")[1]
                     else
                         puts "ERROR: Expected genotypes to be separated with either '/' or '|' but found '#{gt}'!"
+                        puts l
                         exit 1
                     end
                 end
@@ -106,6 +107,7 @@ File.open(vcf_file_name) do |f|
                         gt2 =gt.split("|")[1]
                     else
                         puts "ERROR: Expected genotypes to be separated with either '/' or '|' but found '#{gt}'!"
+                        puts l
                         exit 1
                     end
                 end
