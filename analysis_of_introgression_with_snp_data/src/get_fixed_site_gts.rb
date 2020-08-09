@@ -83,9 +83,11 @@ File.open(vcf_file_name) do |f|
                     elsif gt.include?("|")
                         gt1 = gt.split("|")[0]
                         gt2 = gt.split("|")[1]
+                    elsif gt == "."
+                        gt1 = "."
+                        gt2 = "."
                     else
                         puts "ERROR: Expected genotypes to be separated with either '/' or '|' but found '#{gt}'!"
-                        puts l
                         exit 1
                     end
                 end
@@ -105,9 +107,11 @@ File.open(vcf_file_name) do |f|
                     elsif gt.include?("|")
                         gt1 = gt.split("|")[0]
                         gt2 =gt.split("|")[1]
+                    elsif gt == "."
+                        gt1 = "."
+                        gt2 = "."
                     else
                         puts "ERROR: Expected genotypes to be separated with either '/' or '|' but found '#{gt}'!"
-                        puts l
                         exit 1
                     end
                 end
@@ -148,7 +152,7 @@ File.open(vcf_file_name) do |f|
                         fixedness_count += 1
                         string = "#{chromosome}\t#{position}\t#{parent1_allele}\t#{parent2_allele}"
                         parent1_indices.each do |x|
-                            if line_ary[x] == "."
+                            if line_ary[x].split(":")[0] == "."
                                 gt = "./."
                             else
                                 gt = line_ary[x].split(":")[0]
@@ -156,7 +160,7 @@ File.open(vcf_file_name) do |f|
                             string << "\t#{gt}"
                         end
                         hybrid_indices.each do |x|
-                            if line_ary[x] == "."
+                            if line_ary[x].split(":")[0] == "."
                                 gt = "./."
                             else
                                 gt = line_ary[x].split(":")[0]
@@ -164,7 +168,7 @@ File.open(vcf_file_name) do |f|
                             string << "\t#{gt}"
                         end
                         parent2_indices.each do |x|
-                            if line_ary[x] == "."
+                            if line_ary[x].split(":")[0] == "."
                                 gt = "./."
                             else
                                 gt = line_ary[x].split(":")[0]

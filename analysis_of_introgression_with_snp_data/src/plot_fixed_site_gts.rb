@@ -53,7 +53,7 @@ lines[1..-1].each do |l|
 				elsif alleles_this_pos[x].include?("|")
 					alleles_this_pos_this_specimen = alleles_this_pos[x].split("|")
 				else
-					puts "ERROR: Expected alleles to be separated eiter by '/' or '|' but found #{alleles_this_pos[x]}!"
+					puts "ERROR: Expected alleles to be separated eiter by '/' or '|' but found #{alleles_this_pos[x]} at position #{position}!"
 					exit
 				end
 				if alleles_this_pos_this_specimen[0] == parent1_allele and alleles_this_pos_this_specimen[1] == parent1_allele
