@@ -55,15 +55,24 @@ File.open(vcf_file_name) do |f|
                 end
             end
             # Get the indices of parent and hybrid specimens.
-            header_ary.size.times do |x|
-                if parent1_ids.include?(header_ary[x])
-                    parent1_indices << x
-                elsif parent2_ids.include?(header_ary[x])
-                    parent2_indices << x
-                elsif hybrid_ids.include?(header_ary[x])
-                    hybrid_indices << x
-                end
+            parent1_ids.each do |i|
+                parent1_indices << header_ary.index(i)
             end
+            parent2_ids.each do |i|
+                parent2_indices << header_ary.index(i)
+            end
+            hybrid_ids.each do |i|
+                hybrid_indices << header_ary.index(i)
+            end
+            # header_ary.size.times do |x|
+            #     if parent1_ids.include?(header_ary[x])
+            #         parent1_indices << x
+            #     elsif parent2_ids.include?(header_ary[x])
+            #         parent2_indices << x
+            #     elsif hybrid_ids.include?(header_ary[x])
+            #         hybrid_indices << x
+            #     end
+            # end
         elsif in_data
             line_ary = l.split
             chromosome = line_ary[0]
