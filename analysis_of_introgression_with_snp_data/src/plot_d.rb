@@ -65,7 +65,7 @@ class Text
 				svg = "<text font-family=\"#{@font}\" font-size=\"#{@font_size}\" fill=\"#{@color}\" font-weight=\"#{@weight}\" x=\"#{@x}\" y=\"#{@y}\" transform=\"#{@transform}\">#{@string}</text>"
 			else
 				svg = "<text text-anchor=\"#{@anchor}\" font-family=\"#{@font}\" font-size=\"#{@font_size}\" fill=\"#{@color}\" font-weight=\"#{@weight}\" x=\"#{@x}\" y=\"#{@y}\" transform=\"#{@transform}\">#{@string}</text>"
-			end				
+			end
 		end
 		svg
 	end
@@ -105,7 +105,7 @@ names_ordered.size.times do |x|
 			p2 = asymmetry_table_line_ary[1]
 			p3 = asymmetry_table_line_ary[2]
 			d_value = asymmetry_table_line_ary[3].to_f
-			p_value = asymmetry_table_line_ary[4].to_f
+			p_value = asymmetry_table_line_ary[5].to_f
 			if [p2,p3] == [names_ordered[x],names_ordered[y]] or [p3,p2] == [names_ordered[x],names_ordered[y]]
 				if p_value < selected_p_value
 					selected_d_value = d_value
