@@ -7,7 +7,7 @@ A collection of tutorials on phylogenetic and phylogenomic analyses
 
 * [Requirements](requirements.md)<br>A list of all installations required for the tutorials
 
-* [Getting Started](getting_started.md)<br>General instructions
+* [Getting Started](getting_started.md)<br>General instructions on the use of these tutorials
 
 ## Phylogenetic inference
 
