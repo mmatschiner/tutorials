@@ -77,6 +77,29 @@ If you want to avoid installing any of these programs, you could also use one of
 <a name="downloading"></a>
 ## Downloading tutorial files
 
-Links to input files and scripts are included in all tutorials and to run a given tutorial, the linked files should be downloaded and placed in the tutorial directory. Most often, these files are hosted in the same repository, and will not automatically download when the link is clicked (assuming that the tutorial instructions are opened in a web browser).
+Links to input files and scripts are included in all tutorials and to run a given tutorial, the linked files should be downloaded and placed in the tutorial directory. Most often, these files are hosted in the same GitHub repository, and will not automatically download when the link is clicked (assuming that the tutorial instructions are opened in a web browser).
 
+* To illustrate the point that linked files from the same GitHub repository are not directly downloaded when the link is clicked, click on this to an alignment file from the tutorial on substitution model selection:
 [`16s_filtered.nex`](substitution_model_selection/data/16s_filtered.nex)
+
+	You should see that clicking this link opens another webpage in which the alignment file is merely embedded. The reason for this is simply the way in which GitHub repositories are organized.
+	
+* To get to the alignment file itself rather than the webpage in which it is embedded, click the button labeled with "Raw" at the top right of the window, just above the embedded file.
+
+	Depending on the file and the web browser used, this should either open the file in the browser or download it directly to your computer, or a dialog window should appear that allows you to select the download location. If the file opened in the browser, use the menu of the browser (e.g. the File menu and the option "Save As...") to download the file and save it in the tutorial directory. If it downloaded directly, it can most likely be found in the Download directory of your computer, and should then be moved into the tutorial directory.
+	
+	Perhaps a simpler way to download files is to use right-click when clicking on the "Raw" button; this should open a dialog that allows one to select the download location.
+	
+* Make sure that the file has been placed in the tutorial directory, either with the file manager program or the command line. To do so on the command line, you could use this command:
+
+		ls
+		
+	This command lists all files in the current directory, and if that list includes the name of the alignment file (`16s_filtered.nex`), the download worked fine. Also make sure that the web browser or your file system has not automatically added another file extension such as `.txt` to the file name. Depending on the settings of your file manager program, these file extensions may not be shown but nevertheless be there, so unless you are sure that your file manager is not hiding any file extensions, it may be safer to check the file name with on the command line.
+	
+* As a final test that the file has been downloaded correctly, you could also have a look at the content of the file with this command:
+
+		less 16s_filtered.nex
+		
+	This should present the file content in the console window. To return to the command line, type the letter `q`.
+	
+Note that even though downloading of files may seem trivial, past users of this set of tutorials have often encountered problems that were caused by files that were placed in the wrong locations, with the wrong names, or including the HTML code within which they were embedded on the GitHub webpage.
