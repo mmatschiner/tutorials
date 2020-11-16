@@ -7,6 +7,8 @@ A collection of tutorials on phylogenetic and phylogenomic analyses
 
 * [Requirements](requirements.md)<br>A list of all installations required for the tutorials
 
+* [Getting Started](getting_started.md)<br>General instructions
+
 ## Phylogenetic inference
 
 * [Multiple Sequence Alignment](multiple_sequence_alignment/README.md)<br>A tutorial on multiple sequence alignment
