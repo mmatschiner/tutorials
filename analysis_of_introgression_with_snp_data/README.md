@@ -1,6 +1,6 @@
 # Analysis of Introgression with SNP Data
 
-A tutorial on the analysis of hybridization and introgression with SNP data by Milan Malinsky and Michael Matschiner
+A tutorial on the analysis of hybridization and introgression with SNP data by Milan Malinsky (millanek@gmail.com) and Michael Matschiner
 
 ## Introduction
 
@@ -11,7 +11,7 @@ Patterson's D and related statistics have also been used to identify introgresse
 ## Table of contents
 
 * [Outline](#outline)
-* [Dataset](#dataset)
+<!--- * [Dataset](#dataset)-->
 * [Requirements](#requirements)
 * [Identifying introgression with *D*-statistics](#dsuite)
 * [Ancestry painting](#painting)
@@ -20,13 +20,14 @@ Patterson's D and related statistics have also been used to identify introgresse
 <a name="outline"></a>
 ## Outline
 
-In this tutorial, we are going to use Dsuite, a software package that implements Patterson’s D and related statistics in a way that is straightforward to use and computationally efficient. While exploring Dsuite, we are also going to learn or revise concepts related to application, calculation, and interpretation of the D and of related statistics. In particular, we are first going to use simulated data to demonstrate that, under gene-flow, some inferred species relationships might not correspond to any real biologial relationships. Next we apply sliding-window statistics to identify particular introgressed loci in a real dataset of Malawi cichlid fishes. Finally, we look at the same data that was used for species-tree inference with SVDQuartets in tutorial [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md) to ..... 
+In this tutorial, we are going to use [Dsuite](https://doi.org/10.1111/1755-0998.13265), a software package that implements Patterson’s D and related statistics in a way that is straightforward to use and computationally efficient. While exploring Dsuite, we are also going to learn or revise concepts related to application, calculation, and interpretation of the D and of related statistics. In particular, we are first going to use simulated data to demonstrate that, under gene-flow, some inferred species relationships might not correspond to any real biologial relationships. Next we apply sliding-window statistics to identify particular introgressed loci in a real dataset of Malawi cichlid fishes. Finally, we look at the same data that was used for species-tree inference with SVDQuartets in tutorial [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md) to ..... 
 
 Students who are interested can also apply ancestry painting to investigate a putatitve case of hybrid species.  
 
-[comment]: <> (The original ABBA-BABA test has been extended in various ways, including the <i>D</i><sub>FOIL</sub>-statistic that allows inferring the direction of introgression from sets of five species ([Pease and Hahn 2015](https://academic.oup.com/sysbio/article/64/4/651/1650669)) and the <i>f</i><sub>D</sub>-statistic that is better suited for the identification of gene flow pertaining to certain regions of the genome ([Martin et al. 2014](https://academic.oup.com/mbe/article/32/1/244/2925550)). If a putative hybrid individual as well as the presumed parental species have already been identified, patterns of introgression can be investigated with ancestry painting, a method that focuses on sites that are fixed between the parental species and the alleles observed at these sites in the putative hybrid.)
+<!--- The original ABBA-BABA test has been extended in various ways, including the <i>D</i><sub>FOIL</sub>-statistic that allows inferring the direction of introgression from sets of five species ([Pease and Hahn 2015](https://academic.oup.com/sysbio/article/64/4/651/1650669)) and the <i>f</i><sub>D</sub>-statistic that is better suited for the identification of gene flow pertaining to certain regions of the genome ([Martin et al. 2014](https://academic.oup.com/mbe/article/32/1/244/2925550)). If a putative hybrid individual as well as the presumed parental species have already been identified, patterns of introgression can be investigated with ancestry painting, a method that focuses on sites that are fixed between the parental species and the alleles observed at these sites in the putative hybrid.) -->
 
 
+<!--- 
 <a name="dataset"></a>
 ## Dataset
 
@@ -66,12 +67,12 @@ The SNP data used in this tutorial is the unfiltered dataset used for species-tr
 | KFD4      | neowal     | *Neolamprologus walteri*      | Lamprologini  |
 
 </center>
-
+-->
 
 <a name="requirements"></a>
 ## Requirements
 
-* **Dsuite:** The [Dsuite](https://github.com/millanek/Dsuite) program allows the fast calculation of the *D*-statistic from SNP data in VCF format. The program is particularly useful because it automatically calculates the *D*-statistic either for all possible species trios or for subsets of quartets that are compatible with a user-provided species tree. Instructions for download and installation on Mac OS X and Linux are provided on [https://github.com/millanek/Dsuite](https://github.com/millanek/Dsuite). Installation on Windows is not supported, but Windows users can use the provided output files to learn how to plot and analyze the Dsuite output.
+* **Dsuite:** The [Dsuite](https://github.com/millanek/Dsuite) program allows the fast calculation of the *D*-statistic from SNP data in VCF format. The program is particularly useful because it automatically calculates the *D*-statistic for all possible species trios, optionally also in a way that the trios are compatible with a user-provided species tree. Instructions for download and installation on Mac OS X and Linux are provided on [https://github.com/millanek/Dsuite](https://github.com/millanek/Dsuite). Installation on Windows is not supported, but Windows users can use the provided output files to learn how to plot and analyze the Dsuite output.
 
 * **FigTree:** The program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) should already be installed if you followed the tutorials [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.md), [Phylogenetic Divergence-Time Estimation](../divergence_time_estimation/README.md) or other tutorials. If not, you can download it for Mac OS X, Linux, and Windows from [https://github.com/rambaut/figtree/releases](https://github.com/rambaut/figtree/releases).
 
