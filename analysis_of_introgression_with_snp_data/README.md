@@ -99,17 +99,30 @@ We have simulated SNP data for 20 species in the VCF format, two individuals fro
   # preparing the msprime command input:
   (samples, population_configurations, sorted_events, sample_to_pop, sample_names, id_to_name) = simulate.msprime_input_from_split_tree(t)
   # running the simulation - this takes about 2 hours
-  tree_sequence = simulate.simulate_to_vcf("chr1_no_geneflow.vcf.gz", samples, population_configurations, sorted_events, 1e-8, 1e-8, 20000000, sample_names=sample_names, chrom_id="chr1")
+  tree_sequence = simulate.simulate_to_vcf("self_chr1_no_geneflow.vcf.gz", samples, population_configurations, sorted_events, 1e-8, 1e-8, 20000000, sample_names=sample_names, chrom_id="chr1")
+  # write out the tree:
+  t.write(format=1, outfile="self_simulated_tree_no_geneflow.nwk")
   
   # generating a 'random' tree with 20 species, 2 diploid individuals per species, and five randomly placed gene-flow events:
   t_gf = treetools.get_random_geneflow_species_tree(n_species=20,n_geneflow_events=5,sample_sizes=4,random_tree_process='ete3')
   # preparing the msprime command input:
   (samples, population_configurations, sorted_events, sample_to_pop, sample_names, id_to_name) = simulate.msprime_input_from_split_tree(t_gf)
   # running the simulation - this takes about 2 hours
-  tree_sequence = simulate.simulate_to_vcf("chr1_with_geneflow.vcf.gz", samples, population_configurations, sorted_events, 1e-8, 1e-8, 20000000, sample_names=sample_names, chrom_id="chr1")
+  tree_sequence = simulate.simulate_to_vcf("self_chr1_with_geneflow.vcf.gz", samples, population_configurations, sorted_events, 1e-8, 1e-8, 20000000, sample_names=sample_names, chrom_id="chr1")
+  # write out the tree:
+  t_gf.write(format=1, outfile="self_simulated_tree_with_geneflow.nwk")
   ```
   
-  Note that if you run this code yourselves, the data and the trees that you get out will be somewhat different from the ones we prepared for you, because the trees are randomly generated and the coalescent simulation run by msprime is also a stochastic process. Therefore, every simulation will be different.  
+  Note that if you run this code yourselves, the data and the trees that you get out will be somewhat different from the ones we prepared for you, because the trees are randomly generated and the coalescent simulation run by msprime is also a stochastic process. Therefore, every simulation will be different. If you want to simulate more data using the trees we provided to you, you would replace the  ```treetools.get_random_geneflow_species_tree```  commands with the following code to read the provided trees:
+
+
+ ```python3
+    # reads the newick tree without gene-flow (the empty json file also needs to be in the folder) 
+    t = treetools.HsTree("simulated_tree_no_geneflow.nwk")
+  
+    # reads the newick tree and json file with gene-flow evens
+    t_gf = treetools.HsTree("simulated_tree_with_geneflow.nwk")
+```
   
 </details>
 
