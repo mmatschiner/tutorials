@@ -11,11 +11,11 @@ Patterson's D and related statistics have also been used to identify introgresse
 ## Table of contents
 
 * [Outline](#outline)
-<!--- * [Dataset](#dataset)-->
 * [Requirements](#requirements)
-* [Identifying introgression with *D*-statistics](#dsuite)
+* [1. Inferring the species-tree and gene-flow from a simulated dataset](#simulation)
 * [Ancestry painting](#painting)
 
+<!--- * [Dataset](#dataset)-->
 
 <a name="outline"></a>
 ## Outline
@@ -76,7 +76,31 @@ The SNP data used in this tutorial is the unfiltered dataset used for species-tr
 
 * **FigTree:** The program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) should already be installed if you followed the tutorials [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.md), [Phylogenetic Divergence-Time Estimation](../divergence_time_estimation/README.md) or other tutorials. If not, you can download it for Mac OS X, Linux, and Windows from [https://github.com/rambaut/figtree/releases](https://github.com/rambaut/figtree/releases).
 
-<a name="dsuite"></a>
+<a name="simulation"></a>
+## 1. Inferring the species-tree and gene-flow from a simulated dataset
+
+One difficulty with applying and comparing different methods in evolutionary genomics and phylogenomics is that we rarely know what the right answer is. If methods give us conflicting answers, or any answers, how do we know if we can trust them? One approach that is often helpful is the use of simulated data. Knowing the truth allows us to see if the methods we are using make sense. 
+
+One of fastest software packages around for simulating phylogenomic data is the coalescent-based [msprime](https://msprime.readthedocs.io/en/stable/) ([manuscript](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004842)). The msprime manuscript and the software itself are presented in population genetic framework. However, we can use it to produce phylogenomic data. This is because, from the point of view of looking purely at genetic data, there is no fundamental distinction between a set of allopatric populations of a single species and a set of different species. The genealogical processes that play out across different population are indeed the same as the processes that determine the genetic relationships along-the-genome of any species that may arise. We will return to this theme of a continuum between population genetics and phylogenomics later.
+
+We have simulated SNP data for 20 species in the VCF format, two individuals from each species. The species started diverging 1 million years ago, with effective population sizes on each branch set to 50,000. Both the recombination and mutation rates were set to 1e-8 and 20Mb of data were simulated. Because these simulations take some time to run, we have the ready simulated data available for you. First a simulation without gene-flow ([VCF](link), [true tree](link)), and second, a simulation where five gene-flow events have been added to a tree ([VCF](link), [true tree with gene-flow arrows](link)). Details for how to generate such simulated datasets are provided below.      
+
+<details>
+  <summary>Generating simulated phylogenomic data with msprime</summary>
+  
+  It is in principle possible to simulate data from an arbitrary phylogeny with msprime, but specifying the phylogenetic tree directly in the program is complicated. Therefore, a number of 'helper' wrapper programs have been developed that can make this task much easier for us. For this exercise, we use Hannes Svardal's [pypopgen3](https://github.com/feilchenfeldt/pypopgen3). After installing pypogen3 and its dependencies, using the instructions on the webpage, we simulated the data using the following code:
+  
+  ```python3
+  from pypopgen3.modules import treetools
+  from pypopgen3.modules import simulate
+  t = treetools.get_random_geneflow_species_tree(n_species=20,n_geneflow_events=0,sample_sizes=4,random_tree_process='ete3')
+  tree_sequence = simulate.simulate_to_vcf("chr1_no_geneflow.vcf", samples, population_configurations, sorted_events, 1e-8, 1e-8, 20000000, sample_names=sample_names, chrom_id="chr1")
+  ```
+</details>
+
+
+
+
 ## Identifying introgression with *D*-statistics
 		
 Under incomplete lineage sorting alone, two sister species are expected to share about the same proportion of derived alleles with a third closely related species. Thus, if species "P1" and "P2" are sisters and "P3" is a closely related species, then the number of derived alleles shared by P1 and P3 but not P2 and the number of derived alleles that is shared by P2 and P3 but not P1 should be approximately similar. In contrast, if hybridization leads to introgression between species P3 and one out the two species P1 and P2, then P3 should share more derived alleles with that species than it does with the other one, leading to asymmetry in the sharing of derived alleles. These expectations are the basis for the so-called "ABBA-BABA test" (first described in the Supporting Material of [Green et al. 2010](http://science.sciencemag.org/content/328/5979/710.full)) that quantifies support for introgression by the *D*-statistic. In addition to the three species P1, P2, and P3, the ABBA-BABA test requires a fourth species, "P4", which should be a common outgroup to P1, P2, and P3, and only serves to determine which allele is the ancestral one and which is derived; the ancestral allele is then labelled "A" and the derived allele of a bi-allelic SNP is labelled "B". In the simplest case in which only a single haploid sequence is sampled from each of the four species, "ABBA sites" are those where species P2 and P3 share the derived allele B while P1 retains the ancestral allele A. Similarly "BABA sites" are those where P1 and P3 share the derived allele B while P2 retains the ancestral allele A. The *D*-statistic is then defined as the difference between the counts of ABBA sites and BABA sites relative to the sum of both types of sites:
