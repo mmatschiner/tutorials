@@ -145,6 +145,12 @@ Given that node support in the phylogeny for 16S sequences turned out to be poor
 		
 * IQ-TREE should have written the resulting maximum-likelihood phylogeny with bootstrap support values to file [`rag1_filtered.bs.nex.treefile`](res/rag1_filtered.bs.nex.treefile). Open this file in FigTree. After once again rooting and sorting the phylogeny, the phylogeny should look as shown in the below screenshot.<p align="center"><img src="img/figtree9.png" alt="RAxML" width="600"></p> **Question 7:** Does the *RAG1* phylogeny look more reliable than the 16S phylogeny? [(see answer)](#q7)
 
+* Instead of forcing IQ-TREE to use separate partitions for each of the three codon positions (based on the results of model selection with PAUP\* in tutorial [Substitution Model Selection](../substitution_model_selection/README.md)), we could also allow IQ-TREE to determine the ideal partitioning scheme itself. To do so, use the `-m MFP` and `--merge` options jointly (replace these with the `-m MFP+MERGE` option if you use IQ-TREE v.1.X):
+
+		iqtree -s rag1_filtered.nex -p partitions.txt -B 1000 -m MFP --merge --prefix rag1_filtered.bs.merge.nex
+
+	**Question 8:** Does this change the resulting partitioning scheme? [(see answer)](#q8)
+
 
 <a name="comparison"></a>
 ## Comparing the reliability of different phylogenies
@@ -155,7 +161,7 @@ We have now used bootstrapping to assess node support in two different phylogeni
 
 		iqtree -t 16s_filtered.bs.nex.treefile --tree-dist2 rag1_filtered.bs.nex.treefile
 		
-	IQ-TREE should then write the output to a new file named `16s_filtered.bs.nex.treefile.rfdist`. Open this file in a text editor or with the `less` command. **Question 8:** How many topological rearrangements separate the 16S and *RAG1* trees? [(see answer)](#q8)
+	IQ-TREE should then write the output to a new file named `16s_filtered.bs.nex.treefile.rfdist`. Open this file in a text editor or with the `less` command. **Question 9:** How many topological rearrangements separate the 16S and *RAG1* trees? [(see answer)](#q9)
 
 * To compare the overall support of the two trees, we can calculate the mean bootstrap support for both trees with the Python script [`get_mean_node_support.py`](src/get_mean_node_support.py):
 
@@ -193,7 +199,7 @@ The comparison of phylogenies based on the short 16S alignment and the longer *R
 * Also quantify again the overall node support with the Python script [`get_mean_node_support.py`](src/get_mean_node_support.py):
 
 		python3 get_mean_node_support.py concatenated.bs.nex.treefile 
-	**Question 9:** How good is the overall support for this phylogeny compared to that of the phylogeny based only on the *RAG1* gene? [(see answer)](#q9) 
+	**Question 10:** How good is the overall support for this phylogeny compared to that of the phylogeny based only on the *RAG1* gene? [(see answer)](#q10) 
 
 <br><hr>
 
@@ -223,7 +229,7 @@ The comparison of phylogenies based on the short 16S alignment and the longer *R
 
 <a name="q6"></a>
 
-* **Question 6:** IQ-TREE should have selected "TPM2u+F+G4" as the best-fitting model for the first codon position (partition "codon1"), "K3P+I+G4" for the second codon position (partition "codon2"), and "TPM2u+F+R3" for the third codon position (partition "codon3"). More information about these models can be found at [http://www.iqtree.org/doc/Substitution-Models](http://www.iqtree.org/doc/Substitution-Models). If the lines reporting the models are separated or followed by warnings about log-likelihoods, these may indicate that in some cases, the best likelihoods were not found. In such cases, rerunning the analysis may solve the issue, but that is not needed for this tutorial.
+* **Question 6:** IQ-TREE should have selected "TPM2u+F+G4" or "TPM2+F+I+G4" as the best-fitting model for the first codon position (partition "codon1"), "K3P+I+G4" or "K3P+R2" for the second codon position (partition "codon2"), and "TPM2u+F+R3" or "TVM+F+R3" for the third codon position (partition "codon3"). More information about these models can be found at [http://www.iqtree.org/doc/Substitution-Models](http://www.iqtree.org/doc/Substitution-Models). If the lines reporting the models are separated or followed by warnings about log-likelihoods, these may indicate that in some cases, the best likelihoods were not found. In such cases, rerunning the analysis may solve the issue, but that is not needed for this tutorial.
 
 <a name="q7"></a>
 
@@ -231,8 +237,12 @@ The comparison of phylogenies based on the short 16S alignment and the longer *R
 
 <a name="q8"></a>
 
-* **Question 8:** In my analysis, 62 topological rearrangements were required to convert one of the two trees into the other. This number might be slightly different if, due to stochastic variation, different trees were identified as maximum-likelihood phylogenies.
+* **Question 8:** No, IQ-TREE should still select a best partitioning scheme in which all three codon positions are assigned to three independent partitions, thus confirming the results of the automated model selection with PAUP\* in tutorial [Substitution Model Selection](../substitution_model_selection/README.md). The substitution models selected for each of the three partitions should also be identical (except for stochastic variation) to those selected before.
 
 <a name="q9"></a>
 
-* **Question 9:** The overall node support should be slightly higher in the joint analysis of 16S and *RAG1*, compared to that based on the *RAG1* alignment only (85.3 compared to 84.9). This could be due to stochastic effects or it could indicate that the increased size of the dataset in fact improves the phylogenetic resolution. Note that most phylogenies published these days are based on far larger datasets than the ones used here, assuming that the additional information in fact improves the analysis (this sounds obvious, but has actually been discussed controversially in recent years - the issue will be dealt with in more detail in other tutorials; e.g. in [Maximum-Likelihood Species-Tree Inference](../ml_species_tree_inference/README.md)).
+* **Question 9:** In my analysis, 62 topological rearrangements were required to convert one of the two trees into the other. This number might be slightly different if, due to stochastic variation, different trees were identified as maximum-likelihood phylogenies.
+
+<a name="q10"></a>
+
+* **Question 10:** The overall node support should be slightly higher in the joint analysis of 16S and *RAG1*, compared to that based on the *RAG1* alignment only (85.3 compared to 84.9). This could be due to stochastic effects or it could indicate that the increased size of the dataset in fact improves the phylogenetic resolution. Note that most phylogenies published these days are based on far larger datasets than the ones used here, assuming that the additional information in fact improves the analysis (this sounds obvious, but has actually been discussed controversially in recent years - the issue will be dealt with in more detail in other tutorials; e.g. in [Maximum-Likelihood Species-Tree Inference](../ml_species_tree_inference/README.md)).
