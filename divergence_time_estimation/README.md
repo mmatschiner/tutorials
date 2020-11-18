@@ -374,7 +374,7 @@ Note that a far more extensive tutorial on divergence-time estimation with the F
 <a name="interpretation"></a>
 ## Interpretation of the inferred timelines
 
-We are now going to use the program [Tracer](http://tree.bio.ed.ac.uk/software/tracer/) ([Rambaut et al. 2018](https://academic.oup.com/sysbio/advance-article/doi/10.1093/sysbio/syy032/4989127)) once again (as in tutorial [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.ml)) to assess stationarity of the MCMC chains produced by the analyses with CladeAge and the FBD model, and we will make an interpretation of the differences between these results. Instead of waiting for both BEAST2 analyses to finish, you could use the result files linked in the text below for this part of the tutorial.
+We are now going to use the program [Tracer](http://beast.community/tracer) ([Rambaut et al. 2018](https://academic.oup.com/sysbio/advance-article/doi/10.1093/sysbio/syy032/4989127)) once again (as in tutorial [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.ml)) to assess stationarity of the MCMC chains produced by the analyses with CladeAge and the FBD model, and we will make an interpretation of the differences between these results. Instead of waiting for both BEAST2 analyses to finish, you could use the result files linked in the text below for this part of the tutorial.
 
 * Open Tracer and the log file [`Near_et_al_red.log`](res/Near_et_al_red.log) resulting from the analysis with CladeAge. The Tracer window should then look as shown in the next screenshot.<p align="center"><img src="img/tracer1.png" alt="Tracer" width="700"></p>
 
