@@ -79,11 +79,12 @@ The SNP data used in this tutorial is the unfiltered dataset used for species-tr
 <a name="simulation"></a>
 ## 1. Inferring the species-tree and gene-flow from a simulated dataset
 
+### 1.1 Simulating phylogenomic data with msprime
 One difficulty with applying and comparing different methods in evolutionary genomics and phylogenomics is that we rarely know what the right answer is. If methods give us conflicting answers, or any answers, how do we know if we can trust them? One approach that is often helpful is the use of simulated data. Knowing the truth allows us to see if the methods we are using make sense. 
 
 One of fastest software packages around for simulating phylogenomic data is the coalescent-based [msprime](https://msprime.readthedocs.io/en/stable/) ([manuscript](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004842)). The msprime manuscript and the software itself are presented in population genetic framework. However, we can use it to produce phylogenomic data. This is because, from the point of view of looking purely at genetic data, there is no fundamental distinction between a set of allopatric populations of a single species and a set of different species. The genealogical processes that play out across different population are indeed the same as the processes that determine the genetic relationships along-the-genome of any species that may arise. We will return to this theme of a continuum between population genetics and phylogenomics later.
 
-We have simulated SNP data for 20 species in the VCF format, two individuals from each species. The species started diverging 1 million years ago, with effective population sizes on each branch set to 50,000. Both the recombination and mutation rates were set to 1e-8 and 20Mb of data were simulated. Because these simulations take some time to run, we have the ready simulated data available for you. First a simulation without gene-flow ([VCF](link), [true tree](link)), and second, a simulation where five gene-flow events have been added to a tree ([VCF](link), [true tree with gene-flow arrows](link)). Details for how to generate such simulated datasets are provided below.      
+We have simulated SNP data for 20 species in the VCF format, two individuals from each species. The species started diverging 1 million years ago, with effective population sizes on each branch set to 50,000. Both the recombination and mutation rates were set to 1e-8 and 20Mb of data were simulated. Because these simulations take some time to run, we have the ready simulated data available for you. First a simulation without gene-flow ([VCF](link), true tree [image](img/),[newick](data/simulated_tree_no_geneflow.nwk),[json](data/simulated_tree_no_geneflow.nwk.mass_migrations.json)), and second, a simulation where five gene-flow events have been added to a tree ([VCF](link), true tree with gene-flow [image](img/simulated_tree_with_geneflow.pdf),[newick](data/simulated_tree_with_geneflow.nwk),[json](data/simulated_tree_with_geneflow.nwk.mass_migrations.json)). Details for how to generate such simulated datasets are provided below.      
 
 <details>
   <summary>Generating simulated phylogenomic data with msprime</summary>
@@ -126,7 +127,7 @@ We have simulated SNP data for 20 species in the VCF format, two individuals fro
   
 </details>
 
-
+### 1.2 Reconstructing phylogenies from simulated data
 
 
 ## Identifying introgression with *D*-statistics
