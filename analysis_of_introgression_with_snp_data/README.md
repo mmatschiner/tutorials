@@ -139,7 +139,7 @@ gunzip -c chr1_no_geneflow.vcf.gz | awk 'BEGIN{OFS=FS="\t"}{ if(NR > 6) { $4="A"
 # convert the VCF to the Nexus format:
 python2 vcf2phylip.py -i chr1_no_geneflow_nt.vcf.gz -p --nexus
 ```
-
+* Next, open the Nexus file `chr1_no_geneflow_nt.min4.nexus` in PAUP\*, again making sure that the option "Execute" is set in the opening dialog, as shown in the screenshot.<p align="center"><img src="img/PAUP_open.png" alt="PAUP\*" width="600"></p>
 
 
 ## Identifying introgression with *D*-statistics
