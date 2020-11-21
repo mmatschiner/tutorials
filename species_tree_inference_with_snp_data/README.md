@@ -121,11 +121,7 @@ The dataset of SNP variation for the above-listed 28 individuals of 14 Lake Tang
 	
 		bcftools +prune -w 100bp -n 1 -o NC_031969.f5.sub4.vcf NC_031969.f5.sub3.vcf.gz
 
- the "prune" plugin of bcftools, specifying a window size of 100 bp with `-w 100bp` and that a single site should be retained within the window with  `-n 1`, as in the following command **[Warning: The next command may not actually result in an unbiased subset of SNPs as `prune -n` selects sites accoring to the frequency of the alternate allele. I opened an [issue on the bcftools github page](https://github.com/samtools/bcftools/issues/1050). In the meantime, `vcftools --thin` could be a useful alternative command - see the [vcftools manual](https://vcftools.github.io/index.html)]**:
-
-		bcftools +prune -w 100bp -n 1 -o NC_031969.f5.sub4.vcf NC_031969.f5.sub3.vcf.gz
-		
-	The filtered dataset in file `NC_031969.f5.sub4.vcf` should now contain 65,325 SNPs. Thus, a bit more than every second SNP have been removed in this step.
+ Regardless of whether you used vcftools or bcftools, the filtered dataset in file `NC_031969.f5.sub4.vcf` should now contain 65,325 SNPs. Thus, a bit more than every second SNP have been removed in this step.
 		
 
 <a name="svdquartets"></a>
@@ -184,9 +180,7 @@ SVDQuartets is a highly efficient tool to estimate the species-tree topology bas
 
 * Once again define the samples of *Astatotilapia burtoni* ("IZA1" and "IZC5") as the outgroup with "Define Outgroup..." in the "Data" menu.
 
-* Click "SVDQuartets..." again in the "Analysis" menu. In the settings for the SVDQuartets analysis, again use "Evaluate all possible quartets" and make sure that "Distribute" is selected for "Handling of ambiguities". Unlike in the first analysis, now assign the samples to species by setting a tick in the last checkbox next to "Assign tips to species using taxon partition". The "SPECIES" taxon partition should already be selected in the drop-down menu to the right of it; this is the taxon set definition that we had added in Nexus format to the end of the alignment file. To also perform a bootstrapping analysis this time to assess node support for the species tree, set a tick
-
- in the checkbox next to "Perform bootstrapping". With 100 bootstrap replicates, the bootstrapping analysis might take around 20 minutes; if you would prefer not to wait that long you could set the number of bootstrap replicates to 50 instead. Another way to speed up the analysis is to use all CPUs available on your machine. To do so, simply click the "#CPUs" button in the bottom right of the settings window. This window should then look as shown in the next screenshot; click "OK" if it does.<p align="center"><img src="img/paup7.png" alt="PAUP\*" width="600"></p>
+* Click "SVDQuartets..." again in the "Analysis" menu. In the settings for the SVDQuartets analysis, again use "Evaluate all possible quartets" and make sure that "Distribute" is selected for "Handling of ambiguities". Unlike in the first analysis, now assign the samples to species by setting a tick in the last checkbox next to "Assign tips to species using taxon partition". The "SPECIES" taxon partition should already be selected in the drop-down menu to the right of it; this is the taxon set definition that we had added in Nexus format to the end of the alignment file. To also perform a bootstrapping analysis this time to assess node support for the species tree, set a tick in the checkbox next to "Perform bootstrapping". With 100 bootstrap replicates, the bootstrapping analysis might take around 20 minutes; if you would prefer not to wait that long you could set the number of bootstrap replicates to 50 instead. Another way to speed up the analysis is to use all CPUs available on your machine. To do so, simply click the "#CPUs" button in the bottom right of the settings window. This window should then look as shown in the next screenshot; click "OK" if it does.<p align="center"><img src="img/paup7.png" alt="PAUP\*" width="600"></p>
 
 * While the bootstrapping analysis is running, have a look at the screen output of PAUP\*, which should look as shown in the next screenshot.<p align="center"><img src="img/paup8.png" alt="PAUP\*" width="600"></p>You'll see that PAUP\* has already generated a species tree, and that it reports the number of quartets that are comparable or incomparable with this tree. If all quartets would be comparable with this tree, this would indicate complete absence of incomplete lineage sorting and other processes that might violate the multi-species coalescent model, such as introgression or paralogous sequences in the alignment. However, these processes can not be excluded, and introgression is in fact very likely among the species included in this dataset.
 
