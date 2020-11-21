@@ -143,9 +143,14 @@ python2 vcf2phylip.py -i chr1_no_geneflow_nt.vcf.gz -p --nexus
 
 * Then designate the outgroup (Data->Define_outgroup) as you learned in the tutorial on [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md).
 
-* Then use the Neighbor Joining algorithm (Analysis->Neighbor-Joining/UPGMA) with default parameters to build a quick phylogeny. As you can see, a simple Neigbor Joining algorithm easily reconstructs the tree topology perfectly, and even the branch lengths are almost perfect. <p align="center"><img src="img/chr1_no_geneflow_bases.min4_NJ.jpg" alt="PAUP\*" width="600"></p>
+* Then use the Neighbor Joining algorithm (Analysis->Neighbor-Joining/UPGMA) with default parameters to build a quick phylogeny. As you can see, a simple Neigbor Joining algorithm easily reconstructs the tree topology perfectly, and even the branch lengths are almost perfect. 
 
+<details>
+<summary>Reconstructed NJ tree without gene-flow</summary>
 
+<p align="center"><img src="img/chr1_no_geneflow_bases.min4_NJ.jpg" alt="PAUP\*" width="600"></p>
+
+</details>
 
 ## Identifying introgression with *D*-statistics
 		
