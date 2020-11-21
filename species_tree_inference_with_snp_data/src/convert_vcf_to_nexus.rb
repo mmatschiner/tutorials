@@ -52,7 +52,7 @@ vcf_file.each do |l|
 		end
 		ids.size.times do |x|
 			gt = line_ary[9+x]
-			if gt.match(/([\d\.])\/([\d\.])/)
+			if gt.match(/([\d\.])\/|\|([\d\.])/)
 				if $1 == "." and $2 == "."
 					sample_allele1 = "N"
 					sample_allele2 = "N"
