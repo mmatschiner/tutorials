@@ -141,6 +141,11 @@ python2 vcf2phylip.py -i chr1_no_geneflow_nt.vcf.gz -p --nexus
 ```
 * Next, open the Nexus file `chr1_no_geneflow_nt.min4.nexus` in PAUP\*, again making sure that the option "Execute" is set in the opening dialog, as shown in the screenshot.<p align="center"><img src="img/PAUP_open.png" alt="PAUP\*" width="600"></p>
 
+* Then designate the outgroup (Data->Define_outgroup) as you learned in the tutorial on [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md).
+
+* Then use the Neighbor Joining algorithm (Analysis->Neighbor-Joining/UPGMA) with default parameters to build a quick phylogeny. As you can see, a simple Neigbor Joining algorithm easily reconstructs the tree topology perfectly, and even the branch lengths are almost perfect. <p align="center"><img src="img/chr1_no_geneflow_bases.min4_NJ.pdf" alt="PAUP\*" width="600"></p>
+
+
 
 ## Identifying introgression with *D*-statistics
 		
