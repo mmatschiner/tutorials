@@ -167,6 +167,21 @@ Then load the file `with_geneflow_nt.min4.nexus` into PAUP\*, again making sure 
 
 <p align="center"><img src="img/with_geneflow_bases.min4_NJ.jpg" alt="PAUP\*" width="600"></p>
 
+An examination of this reconstructed tree reveals that in this case we did not recover the topology of the [true tree](img/simulated_tree_with_geneflow.pdf) used as input to the simulation. Unlike in the true tree, in the reconstructed tree species  `S14` is "pulled outside" the group formed by  `S13,S15,S16`. This is most likely because of the gene-flow that `S14` received from `S00`. This is a typical pattern: when one species from within a group receives introgression from another group, it tends to be "pulled out" like this in phylogenetic reconstruction. One argument that could be made here is that the Neighbor Joining algorithm is outdated, and that perhaps newer, more sophisticated, methods would recover the correct tree. You can now try to apply SVDQuartets in PAUP\*, and also try any of the other phylogenomic methods you know to see if any of these will succeed.
+
+<details>
+<summary>Click here to see the reconstructed SVDQuartets tree with gene-flow</summary>
+
+As you can see, the topology is in fact different from the Neighbor Joining, but also is not correct (`S13,S14` should not be sister taxa) . 
+
+<p align="center"><img src="img/with_geneflow_bases.min4_SVDQ.jpg" alt="PAUP\*" width="600"></p>
+
+</details>
+
+### 1.3 Testing for gene-flow in simulated data
+
+
+
 ## Identifying introgression with *D*-statistics
 		
 Under incomplete lineage sorting alone, two sister species are expected to share about the same proportion of derived alleles with a third closely related species. Thus, if species "P1" and "P2" are sisters and "P3" is a closely related species, then the number of derived alleles shared by P1 and P3 but not P2 and the number of derived alleles that is shared by P2 and P3 but not P1 should be approximately similar. In contrast, if hybridization leads to introgression between species P3 and one out the two species P1 and P2, then P3 should share more derived alleles with that species than it does with the other one, leading to asymmetry in the sharing of derived alleles. These expectations are the basis for the so-called "ABBA-BABA test" (first described in the Supporting Material of [Green et al. 2010](http://science.sciencemag.org/content/328/5979/710.full)) that quantifies support for introgression by the *D*-statistic. In addition to the three species P1, P2, and P3, the ABBA-BABA test requires a fourth species, "P4", which should be a common outgroup to P1, P2, and P3, and only serves to determine which allele is the ancestral one and which is derived; the ancestral allele is then labelled "A" and the derived allele of a bi-allelic SNP is labelled "B". In the simplest case in which only a single haploid sequence is sampled from each of the four species, "ABBA sites" are those where species P2 and P3 share the derived allele B while P1 retains the ancestral allele A. Similarly "BABA sites" are those where P1 and P3 share the derived allele B while P2 retains the ancestral allele A. The *D*-statistic is then defined as the difference between the counts of ABBA sites and BABA sites relative to the sum of both types of sites:
