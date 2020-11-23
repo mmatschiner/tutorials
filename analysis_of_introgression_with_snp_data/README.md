@@ -184,22 +184,51 @@ Under incomplete lineage sorting alone, two sister species are expected to share
 
 <p align="center"><img src="img/DstatIllustration.png" alt="Dstat\*" width="600"></p>
 
-In short, if there is gene-flow between P2 &lt;-&gt; P3, there is going to be an excess of the of the ABBA pattern, leading to positive D statistics. There is also the f4-ratio, a related and somewhat more complicated measure which strives to estimate the admixture proportion in percentage. We will not go into the maths of the statistics here. If you are interested in the details, have a look at the [Dsuite paper](https://doi.org/10.1111/1755-0998.13265).   
+In short, if there is gene-flow between P2 &lt;-&gt; P3, there is going to be an excess of the of the ABBA pattern, leading to positive D statistics. In contrast, gene-flow between P1 &lt;-&gt; P3 would lead to a an excess of the BABA pattern and a negative D statistic. However, whether a species is assigned in the P1 or P2 position is arbitrary, so we can always assign them so that P2 and P3 share more derived alleles and the D statistic is then bounded between 0 and 1. There is also a related and somewhat more complicated measure,  the f4-ratio, which strives to estimate the admixture proportion in percentage. We will not go into the maths here - if you are interested, have a look at the [Dsuite paper](https://doi.org/10.1111/1755-0998.13265). 
 
 
+The Dsuite software has several advantages: it brings several related statistics together into one software package, has a straightforward workflow to calculate the D statistics and the f4-ratio for all combinations of trios in the dataset, and the standard VCF format, thus generally avoiding the need for format conversions or data duplication. It is computationally more efficient than other software in the core tasks, making it more practical for analysing large genome-wide data sets with tens or even hundreds of populations or species. Finally, Dsuite implements the calculation of the <i>f</i><sub>dM</sub> and <i>f</i>-branch statistics for the first time in publicly available software.
+
+To calculate the D statistics and the f4-ratio for all combinations of trios of species, all we need is the file that specifies what individuals belong to which population/species - we prepared it for you: [species_sets.txt](data/species_sets.txt). Such a file could be simply prepared manually, but, in this case we can save ourselves the work and automate the process using a combination of `bcftools` and `awk`:   
 
 ```bash
 bcftools query -l chr1_no_geneflow.vcf.gz | awk '{ if (NR <= 40) {sp=substr($1,1,3); print $1"\t"sp} else {print $1"\tOutgroup";}}' > species_sets.txt
-Dsuite Dtrios -n no_geneflow -t simulated_tree_no_geneflow.nwk chr1_no_geneflow.vcf.gz species_sets.txt 
+```
+Something similar to the above can be useful in many cases, depending on how the individuals are named in your VCF file. 
+
+* Then, to familiarize yourself with Dsuite, simply start the program with the command `Dsuite`. When you hit enter, you should see a help text that informs you about three different commands named "Dtrios", "DtriosCombine", and "Dinvestigate", with short descriptions of what these commands do. Of the three commands, we are going to focus on Dtrios, which is the one that calculates the *D*-statistic for all possible species trios.
+
+* To learn more about the command, type `Dsuite Dtrios` and hit enter. The help text should then inform you about how to run this command. There are numerous options, but the defaults are approprite for a vast majority of use-cases.  All we are going to do is to provide a run name using the `-n` option, the correct tree using the `-t` option, and use the `-c` option to indicate that this is the entire dataset and, therefore, we don't need intermediate files for "DtriosCombine". or to specify a tree file. For now, there is no need to specify any of these options, but we'll look at the tree-file option later in this tutorial. we run Dsuite as follows:
+
+```bash
+Dsuite Dtrios -c -n no_geneflow -t simulated_tree_no_geneflow.nwk chr1_no_geneflow.vcf.gz species_sets.txt 
+```
+The run takes about 50 minutes. Therefore, we have run it already and put the output files for you in the [data](data/) folder. The output files are [species_sets_no_geneflow_tree.txt](data/species_sets_no_geneflow_tree.txt) where trios are arranged according to the tree, [species_sets_no_geneflow_BBAA.txt](data/species_sets_no_geneflow_BBAA.txt) where trios are arranged so that P1 and P2 always share the most derived alleles, and [species_sets_no_geneflow_Dmin.txt](data/species_sets_no_geneflow_Dmin.txt) where trios are arranged so that the D statistic is minimised - providing a kind of "lower bound" on gene-flow statistics in cases where the true relationships between species are not clear, as illustrated for example in [this paper](https://doi.org/10.1038/s41559-018-0717-x) (Fig. 2a). In this case, we of course know the true tree, and, therefore, the correct trio arrangments. Let's first see how the other outputs differ from the  `tree.txt` file:
+
+```bash
+diff species_sets_no_geneflow_BBAA.txt species_sets_no_geneflow_no_geneflow_tree.txt
+922c922
+< S08    S10    S09    0.0170473    1.22568    0.110159    0.00133751    6829.88    6764    6537.25
+---
+> S09    S10    S08    0.0218914    1.73239    0.0416019    0.00172128    6764    6829.88    6537.25
+```
+We see that there is one difference. Because of incomplete lineage sorting being a stochastic (random) process, we see that  `S08` and  `S10` share more derived alleles than `S09` and  `S10`, which are sister species in the input tree. If you look again at the input tree, you will see that  the branching order between `S08`,  `S09` and  `S10` is very rapid, it is almost a polytomy.
+
+A similar exercise with the `_Dmin.txt` file reveals nine differences. If you look closer into what they are, it becomes clear that they do not make much sense. The correct trio arrengements in all these cases are very clear.
+```bash
+diff species_sets_no_geneflow_Dmin.txt species_sets_no_geneflow_no_geneflow_tree.txt
 ```
 
+List some of the highest D stats.... then discuss that p-values are low...
+
+And finally show the ruby plot from Micha - should be pretty white...
+
+
+
+
+
+
 ## Identifying introgression with *D*-statistics
-		
- In addition to the three species P1, P2, and P3, the ABBA-BABA test requires a fourth species, "P4", which should be a common outgroup to P1, P2, and P3, and only serves to determine which allele is the ancestral one and which is derived; the ancestral allele is then labelled "A" and the derived allele of a bi-allelic SNP is labelled "B". In the simplest case in which only a single haploid sequence is sampled from each of the four species, "ABBA sites" are those where species P2 and P3 share the derived allele B while P1 retains the ancestral allele A. Similarly "BABA sites" are those where P1 and P3 share the derived allele B while P2 retains the ancestral allele A. The *D*-statistic is then defined as the difference between the counts of ABBA sites and BABA sites relative to the sum of both types of sites:
-
-*D* = (*C*<sub>ABBA</sub> - *C*<sub>BABA</sub>) / (*C*<sub>ABBA</sub> + *C*<sub>BABA</sub>)
-
-This statistic is expected to be 0 if no introgression occurred, to be 1 in the extreme case of no incomplete lineage sorting but introgression between P2 and P3, and -1 if incomplete lineage sorting is absent but introgression occurred between P1 and P3. By convention, however, P1 and P2 are swapped if P1 turns out to be closer to P3 than P2 is to P3, so that the *D*-statistic remains within the interval [0, 1] and the number of ABBA sites is always greater than the number of BABA sites. When the dataset includes more than a single sequence per species, the calculation of the *D*-statistic is slightly more complicated and involves weighting each site for the ABBA or BABA pattern based on the allele frequencies observed in each species.
 
 When more than four species are included in the dataset, obtaining *D*-statistics has long been a bit tedious because no program was available to calculate them automatically for all possible combinations of species in a VCF input file. This gap the available methodology, however, has recently been filled with the program Dsuite by Milan Malinsky ([Malinsky 2019](https://www.biorxiv.org/content/10.1101/634477v1)), which will be used in this tutorial. To calculate *D*-statistics not just for one specific quartet but comprehensively for sets of species in a VCF file, Dsuite keeps the outgroup (which is specified by the user) fixed, but tests all possible ways in which three species can be selected from the ingroup species and placed into the positions P1, P2, and P3. In addition to the *D*-statistic, Dsuite allows the calculation of a p-value based on jackknifing for the null hypothesis that the *D*-statistic is 0, which means that the absence of introgression can be rejected if the p-value is below the significance level.
 
@@ -240,9 +269,7 @@ In this part of the tutorial, we are going to calculate *D*-statistics with Dsui
 
 	(note that the file with the same name written in tutorial [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md) should not be re-used here as its content differs).
 
-* To familiarize yourself with Dsuite, simply start the program with the command `Dsuite`. When you hit enter, you should see a help text that informs you about three different commands named "Dtrios", "DtriosCombine", and "Dinvestigate", with short descriptions of what these commands do. Of the three commands, we are going to focus on Dtrios, which is the one that calculates the *D*-statistic for all possible species trios.
 
-* To learn more about the command, type `Dsuite Dtrios` and hit enter. The help text should then inform you about how to run this command. You'll see that the available options allow to limit the genomic region used in the analysis, to specify a window size for significance testing based on jackknifing, or to specify a tree file. For now, there is no need to specify any of these options, but we'll look at the tree-file option later in this tutorial.
 
 * As shown at the top of the Dsuite help text, the program can be run with `Dsuite Dtrios [OPTIONS] INPUT_FILE.vcf SETS.txt`. In our case, the input file is [`NC_031969.f5.sub1.vcf.gz`](data/NC_031969.f5.sub1.vcf.gz) and the sets files is the table with sample and species IDs written earlier to [`samples.txt`](res/samples.txt). Thus, start the Dsuite analysis of our dataset with
 
