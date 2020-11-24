@@ -16,6 +16,8 @@ Patterson's D and related statistics have also been used to identify introgresse
 * [1.1 Simulating phylogenomic data with msprime](#simulation)
 * [1.2 Reconstructing phylogenies from simulated data](#ReconstructingFromSimulation)
 * [1.3 Testing for gene-flow in simulated data ](#TestingInSimulations)
+* [1.3.2 Do we find geneflow in data simulated without geneflow?](#TestingWithoutGeneflow)
+* [1.3.2 Do we find geneflow in data simulated with geneflow?](#TestingWithGeneflow)
 * [Ancestry painting](#painting)
 
 <!--- * [Dataset](#dataset)-->
@@ -205,6 +207,7 @@ Something similar to the above can be useful in many cases, depending on how the
 
 * To learn more about the command, type `Dsuite Dtrios` and hit enter. The help text should then inform you about how to run this command. There are numerous options, but the defaults are approprite for a vast majority of use-cases.  All we are going to do is to provide a run name using the `-n` option, the correct tree using the `-t` option, and use the `-c` option to indicate that this is the entire dataset and, therefore, we don't need intermediate files for "DtriosCombine". 
 
+<a name="TestingWithoutGeneflow"></a>
 #### 1.3.1 Do we find geneflow in data simulated without geneflow?
 
 We run Dsuite for the dataset without gene-flow as follows:
@@ -316,7 +319,7 @@ ruby plot_f4ratio.rb species_sets_no_geneflow_BBAA.txt plot_order.txt 0.7 specie
 
 
 
-
+<a name="TestingWithGeneflow"></a>
 #### 1.3.2 Do we find geneflow in data simulated with geneflow?
 
 
