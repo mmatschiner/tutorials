@@ -104,7 +104,7 @@ names_ordered.size.times do |x|
 			asymmetry_table_line_ary = l.split
 			p2 = asymmetry_table_line_ary[1]
 			p3 = asymmetry_table_line_ary[2]
-			d_value = asymmetry_table_line_ary[3].to_f
+			d_value = asymmetry_table_line_ary[6].to_f
                         if asymmetry_table_line_ary[5] == "nan"
 				p_value = 1.0
 			else
@@ -231,7 +231,7 @@ legend_label_shift3 = 2
 legend_label_shift4 = 2
 x = legend_x + 0.5 * legend_width
 y = legend_y - legend_label_shift1
-texts << Text.new(x,y,font,legend_font_size,"normal","black","D","middle","none")
+texts << Text.new(x,y,font,legend_font_size,"normal","black","f4-ratio","middle","none")
 y = legend_y - legend_label_shift2
 ((max_d_value*10).to_i+1).times do |z|
 	label = z/10.0

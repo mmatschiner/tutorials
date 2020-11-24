@@ -203,7 +203,30 @@ Something similar to the above can be useful in many cases, depending on how the
 ```bash
 Dsuite Dtrios -c -n no_geneflow -t simulated_tree_no_geneflow.nwk chr1_no_geneflow.vcf.gz species_sets.txt 
 ```
-The run takes about 50 minutes. Therefore, we have run it already and put the output files for you in the [data](data/) folder. The output files are [species_sets_no_geneflow_tree.txt](data/species_sets_no_geneflow_tree.txt) where trios are arranged according to the tree, [species_sets_no_geneflow_BBAA.txt](data/species_sets_no_geneflow_BBAA.txt) where trios are arranged so that P1 and P2 always share the most derived alleles, and [species_sets_no_geneflow_Dmin.txt](data/species_sets_no_geneflow_Dmin.txt) where trios are arranged so that the D statistic is minimised - providing a kind of "lower bound" on gene-flow statistics in cases where the true relationships between species are not clear, as illustrated for example in [this paper](https://doi.org/10.1038/s41559-018-0717-x) (Fig. 2a). In this case, we of course know the true tree, and, therefore, the correct trio arrangments. Let's first see how the other outputs differ from the  `tree.txt` file:
+The run takes about 50 minutes. Therefore, we already put the output files for you in the [data](data/) folder.  Let's have a look at the first few lines of  [`species_sets_no_geneflow_BBAA.txt`](data/species_sets_no_geneflow_BBAA.txt):
+
+```bash
+head species_sets_no_geneflow_BBAA.txt
+P1    P2    P3    Dstatistic    Z-score    p-value    f4-ratio    BBAA    ABBA    BABA
+S01    S02    S00    0.00645161    0.228337    0.409692    7.6296e-05    40635    936    924
+S01    S00    S03    0.0299321    1.08142    0.139754    0.000543936    28841    1724.75    1624.5
+S01    S00    S04    0.0072971    0.308069    0.379015    0.00013279    28889.2    1691    1666.5
+S01    S00    S05    0.00312175    0.133303    0.446977    5.6877e-05    28861.2    1687    1676.5
+S01    S00    S06    0.00312175    0.135082    0.446273    5.69626e-05    28876.5    1687    1676.5
+S01    S00    S07    0.00490269    0.210116    0.416789    8.92693e-05    28871.5    1691    1674.5
+S00    S01    S08    0.0613992    1.7814    0.0374237    0.000460113    45178.5    806    712.75
+S00    S01    S09    0.0704225    2.17799    0.0147034    0.000530632    45323    817    709.5
+S00    S01    S10    0.07982    2.25263    0.0121413    0.000589494    45131.8    810    690.25
+```
+
+Each row shows the results for the analysis of one trio. For example in the first row, species *S01* was used as P1, *S02* was considered as P2, and *S00* was placed in the position of P3. Then we see the D statistic, associated Zscore and p-value, the f4-ratio estimating admixture proportion and then the counts of BBAA sites (where  `S01` and  `S02` share the derived allele) and then the counts of ABBA and BABA sites. As you can see, ABBA is always more than BABA and the D statistic is always positive because Dsuite orients P1 and P2 in this way. Since these results are for coalescent simulations without gene-flow, the ABBA and BABA sites arise purely through incomplete lineage sorting and the difference between them is purely random - therefore, even though the D statistic can be quite high (e.g. up to 8% on the last line), this is not a result of gene flow. 
+
+**Question 1:** Can you tell why the BBAA, ABBA, and BABA numbers are not integer numbers but have decimal positions? [(see answer)](#q1)
+**Question 2:** How many different trios are listed in the file? Are these all possible (unordered) trios? [(see answer)](#q2)
+
+In [`species_sets_no_geneflow_BBAA.txt`](data/species_sets_no_geneflow_BBAA.txt), trios are arranged so that P1 and P2 always share the most derived alleles (BBAA is always the highest number). There are two other output files: one with the `_tree.txt` suffix: [`species_sets_no_geneflow_tree.txt`](data/species_sets_no_geneflow_tree.txt) where trios are arranged according to the tree we gave Dsuite, and a file with the `_Dmin.txt` suffix [`species_sets_no_geneflow_Dmin.txt`](data/species_sets_no_geneflow_Dmin.txt) where trios are arranged so that the D statistic is minimised - providing a kind of "lower bound" on gene-flow statistics. This can be useful in cases where the true relationships between species are not clear, as illustrated for example in [this paper](https://doi.org/10.1038/s41559-018-0717-x) (Fig. 2a). 
+
+Let's first see how the other outputs differ from the  `_tree.txt` file, which has the correct trio arrangments. :
 
 ```bash
 diff species_sets_no_geneflow_BBAA.txt species_sets_no_geneflow_no_geneflow_tree.txt
@@ -212,12 +235,23 @@ diff species_sets_no_geneflow_BBAA.txt species_sets_no_geneflow_no_geneflow_tree
 ---
 > S09    S10    S08    0.0218914    1.73239    0.0416019    0.00172128    6764    6829.88    6537.25
 ```
-We see that there is one difference. Because of incomplete lineage sorting being a stochastic (random) process, we see that  `S08` and  `S10` share more derived alleles than `S09` and  `S10`, which are sister species in the input tree. If you look again at the input tree, you will see that  the branching order between `S08`,  `S09` and  `S10` is very rapid, it is almost a polytomy.
+There is one difference in the `_BBAA.txt` ile. Because of incomplete lineage sorting being a stochastic (random) process, we see that  `S08` and  `S10` share more derived alleles than `S09` and  `S10`, which are sister species in the input tree. If you look again at the input tree, you will see that  the branching order between `S08`,  `S09` and  `S10` is very rapid, it is almost a polytomy.
 
-A similar exercise with the `_Dmin.txt` file reveals nine differences. If you look closer into what they are, it becomes clear that they do not make much sense. The correct trio arrengements in all these cases are very clear.
+A similar exercise with the `_Dmin.txt`, which minimises the Dstatistic, reveals nine differences. However, the correct trio arrangements in all these cases are very clear.
+
 ```bash
 diff species_sets_no_geneflow_Dmin.txt species_sets_no_geneflow_no_geneflow_tree.txt
 ```
+
+Next, let's look at the results in more detail. I like to do my statistical analysis in R. We load the `_BBAA.txt` file and first look at the distribution of D values:  
+
+```R
+D_BBAA <- read.table("species_sets_no_geneflow_BBAA.txt",as.is=T,header=T)
+plot(D_BBAA$Dstatistic, ylab="D",xlab="trio number")
+```
+
+<p align="center"><img src="img/no_geneflow_Dvals.png" alt="DstatNoGF\*" width="600"></p>
+
 
 List some of the highest D stats.... then discuss that p-values are low...
 
@@ -284,32 +318,6 @@ In this part of the tutorial, we are going to calculate *D*-statistics with Dsui
 		samples__combine.txt
 		samples__combine_stderr.txt
 		
-* Next, have a look at the content of file [`samples__combine.txt`](res/samples__combine.txt), for example using the `less` command. You'll see that the first part of this files has the following content:
-
-		altfas  neobri  neocan  1378.2  13479.6 4066.95
-		altfas  neobri  neochi  2281.67 2322.45 8154.16
-		altfas  neobri  neocra  1610.98 1495.17 14174.6
-		altfas  neobri  neogra  1618.4  1559.8  14312.1
-		altfas  neobri  neohel  1549.77 1416.71 14741.8
-		altfas  neobri  neomar  1980.94 1728.7  13168.8
-		altfas  neobri  neooli  1668.03 1460.84 14734.4
-		altfas  neobri  neopul  1279.66 1164.73 14283.7
-		altfas  neobri  neosav  1729.49 1616.15 12626.2
-		altfas  neobri  neowal  2525.99 2440.28 8572.34
-		altfas  neobri  telvit  2581.12 2688.36 8258.12
-		altfas  neocan  neochi  12306.4 1310.06 3745.6
-		altfas  neocan  neocra  14200.7 1395.33 4097.46
-		altfas  neocan  neogra  14825.3 1436.9  4286.4
-		altfas  neocan  neohel  14063.7 1361.83 4102.08
-		altfas  neocan  neomar  14794.6 1422.08 4181.25
-		altfas  neocan  neooli  14834.4 1408.33 4274.5
-		...
-
-	Here, each row shows the results for the analysis of one trio, and for example in the first row, *Altolamprologus fasciatus* ("altfas") was used as P1, *Neolamprologus brichardi* was considered as P2, and *Neolamprologus cancellatus* was placed in the position of P3. The numbers in the fifth and sixth column of that row then include the count of ABBA sites, *C*<sub>ABBA</sub>, in that trio (where the derived allele is shared by "neobri" and "neocan") and the count of BABA sites, *C*<sub>BABA</sub> (where the derived allele is shared by "altfas" and "neocan"). Note, however, that (perhaps unintuitively) *C*<sub>ABBA</sub> is given in the sixth column whereas *C*<sub>BABA</sub> is in the fifth column. **Question 1:** Can you tell why these numbers are not integer numbers but have decimal positions? [(see answer)](#q1)
-	
-	In addition to the counts of BABA and ABBA sites in columns five and six, the fourth column lists the count of "BBAA" sites, *C*<sub>BBAA</sub>, at which the derived allele is shared by P1 and P2 (thus by "altfas" and "neobri"). **Question 2:** How many different trios are listed in the file? Are these all possible (unordered) trios? [(see answer)](#q2)
-	
-	You may note that in this file all trios are ordered alphabetically; thus, P1 is alphabetically before P2 and P2 is before P3. As described above, however, the ABBA-BABA test is based on the assumption that P1 and P2 are sister species. When calculating the *D*-statistic for a given trio, Dsuite first rearranges the species assigned to P1, P2, and P3 (and as a consequence the counts of ABBA, BABA, and BBAA sites are also rearranged), and this is done separately according to certain rules: 
 	1. In a first set of calculations, all possible rearrangements are tested, and the lowest *D*-statistic, called *D*<sub>min</sub> is reported for each trio. *D*<sub>min</sub> is therefore a conservative estimate of the *D*-statistic in a given trio. This output is written to a file with the ending `__Dmin.txt`.
 	2. The trio is arranged so that P1 and P2 are the two species of the trio that share the largest number of derived sites. In other words, the rearrangement is done so that *C*<sub>BBAA</sub> > *C*<sub>ABBA</sub> and *C*<sub>BBAA</sub> > *C*<sub>BABA</sub>. In addition, P1 and P2 are rotated so that the number of derived sites shared between P2 and P3 is larger than that between P1 and P3. In sum this means that *C*<sub>BBAA</sub> > *C*<sub>ABBA</sub> > *C*<sub>BABA</sub>. The idea behind this type of rearrangement is that the two species that share the largest number of derived sites are most likely the true two sister species in the trio, and thus rightfully placed in the positions P1 and P2. This assumption is expected to hold under certain conditions (e.g. clock-like evolution, absence of homoplasies, absence of introgression, and panmictic ancestral populations), but how reliable it is for real datasets is sometimes difficult to say. *D*-statistics based on this type of rearrangement are written to a file with ending `__BBAA.txt`.
 	3. To tell Dsuite directly which species of a trio should be considered sister species (and thus, which should be assigned to P1 and P2), a tree file that contains all species of the dataset can be provided by the user with option `-t` or `--tree`. The output will then be written to an additional file with ending `__tree.txt`. We will use this option later in the tutorial.
