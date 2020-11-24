@@ -271,7 +271,9 @@ These nine cases arise because there is amost no incomplete lineage sorting amon
 
 <p align="center"><img src="img/no_geneflow_Pvals.png" alt="DstatNoGF-Pvals\*" width="600"></p>
 
-In fact, there are many p values that are &lt;0.05.
+In fact, there are many p values that are &lt;0.05. For those who have a good understanding of statistics this will be not be suprising. This is because [p values are uniformly distributed](https://neuroneurotic.net/2018/10/29/p-values-are-uniformly-distributed-when-the-null-hypothesis-is-true/) when the null hypopthesis is true. Therefore, we expect 5% of the (or 1 in 20) p-values, they will be &lt;0.05. If we did a 1140 tests, we can expect 57 of them to be &lt;0.05. Therefore, any time we conduct a large amount of statistical tests, we should apply a multiple testing correction - commonly used is the Benjamini-Hochberg (BH) correction which controls for the [false discovery rate](https://en.wikipedia.org/wiki/False_discovery_rate).
+
+<p align="center"><img src="img/no_geneflow_correctedPvals.png" alt="DstatNoGF-PvalsCorrected\*" width="600"></p>
 
 
 
