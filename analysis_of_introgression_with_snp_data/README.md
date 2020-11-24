@@ -243,7 +243,7 @@ A similar exercise with the `_Dmin.txt`, which minimises the Dstatistic, reveals
 diff species_sets_no_geneflow_Dmin.txt species_sets_no_geneflow_no_geneflow_tree.txt
 ```
 
-Next, let's look at the results in more detail. I like to do my statistical analysis in R. We load the `_BBAA.txt` file and first look at the distribution of D values:  
+Next, let's look at the results in more detail, for example in [R](https://www.r-project.org). We load the `_BBAA.txt` file and first look at the distribution of D values:  
 
 ```R
 D_BBAA <- read.table("species_sets_no_geneflow_BBAA.txt",as.is=T,header=T)
@@ -251,6 +251,28 @@ plot(D_BBAA$Dstatistic, ylab="D",xlab="trio number")
 ```
 
 <p align="center"><img src="img/no_geneflow_Dvals.png" alt="DstatNoGF\*" width="600"></p>
+
+There are some very high D statistics. In fact, the D statistics for 9 trios are &gt;0.7, which is extremely high. So how is this possible in a dataset simulated with no geneflow?
+
+```R
+D_BBAA[which(D_BBAA$Dstatistic > 0.7),]
+     P1  P2  P3 Dstatistic Z.score    p.value    f4.ratio   BBAA ABBA BABA
+171 S18 S19 S00   1.000000 0.00000        NaN 7.42372e-06 179922  1.5    0
+324 S18 S19 S01   1.000000 0.00000        NaN 7.42743e-06 179814  1.5    0
+460 S18 S19 S02   1.000000 0.00000        NaN 7.39892e-06 179800  1.5    0
+580 S18 S19 S03   1.000000 0.00000        NaN 7.43931e-06 179778  1.5    0
+685 S18 S19 S04   1.000000 0.00000        NaN 7.44097e-06 179765  1.5    0
+690 S06 S05 S11   0.833333 2.91667 0.00176897 4.94462e-05 138120 11.0    1
+776 S18 S19 S05   1.000000 0.00000        NaN 7.43290e-06 179768  1.5    0
+854 S18 S19 S06   1.000000 0.00000        NaN 7.44536e-06 179777  1.5    0
+920 S18 S19 S07   1.000000 0.00000        NaN 7.42259e-06 179771  1.5    0
+```
+These nine cases arise because there is amost no incomplete lineage sorting among these trios almost all sites are `BBAA` - e.g. 179922 sites for the first trio, while the count for `ABBA` is only 1.5 and for `BABA` it is 0 . The D statistic is calculated as D = (ABBA-BABA)/(ABBA+BABA), which for the first trio would be D = (1.5-0)/(1.5+0)=1. So, the lesson here is that the D statistic is very sensitive to random fluctuations when there is a small number of ABBA and BABA sites. One certainly cannot take the D value seriously unless it is supported by a statistical test suggesting that the D is significanly different from 0. In the most extreme cases above, the p-value could not even be calculated, becuase there were so few sites. Those definitely do not represent geneflow. But in one case we see a p value of 0.0018. Well, that looks significant, if one considers for example the traditional 0.05 cutoff. So, again, how is this possible in a dataset simulated with no geneflow?
+
+<p align="center"><img src="img/no_geneflow_Pvals.png" alt="DstatNoGF-Pvals\*" width="600"></p>
+
+In fact, there are many p values that are &lt;0.05.
+
 
 
 List some of the highest D stats.... then discuss that p-values are low...
