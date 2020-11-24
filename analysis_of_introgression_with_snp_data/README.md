@@ -13,6 +13,9 @@ Patterson's D and related statistics have also been used to identify introgresse
 * [Outline](#outline)
 * [Requirements](#requirements)
 * [1. Inferring the species-tree and gene-flow from a simulated dataset](#simulation)
+* [1.1 Simulating phylogenomic data with msprime](#simulation)
+* [1.2 Reconstructing phylogenies from simulated data](#ReconstructingFromSimulation)
+* [1.3 Testing for gene-flow in simulated data ](#TestingInSimulations)
 * [Ancestry painting](#painting)
 
 <!--- * [Dataset](#dataset)-->
@@ -127,6 +130,7 @@ We have simulated SNP data for 20 species in the VCF format, two individuals fro
   
 </details>
 
+<a name="ReconstructingFromSimulation"></a>
 ### 1.2 Reconstructing phylogenies from simulated data
 
 Now we apply the phylogentic (or phylogenomic) approaches that we have learned to the simulated SNP data to see if we can recover the phylogentic trees that were used as input to the simulations. As in the tutorial on [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md), we are going to use algorithms implemented in [PAUP\*](http://phylosolutions.com/paup-test/). 
@@ -178,7 +182,8 @@ As you can see, the topology is in fact different from the Neighbor Joining, but
 
 </details>
 
-### 1.3 Testing for gene-flow in simulated data
+<a name="TestingInSimulations"></a>
+### 1.3 Testing for gene-flow in simulated data 
 
 Under incomplete lineage sorting alone, two sister species are expected to share about the same proportion of derived alleles with a third closely related species. Thus, if species "P1" and "P2" are sisters and "P3" is a closely related species, then the number of derived alleles shared by P1 and P3 but not P2 and the number of derived alleles that is shared by P2 and P3 but not P1 should be approximately similar. In contrast, if hybridization leads to introgression between species P3 and one out the two species P1 and P2, then P3 should share more derived alleles with that species than it does with the other one, leading to asymmetry in the sharing of derived alleles. These expectations are the basis for the so-called "ABBA-BABA test" (first described in the Supporting Material of [Green et al. 2010](http://science.sciencemag.org/content/328/5979/710.full)) that quantifies support for introgression by the *D*-statistic. Below is an illustration of the basic principle. 
 
@@ -198,7 +203,11 @@ Something similar to the above can be useful in many cases, depending on how the
 
 * Then, to familiarize yourself with Dsuite, simply start the program with the command `Dsuite`. When you hit enter, you should see a help text that informs you about three different commands named "Dtrios", "DtriosCombine", and "Dinvestigate", with short descriptions of what these commands do. Of the three commands, we are going to focus on Dtrios, which is the one that calculates the *D*-statistic for all possible species trios.
 
-* To learn more about the command, type `Dsuite Dtrios` and hit enter. The help text should then inform you about how to run this command. There are numerous options, but the defaults are approprite for a vast majority of use-cases.  All we are going to do is to provide a run name using the `-n` option, the correct tree using the `-t` option, and use the `-c` option to indicate that this is the entire dataset and, therefore, we don't need intermediate files for "DtriosCombine". or to specify a tree file. For now, there is no need to specify any of these options, but we'll look at the tree-file option later in this tutorial. we run Dsuite as follows:
+* To learn more about the command, type `Dsuite Dtrios` and hit enter. The help text should then inform you about how to run this command. There are numerous options, but the defaults are approprite for a vast majority of use-cases.  All we are going to do is to provide a run name using the `-n` option, the correct tree using the `-t` option, and use the `-c` option to indicate that this is the entire dataset and, therefore, we don't need intermediate files for "DtriosCombine". 
+
+### 1.3.1 Do we find geneflow in data simulated without geneflow?
+
+We run Dsuite for the dataset without gene-flow as follows:
 
 ```bash
 Dsuite Dtrios -c -n no_geneflow -t simulated_tree_no_geneflow.nwk chr1_no_geneflow.vcf.gz species_sets.txt 
@@ -269,20 +278,46 @@ D_BBAA[which(D_BBAA$Dstatistic > 0.7),]
 ```
 These nine cases arise because there is amost no incomplete lineage sorting among these trios almost all sites are `BBAA` - e.g. 179922 sites for the first trio, while the count for `ABBA` is only 1.5 and for `BABA` it is 0 . The D statistic is calculated as D = (ABBA-BABA)/(ABBA+BABA), which for the first trio would be D = (1.5-0)/(1.5+0)=1. So, the lesson here is that the D statistic is very sensitive to random fluctuations when there is a small number of ABBA and BABA sites. One certainly cannot take the D value seriously unless it is supported by a statistical test suggesting that the D is significanly different from 0. In the most extreme cases above, the p-value could not even be calculated, becuase there were so few sites. Those definitely do not represent geneflow. But in one case we see a p value of 0.0018. Well, that looks significant, if one considers for example the traditional 0.05 cutoff. So, again, how is this possible in a dataset simulated with no geneflow?
 
+```R
+plot(D_BBAA$p.value, ylab="p value",xlab="trio number",ylim=c(0,0.05))
+```
 <p align="center"><img src="img/no_geneflow_Pvals.png" alt="DstatNoGF-Pvals\*" width="600"></p>
 
 In fact, there are many p values that are &lt;0.05. For those who have a good understanding of statistics this will be not be suprising. This is because [p values are uniformly distributed](https://neuroneurotic.net/2018/10/29/p-values-are-uniformly-distributed-when-the-null-hypothesis-is-true/) when the null hypopthesis is true. Therefore, we expect 5% of the (or 1 in 20) p-values, they will be &lt;0.05. If we did a 1140 tests, we can expect 57 of them to be &lt;0.05. Therefore, any time we conduct a large amount of statistical tests, we should apply a multiple testing correction - commonly used is the Benjamini-Hochberg (BH) correction which controls for the [false discovery rate](https://en.wikipedia.org/wiki/False_discovery_rate).
 
+```R
+plot(p.adjust(D_BBAA$p.value,method="BH"), ylab="p value",xlab="trio number",ylim=c(0,0.05))
+```
 <p align="center"><img src="img/no_geneflow_correctedPvals.png" alt="DstatNoGF-PvalsCorrected\*" width="600"></p>
 
+However, even after applying the BH correction there are three p-values which look significant. These are all false discoveries. Here comes an important scientific lesson - that even if we apply statistical tests correctly, seeing a p-value below 0.05 is not a proof that the null hypothesis is false. All hypothesis testing has [false positives and false negatives](https://en.wikipedia.org/wiki/Type_I_and_type_II_errors). It may be helpful to focus less on statistical testing and aim for a more nuanced understanding of the dataset, as argued for example in this [Nature commentary](https://www.nature.com/articles/d41586-019-00857-9). 
+
+Therefore, we should also plot the f4-ratio, which estimates the proportion of genome affected by geneflow. It turns out that this is perhaps the most reliable - all the f4-ratio values are tiny, as they should be for a dataset without geneflow.  
+
+```R
+plot(D_BBAA$f4.ratio, ylab="f4-ratio",xlab="trio number", ylim=c(0,1))
+```
+<p align="center"><img src="img/no_geneflow_f4-ratios.png" alt="DstatF4ratio\*" width="600"></p>
+
+Finally, we use visualisation heatmap in which the species in positions P2 and P3 are sorted on the horizontal and vertical axes, and the color of the corresponding heatmap cell indicates the most significant *D*-statistic found between these two species, across all possible species in P1. To prepare this plot, we need to prepare a file that lists the order in which the P2 and P3 species should be plotted along the heatmap axes. The file should look like  [`plot_order.txt`](data/plot_order.txt). You could prepare this file manually, or below is a programmatic way: 
+
+```bash
+cut -f 2 species_sets.txt | uniq | head -n 20 > plot_order.txt
+```
+
+Then make the plots using the scripts [`plot_d.rb`](src/plot_d.rb) and [`plot_f4ratio.rb`](src/plot_f4ratio.rb). 
+
+```bash
+ruby plot_d.rb species_sets_no_geneflow_BBAA.txt plot_order.txt 0.7 species_sets_no_geneflow_BBAA_D.svg
+ruby plot_f4ratio.rb species_sets_no_geneflow_BBAA.txt plot_order.txt 0.7 species_sets_no_geneflow_BBAA_f4ratio.svg
+```
+
+<p align="center"><img src="img/species_sets_no_geneflow_BBAA_D.png" alt="DstatNoGF-PvalsCorrected\*" width="600"><img src="img/species_sets_no_geneflow_BBAA_f4ratio.png" alt="DstatNoGF-PvalsCorrected\*" width="600"></p>
 
 
-List some of the highest D stats.... then discuss that p-values are low...
-
-And finally show the ruby plot from Micha - should be pretty white...
 
 
-
+### 1.3.2 Do we find geneflow in data simulated with geneflow?
 
 
 
