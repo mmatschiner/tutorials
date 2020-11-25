@@ -312,7 +312,7 @@ Then make the plots using the scripts [`plot_d.rb`](src/plot_d.rb) and [`plot_f4
 
 ```bash
 ruby plot_d.rb species_sets_no_geneflow_BBAA.txt plot_order.txt 0.7 species_sets_no_geneflow_BBAA_D.svg
-ruby plot_f4ratio.rb species_sets_no_geneflow_BBAA.txt plot_order.txt 0.7 species_sets_no_geneflow_BBAA_f4ratio.svg
+ruby plot_f4ratio.rb species_sets_no_geneflow_BBAA.txt plot_order.txt 0.2 species_sets_no_geneflow_BBAA_f4ratio.svg
 ```
 
 <p align="center"><img src="img/species_sets_no_geneflow_BBAA_Dandf4ratio.png" alt="DstatNoGF-PvalsCorrected\*" width="600"></p>
@@ -381,10 +381,36 @@ The scripts [`plot_d.rb`](src/plot_d.rb) and [`plot_f4ratio.rb`](src/plot_f4rati
 
 ```bash
 ruby plot_d.rb species_sets_with_geneflow_BBAA.txt plot_order.txt 0.7 species_sets_with_geneflow_BBAA_D.svg
-ruby plot_f4ratio.rb species_sets_with_geneflow_BBAA.txt plot_order.txt 0.7 species_sets_with_geneflow_BBAA_f4ratio.svg
+ruby plot_f4ratio.rb species_sets_with_geneflow_BBAA.txt plot_order.txt 0.2 species_sets_with_geneflow_BBAA_f4ratio.svg
 ```
 
 <p align="center"><img src="img/species_sets_with_geneflow_BBAA_Dandf4ratio.png" alt="Dvals\*" width="600"></p>
+
+**Question 3:** How informative are the plots above? Can you identify the gene flow events from the plots? [(see answer)](#q3)
+
+As an upgrade on the above plots we developed with Hannes Svardal, the f-branch or fb(C) metric (introduced in [Malinsky et al. (2018)](https://doi.org/10.1038/s41559-018-0717-x). This is designed to disentangle correlated f4-ratio results and, unlike the matrix presentation above, f-branch can assign gene flow to specific, possibly internal, branches on a phylogeny. The f-branch metric builds upon and formalises verbal arguments employed by [Martin et al. (2013)](http://www.genome.org/cgi/doi/10.1101/gr.159426.113), who used these lines of reasoning to assign gene flow to specific internal branches on the phylogeny of Heliconius butterflies. 
+
+The logic of f-branch is illustated in the following figure:
+
+<p align="center"><img src="img/FbranchIllustation.png" alt="\*" width="600"></p>
+
+This is implemented in the `Dsuite Fbranch` subcommand, and the plotting utility, called `dtools.py` is in the utils subfolder of the Dsuite package.
+
+```bash
+Dsuite Fbranch simulated_tree_with_geneflow.nwk species_sets_with_geneflow_tree.txt > species_sets_with_geneflow_Fbranch.txt
+python3 /Users/milanmalinsky/Sanger_work/Dsuite/Dsuite/utils/dtools.py species_sets_with_geneflow_Fbranch.txt simulated_tree_with_geneflow.nwk
+```
+
+The second command creates a file called `fbranch.png`, which is shown below.
+
+<p align="center"><img src="img/fbranch.png" alt="\*" width="600"></p>
+
+**Question 4:** Can you identify the gene flow events clearer here than from the matrix plots above? Is this a good showcase for the f-branch method?  [(see answer)](#q4)
+
+**Question 5:** What happens when you re-run Dsuite with the inferred (wrong) tree from PAUP\*?
+
+**Question 6:** If you exclude species with the strongest f4-ratio of f-branch signals, can you then get a correct phylogeny from PAUP\*?
+
 
 
 ## Identifying introgression with *D*-statistics
