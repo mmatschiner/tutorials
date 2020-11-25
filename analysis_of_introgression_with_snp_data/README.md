@@ -237,8 +237,29 @@ S00    S01    S10    0.07982    2.25263    0.0121413    0.000589494    45131.8  
 
 Each row shows the results for the analysis of one trio. For example in the first row, species *S01* was used as P1, *S02* was considered as P2, and *S00* was placed in the position of P3. Then we see the D statistic, associated Zscore and p-value, the f4-ratio estimating admixture proportion and then the counts of BBAA sites (where  `S01` and  `S02` share the derived allele) and then the counts of ABBA and BABA sites. As you can see, ABBA is always more than BABA and the D statistic is always positive because Dsuite orients P1 and P2 in this way. Since these results are for coalescent simulations without gene-flow, the ABBA and BABA sites arise purely through incomplete lineage sorting and the difference between them is purely random - therefore, even though the D statistic can be quite high (e.g. up to 8% on the last line), this is not a result of gene flow. 
 
-**Question 1:** Can you tell why the BBAA, ABBA, and BABA numbers are not integer numbers but have decimal positions? [(see answer)](#q1)
-**Question 2:** How many different trios are listed in the file? Are these all possible (unordered) trios? [(see answer)](#q2)
+**Question 1:** Can you tell why the BBAA, ABBA, and BABA numbers are not integer numbers but have decimal positions? 
+<details>
+<summary>Click here to see the answer</summary>
+
+Integer counts of ABBA and BABA sites would only be expected if each species would be represented only by a single haploid sequence. With diploid sequences and multiple samples per species, allele frequences are taken into account to weigh the counts of ABBA and BABA sites as described by equations 1a to 1c of the [Dsuite paper](https://doi.org/10.1111/1755-0998.13265).
+</details>
+
+**Question 2:** How many different trios are listed in the file? Are these all possible (unordered) trios? 
+<details>
+<summary>Click here to see the answer</summary>
+
+
+Because each trio is listed on a single row, the number of trios in file [`species_sets_no_geneflow_BBAA.txt`](data/species_sets_no_geneflow_BBAA.txt) is identical to the number of lines in this file. This number can easily be counted using, e.g. the following command:
+
+    cat species_sets_no_geneflow_BBAA.txt | wc -l
+    
+You should see that the file includes 1140 lines and therefore results for 1140 trios. Given that the dataset includes (except the outgroup species) 20 species and 3 of these are required to form a trio, the number of possible trios is 
+
+[20 choose 3](https://en.wikipedia.org/wiki/Binomial_coefficient) = 20! / (3! &times; 17!) = 1140.
+
+(where ! denotes the [factorial function](https://en.wikipedia.org/wiki/Factorial))
+
+</details>
 
 In [`species_sets_no_geneflow_BBAA.txt`](data/species_sets_no_geneflow_BBAA.txt), trios are arranged so that P1 and P2 always share the most derived alleles (BBAA is always the highest number). There are two other output files: one with the `_tree.txt` suffix: [`species_sets_no_geneflow_tree.txt`](data/species_sets_no_geneflow_tree.txt) where trios are arranged according to the tree we gave Dsuite, and a file with the `_Dmin.txt` suffix [`species_sets_no_geneflow_Dmin.txt`](data/species_sets_no_geneflow_Dmin.txt) where trios are arranged so that the D statistic is minimised - providing a kind of "lower bound" on gene-flow statistics. This can be useful in cases where the true relationships between species are not clear, as illustrated for example in [this paper](https://doi.org/10.1038/s41559-018-0717-x) (Fig. 2a). 
 
@@ -439,10 +460,11 @@ Now execute line 8 of the script to plot the f_dM values. Do you see any signal 
 
 To save time, we prepared result files for runs with varying window and step sizes: [`mbuna_deep_Diplotaxodon_localFstats__50_5.txt`](data/mbuna_deep_Diplotaxodon_localFstats__50_5.txt),  [`mbuna_deep_Diplotaxodon_localFstats__50_1.txt`](data/mbuna_deep_Diplotaxodon_localFstats__50_5.txt),  [`mbuna_deep_Diplotaxodon_localFstats__10_1.txt`](data/mbuna_deep_Diplotaxodon_localFstats__10_1.txt), and  [`mbuna_deep_Diplotaxodon_localFstats__2_1.txt`](data/mbuna_deep_Diplotaxodon_localFstats__2_1.txt).
 
-
  They can be plotted with the same R script. Have a look at the results.
 
+**Question 9:** What combination of window size/step seems to have the best resolution? Why is the smallest window so noisy?
 
+**Question 10:** What happens if you plot individual data points, instead of a continuous line? Are the results clearer?
 
 
 ## Identifying introgression with *D*-statistics
@@ -780,41 +802,10 @@ A very simple alternative way of investigating patterns of ancestry in potential
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
-## Answers
-
-<a name="q1"></a>
-
-* **Question 1:** In fact, integer counts of ABBA and BABA sites would only be expected if each species would be represented only by a single haploid sequence. With diploid sequences and multiple samples per species, allele frequences are taken into account to weigh the counts of ABBA and BABA sites as described by equation 1 of Malinsky [(2019](https://www.biorxiv.org/content/10.1101/634477v1)).
-
-
 <a name="q2"></a>
 
-* **Question 2:** Because each trio is listed on a single row, the number of trios in file [`samples__combine.txt`](res/samples__combine.txt) is identical to the number of lines in this file. This number can easily be counted using, e.g. the following command:
 
-		cat samples__combine.txt | wc -l
-		
-	You should see that the file includes 286 lines and therefore results for 286 trios. Given that the dataset includes (except the outgroup species) 13 species and 3 of these are required to form a trio, the number of possible trios is 
 	
-	[13 choose 3](https://en.wikipedia.org/wiki/Binomial_coefficient) = 13! / (3! &times; 10!) = 6227020800 / (6 &times; 3628800) = 286.
-	
-	(where ! denotes the [factorial function](https://en.wikipedia.org/wiki/Factorial))
-	
-	Thus, all possible trios seem to be included in file [`samples__combine.txt`](res/samples__combine.txt).
-	
-
-<a name="q3"></a>
-
-* **Question 3:** *D*-statistics that could be obtained with alternative rearrangements of the trio "altfas", "neocan", and "neobri" are the following:
-	
-	*D* = (13479.6 - 1378.2) / (13479.6 + 1378.2) = 0.814481
-	*D* = (13479.6 - 4066.95) / (13479.6 + 4066.95) = 0.536438
-	
-	Without violating the convention that *C*<sub>ABBA</sub> > *C*<sub>BABA</sub>, ensuring that *D* is positive, no other *D* statistics can be obtained for this trio. Thus, the reported *D*-statistic of 0.493787, even though it is extremely high, is in fact the lowest *D*-statistic possible for this trio.
-	
-
-<a name="q4"></a>
-
-* **Question 4:** Comparing the two files [`samples__BBAA.txt`](res/samples__BBAA.txt) and [`samples__tree.txt`](res/samples__tree.txt), for example using the command `diff samples__BBAA.txt samples__tree.txt` shows some differences. For example, the trio "neobri", "neocan", and "telvit" is arranged so that "neocan" and "telvit" are in the positions of P1 and P2 in [`samples__BBAA.txt`](res/samples__BBAA.txt), but "neobri" and "telvit" are in the same positions in [`samples__tree.txt`](res/samples__tree.txt). Such disagreement can arise when sister species do not share the largest number of derived sites with each other, for example as a result of introgression, ancestral population structure, or variation in substitution rates.
 
 
 <a name="q5"></a>
