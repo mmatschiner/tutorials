@@ -19,14 +19,15 @@ Patterson's D and related statistics have also been used to identify introgresse
 * [1.3.2 Do we find geneflow in data simulated without geneflow?](#TestingWithoutGeneflow)
 * [1.3.2 Do we find geneflow in data simulated with geneflow?](#TestingWithGeneflow)
 * [2. Finding specific introgressed loci - adaptive introgression in Malawi cichlids](#SpecificLoci)
-* [Ancestry painting](#painting)
+* [3. Finding geneflow in a real dataset - Tanganyikan cichlids](#Tanganyika)
+* [4. Ancestry painting](#painting)
 
 <!--- * [Dataset](#dataset)-->
 
 <a name="outline"></a>
 ## Outline
 
-In this tutorial, we are first going to use simulated data to demonstrate that, under gene-flow, some inferred species relationships might not correspond to any real biologial relationships. Then we are going to use [Dsuite](https://doi.org/10.1111/1755-0998.13265), a software package that implements Patterson’s D and related statistics in a way that is straightforward to use and computationally efficient. This will allow us to identify admixed taxa. While exploring Dsuite, we are also going to learn or revise concepts related to application, calculation, and interpretation of the D and of related statistics. Next we apply sliding-window statistics to identify particular introgressed loci in a real dataset of Malawi cichlid fishes. Finally, we look at the same data that was used for species-tree inference with SVDQuartets in tutorial [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md) to ..... 
+In this tutorial, we are first going to use simulated data to demonstrate that, under gene-flow, some inferred species relationships might not correspond to any real biologial relationships. Then we are going to use [Dsuite](https://doi.org/10.1111/1755-0998.13265), a software package that implements Patterson’s D and related statistics in a way that is straightforward to use and computationally efficient. This will allow us to identify admixed taxa. While exploring Dsuite, we are also going to learn or revise concepts related to application, calculation, and interpretation of the D and of related statistics. Next we apply sliding-window statistics to identify particular introgressed loci in a real dataset of Malawi cichlid fishes. Finally, we look at the same data that was used for species-tree inference with SVDQuartets in tutorial [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md) to see if we can reach the same conclusions as a 2016 manuscript which used a more limited dataset with fewer species. 
 
 Students who are interested can also apply ancestry painting to investigate a putatitve case of hybrid species.  
 
@@ -467,7 +468,8 @@ To save time, we prepared result files for runs with varying window and step siz
 **Question 10:** What happens if you plot individual data points, instead of a continuous line? Are the results clearer?
 
 
-## Identifying introgression with *D*-statistics
+<a name="Tanganyika"></a>
+## Finding geneflow in a real dataset - Tanganyikan cichlids
 
 
 In this part of the tutorial, we are going to calculate *D*-statistics with Dsuite to test for introgression among sets of species from our dataset. We will apply these statistics in particular to determine potential introgression into *Neolamprologus cancellatus*, the species that had been excluded from species-tree analyses in tutorials [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md) and [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md) due to its presumed hybrid nature. As mentioned in tutorial [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md), *Neolamprologus cancellatus* ("neocan") is not accepted as a valid species by some authors who speculate that it is a "natural hybrid between *Telmatochromis vittatus* and another species" ([Konings 2015](http://www.cichlidpress.com/books/details/tc3.html)), based on field observations.
@@ -753,7 +755,7 @@ So far we only calculated *D*-statistics across the entire chromosome 5 (the onl
 
 
 <a name="painting"></a>
-## Ancestry painting
+## 4. Ancestry painting
 
 A very simple alternative way of investigating patterns of ancestry in potentially introgressed or hybrid species is to "paint" their chromosomes according to the genotypes carried at sites that are fixed between the presumed parental species. This type of plot, termed "ancestry painting" was used for example by [Fu et al. (2015; Fig. 2)](https://www.nature.com/articles/nature14558) to find blocks of Neanderthal ancestry in an ancient human genome, by [Der Sarkassian et al. (2015; Fig. 4)](https://www.cell.com/current-biology/abstract/S0960-9822(15)01003-9) to investigate the ancestry of Przewalski's horses, by [Runemark et al. (2018; Suppl. Fig. 4)](https://www.nature.com/articles/s41559-017-0437-7) to assess hybridization in sparrows, and by [Barth et al. (2019; Fig. 2)](https://www.biorxiv.org/content/10.1101/635631v1) to identify hybrids in tropical eels.
 
@@ -803,6 +805,7 @@ A very simple alternative way of investigating patterns of ancestry in potential
 	**Question 6:** How can this difference be explained? 
     <details>
     <summary>Click here to see the answer</summary>
+    
  The fact that both *Neolamprologus cancellatus* samples are heterozygous for basically all sites that are differentially fixed in the two parental species can only be explained if both of these samples are in fact first-generation hybrids. If introgression would instead be more ancient and backcrossing (or recombination within the hybrid population) had occurred, we would expect that only certain regions of the chromosome are heterozygous while others should be homozygous for the alleles of one or the other of the two parental species. However, unlike in cases where the genomes have been sequenced of parent-offspring trios, we do not know who the actual parent individuals were. We can guess that the parent individuals were members of the species *Altolamprologus fasciatus* and *Telmatochromis vittatus*, but whether the parental individuals were part of the same population as the sampled individuals or a more distantly related population within these species remains uncertain. 
          </details>
  
