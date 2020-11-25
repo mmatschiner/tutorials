@@ -249,7 +249,7 @@ diff species_sets_no_geneflow_BBAA.txt species_sets_no_geneflow_no_geneflow_tree
 ```
 There is one difference in the `_BBAA.txt` ile. Because of incomplete lineage sorting being a stochastic (random) process, we see that  `S08` and  `S10` share more derived alleles than `S09` and  `S10`, which are sister species in the input tree. If you look again at the input tree, you will see that  the branching order between `S08`,  `S09` and  `S10` is very rapid, it is almost a polytomy.
 
-A similar exercise with the `_Dmin.txt`, which minimises the Dstatistic, reveals nine differences. However, the correct trio arrangements in all these cases are very clear.
+A comparison of the `_tree.txt` file against the `_Dmin.txt`, which minimises the Dstatistic, reveals nine differences. However, the correct trio arrangements in all these cases are very clear.
 
 ```bash
 diff species_sets_no_geneflow_Dmin.txt species_sets_no_geneflow_no_geneflow_tree.txt
@@ -321,6 +321,38 @@ ruby plot_f4ratio.rb species_sets_no_geneflow_BBAA.txt plot_order.txt 0.7 specie
 
 <a name="TestingWithGeneflow"></a>
 #### 1.3.2 Do we find geneflow in data simulated with geneflow?
+
+How do the results for the simulation with geneflow differ from the above? Here we are going to run a similar set of analyses and make comparisons. We run Dsuite for the dataset with gene-flow as follows:
+
+```bash
+Dsuite Dtrios -c -n with_geneflow -t simulated_tree_with_geneflow.nwk with_geneflow.vcf.gz species_sets.txt 
+```
+
+Again, this takes about 50 minutes, so the output files  [`species_sets_with_geneflow_BBAA.txt`](data/species_sets_with_geneflow_BBAA.txt),  [`species_sets_with_geneflow_tree.txt`](data/species_sets_with_geneflow_tree.txt) and [`species_sets_with_geneflow_Dmin.txt`](data/species_sets_with_geneflow_Dmin.txt) are already provided.
+
+Now we find 39 differences between the  `_tree.txt` file and the `_BBAA.txt`, reflecting that, under geneflow, sister species often do not share the most derived alleles. Between  `_tree.txt` file and the `_Dmin.txt` there are 124 differences.
+
+```bash
+diff species_sets_with_geneflow_BBAA.txt species_sets_with_geneflow_tree.txt | grep -c '<'
+diff species_sets_with_geneflow_Dmin.txt species_sets_with_geneflow_tree.txt | grep -c '<'
+```
+
+We can visualise the overlap between these different files using a Venn diagram. For example in R:
+
+```R
+library("VennDiagram")
+D_BBAA <- read.table("species_sets_with_geneflow_BBAA.txt",as.is=T,header=T)
+D_Dmin <- read.table("species_sets_with_geneflow_Dmin.txt",as.is=T,header=T)
+D_tree <- read.table("species_sets_with_geneflow_tree.txt",as.is=T,header=T)
+
+D_BBAA$P123 <- paste(D_BBAA$P1,D_BBAA$P2,D_BBAA$P3,sep="_"); D_Dmin$P123 <- paste(D_Dmin$P1, D_Dmin$P2, D_Dmin$P3,sep="_"); D_tree$P123 <- paste(D_tree$P1, D_tree$P2, D_tree$P3,sep="_")
+
+draw.triple.venn(length(D_BBAA$P123),length(D_Dmin$P123),length(D_tree$P123),length(which(D_BBAA$P123 == D_Dmin$P123)),length(which(D_tree$P123 == D_Dmin$P123)),length(which(D_tree$P123 == D_BBAA$P123)),length(which(D_tree$P123 == D_BBAA$P123 & D_Dmin$P123 == D_BBAA$P123 & D_Dmin$P123 == D_tree$P123)),category = c("BBAA", "Dmin", "tree"), lty = "blank", fill = c("skyblue", "pink1", "darkolivegreen1"))
+```
+
+<p align="center"><img src="img/trippleVenn.png" alt="trippleVenn\*" width="600"></p>
+
+
 
 
 
