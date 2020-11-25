@@ -18,6 +18,7 @@ Patterson's D and related statistics have also been used to identify introgresse
 * [1.3 Testing for gene-flow in simulated data ](#TestingInSimulations)
 * [1.3.2 Do we find geneflow in data simulated without geneflow?](#TestingWithoutGeneflow)
 * [1.3.2 Do we find geneflow in data simulated with geneflow?](#TestingWithGeneflow)
+* [2. Finding specific introgressed loci - adaptive introgression in Malawi cichlids](#SpecificLoci)
 * [Ancestry painting](#painting)
 
 <!--- * [Dataset](#dataset)-->
@@ -80,6 +81,9 @@ The SNP data used in this tutorial is the unfiltered dataset used for species-tr
 * **Dsuite:** The [Dsuite](https://github.com/millanek/Dsuite) program allows the fast calculation of the *D*-statistic from SNP data in VCF format. The program is particularly useful because it automatically calculates the *D*-statistic for all possible species trios, optionally also in a way that the trios are compatible with a user-provided species tree. Instructions for download and installation on Mac OS X and Linux are provided on [https://github.com/millanek/Dsuite](https://github.com/millanek/Dsuite). Installation on Windows is not supported, but Windows users can use the provided output files to learn how to plot and analyze the Dsuite output.
 
 * **FigTree:** The program [FigTree](http://tree.bio.ed.ac.uk/software/figtree/) should already be installed if you followed the tutorials [Bayesian Phylogenetic Inference](../bayesian_phylogeny_inference/README.md), [Phylogenetic Divergence-Time Estimation](../divergence_time_estimation/README.md) or other tutorials. If not, you can download it for Mac OS X, Linux, and Windows from [https://github.com/rambaut/figtree/releases](https://github.com/rambaut/figtree/releases).
+
+* **pypopgen3:** (with dependencies, uncluding msprime) [Pypopgen3](https://github.com/feilchenfeldt/pypopgen3) provides various useful population genetics tools, including, importantly, a wrapper for the msprime program to allow convenient simulations of phylogenomic data.
+
 
 <a name="simulation"></a>
 ## 1. Inferring the species-tree and gene-flow from a simulated dataset
@@ -386,11 +390,11 @@ ruby plot_f4ratio.rb species_sets_with_geneflow_BBAA.txt plot_order.txt 0.2 spec
 
 <p align="center"><img src="img/species_sets_with_geneflow_BBAA_Dandf4ratio.png" alt="Dvals\*" width="600"></p>
 
-**Question 3:** How informative are the plots above? Can you identify the gene flow events from the plots? [(see answer)](#q3)
+**Question 3:** How informative are the plots above? Can you identify the gene flow events from the plots? 
 
 As an upgrade on the above plots we developed with Hannes Svardal, the f-branch or fb(C) metric (introduced in [Malinsky et al. (2018)](https://doi.org/10.1038/s41559-018-0717-x). This is designed to disentangle correlated f4-ratio results and, unlike the matrix presentation above, f-branch can assign gene flow to specific, possibly internal, branches on a phylogeny. The f-branch metric builds upon and formalises verbal arguments employed by [Martin et al. (2013)](http://www.genome.org/cgi/doi/10.1101/gr.159426.113), who used these lines of reasoning to assign gene flow to specific internal branches on the phylogeny of Heliconius butterflies. 
 
-The logic of f-branch is illustated in the following figure:
+The logic of f-branch is illustated in the following figure. The panel (c) provides an example illustrating interdependences between different f4-ratio scores, which can be informative about the timing of introgression. In this example, different choices for the P1 population provide constraints on when the gene flow could have happened. (d) Based on relationships between the f4-ratio results from different four taxon tests, the f-branch, or f<sub>b</sub> statistic, distinguishes between admixture at different time periods, assigning signals to different (possibly internal) branches in the population/species tree
 
 <p align="center"><img src="img/FbranchIllustation.png" alt="\*" width="600"></p>
 
@@ -405,17 +409,45 @@ The second command creates a file called `fbranch.png`, which is shown below.
 
 <p align="center"><img src="img/fbranch.png" alt="\*" width="600"></p>
 
-**Question 4:** Can you identify the gene flow events clearer here than from the matrix plots above? Is this a good showcase for the f-branch method?  [(see answer)](#q4)
+**Question 4:** Can you identify the gene flow events clearer here than from the matrix plots above? Is this a good showcase for the f-branch method?  
 
-**Question 5:** What happens when you re-run Dsuite with the inferred (wrong) tree from PAUP\*?
+**Question 5:** If you exclude species with the strongest f4-ratio of f-branch signals, can you then get a correct phylogeny from PAUP\*?
 
-**Question 6:** If you exclude species with the strongest f4-ratio of f-branch signals, can you then get a correct phylogeny from PAUP\*?
+**Question 6:** What happens when you re-run Dsuite with the inferred (wrong) tree from PAUP\*?
+
+
+<a name="SpecificLoci"></a>
+## 2. Finding specific introgressed loci - adaptive introgression in Malawi cichlids
+
+This exercise is based on analysis from the [Malinsky et al. (2018)](https://doi.org/10.1038/s41559-018-0717-x) manuscript published in Nature Ecol. Evo.. The paper shows that two deep water adapted lineages of cichlids share signatures of selection and very similar haplotypes in two green-sensitive opsin genes (RH2Aβ and RH2B). The genes are located next to each other on scaffold_18. To find out whether these shared signatures are the result of convergent evolution or of adaptive introgression, we used the f_dM statistic. The f_dM is related to Patterson’s D and to the f4-ratio, but is better suited to analyses of sliding genomic windows. The calculation of this statistic is implemented in the program `Dsuite Dinvestigate`.
+
+The data for this exercise are in the [data](data/) folder. It includes the VCF file with variants mapping to the scaffold_18 of the Malawi cichlid reference genome we used at the time - [`scaffold_18.vcf.gz`](data/scaffold_18.vcf.gz). There are also two other files required to run Dinvestigate: the “SETS” file and the “test_trios” file. In this case they are called: [`MalawiSetsFile.txt`](MalawiSetsFile.txt) and [`MalawiTestTriosForInvestigate.txt`]. The “TestTrios” file specifies that we want to investigate the admixture signal between the Diplotaxodon genus and the deep benthic group, compared with the mbuna group. The “SETS” file specifies which individuals belong to these groups. Finally, the command to execute the analysis is:
+
+```bash
+Dsuite Dinvestigate -w 50,25 scaffold_18.vcf.gz MalawiSetsFile.txt MalawiTestTriosForInvestigate.txt
+```
+
+The `-w 50,25` option specifies that the statistics should be averaged over windows of 50 informative SNPs, moving forward by 25 SNPs at each step. The run should take a little under 10 minutes. We suggest you have a tea/coffee break while you wait for the results ;).
+
+**Question 7:**  What are the overall D and f4-ratio (fG) values over the entire scaffold_18? What does this suggest?
+
+The results are output by Dsuite into the file `mbuna_deep_Diplotaxodon_localFstats__50_25.txt`. A little R plotting function [`plotInvestigateResults.R`](src/plotInvestigateResults.R) is prepared for you. Use the script to load in the file you just produced (line 3) and plot the D statistic (line 6).
+
+**Question 8:** Do you see any interesting signal in the D statistic? The opsin genes are located between 4.3Mb and 4.4Mb. Do you see anything interesting there?
+
+Now execute line 8 of the script to plot the f_dM values. Do you see any signal near the opsin coordinates? We also plot the f_d statistic. As you can see, the top end of the plot is the same as for the f_dM, but the f_d is asymmetrical, extending far further into negative values. Finally, we zoom in at the region of the opsin genes (line 12). As you can see, the results look like a single “mountain” extending over 100kb. But there is more structure than that. Perhaps we need to reduce the window or step size to see that.
+
+To save time, we prepared result files for runs with varying window and step sizes. mbuna_deep_Diplotaxodon_localFstats__2_1.txt
+mbuna_deep_Diplotaxodon_localFstats__10_1.txt
+mbuna_deep_Diplotaxodon_localFstats__50_1.txt
+mbuna_deep_Diplotaxodon_localFstats__50_5.txt
+ They can be plotted with the same R script. Have a look at the results.
+
 
 
 
 ## Identifying introgression with *D*-statistics
 
-When more than four species are included in the dataset, obtaining *D*-statistics has long been a bit tedious because no program was available to calculate them automatically for all possible combinations of species in a VCF input file. This gap the available methodology, however, has recently been filled with the program Dsuite by Milan Malinsky ([Malinsky 2019](https://www.biorxiv.org/content/10.1101/634477v1)), which will be used in this tutorial. To calculate *D*-statistics not just for one specific quartet but comprehensively for sets of species in a VCF file, Dsuite keeps the outgroup (which is specified by the user) fixed, but tests all possible ways in which three species can be selected from the ingroup species and placed into the positions P1, P2, and P3. In addition to the *D*-statistic, Dsuite allows the calculation of a p-value based on jackknifing for the null hypothesis that the *D*-statistic is 0, which means that the absence of introgression can be rejected if the p-value is below the significance level.
 
 In this part of the tutorial, we are going to calculate *D*-statistics with Dsuite to test for introgression among sets of species from our dataset. We will apply these statistics in particular to determine potential introgression into *Neolamprologus cancellatus*, the species that had been excluded from species-tree analyses in tutorials [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md) and [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md) due to its presumed hybrid nature. As mentioned in tutorial [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md), *Neolamprologus cancellatus* ("neocan") is not accepted as a valid species by some authors who speculate that it is a "natural hybrid between *Telmatochromis vittatus* and another species" ([Konings 2015](http://www.cichlidpress.com/books/details/tc3.html)), based on field observations.
 
