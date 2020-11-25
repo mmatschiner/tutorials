@@ -361,7 +361,7 @@ plot(D_BBAA$f4.ratio, ylab="f4-ratio",xlab="trio number", ylim=c(0,0.2))
 ```
 
 <details>
-<summary>Click here to see the resulting plots:</summary>
+<summary>Click here to see the resulting R plots</summary>
 
 <p align="center"><img src="img/geneflow_Dvals.png" alt="Dvals\*" width="600"></p>
 <p align="center"><img src="img/geneflow_correctedPvals.png" alt="pvals\*" width="600"></p>
@@ -372,16 +372,19 @@ plot(D_BBAA$f4.ratio, ylab="f4-ratio",xlab="trio number", ylim=c(0,0.2))
 <p>
 <img align="left" src="img/simulated_tree_with_geneflow.png" width="200"> 
 
-The statistics are markedly different for the no-geneflow scenario. The number of D statistics &gt;0.7 here is 85 (compared with 9 above) and very many have significant p values - even after FDR correction, we have p<0.05 for whopping 671 trios. Finally, the f4-ratios are also elevated, up to almost 15% in some cases.  
+As you can see if you click above, the distributions of the statistics are markedly different when compared against the no-geneflow scenario. The number of D statistics &gt;0.7 here is 85 (compared with 9 under no-geneflow) and very many trios now have significant p values - even after FDR correction, we have p&lt;0.05 for whopping 671 trios. Finally, the f4-ratios are also elevated, up to almost 15% in some cases.  
 
 To remind ourselves, the simulated tree and geneflow events are shown on the left. The 15% f4-ratios estimates correspond reasonably well with the strength of the geneflow events that we simulated (in the region of 8% to 18%). However, we simulated only five geneflow events and have 671 significant p values and 138 f4-ratio values above 3%. This is because the test statistics are correlated when trios share an (internal) branch in the overall population or species tree. Therefore, a system of all possible four taxon tests across a data set can be difficult to interpret. In any case (and with any methods) pinpointing specific introgression events in data sets with tens or hundreds of populations or species remains challenging - especially when genetic data is all the evidence we have.  
 
 The scripts [`plot_d.rb`](src/plot_d.rb) and [`plot_f4ratio.rb`](src/plot_f4ratio.rb) were originally developed to help with such interpretation, and can still be useful. Because they take the maximum D or f4-ratio value between species in the P2 and P3 positions, across all possible species in P1, the plot deals with some of the correlated signals and redundancy in the data by focusing on the overall support for geneflow between pairs of species or their ancestors, which could have happened at any time in the past since the species in P2 and P3 positions diverged from each other.
-
-
 </p>
 
+```bash
+ruby plot_d.rb species_sets_with_geneflow_BBAA.txt plot_order.txt 0.7 species_sets_with_geneflow_BBAA_D.svg
+ruby plot_f4ratio.rb species_sets_with_geneflow_BBAA.txt plot_order.txt 0.7 species_sets_with_geneflow_BBAA_f4ratio.svg
+```
 
+<p align="center"><img src="img/species_sets_with_geneflow_BBAA_Dandf4ratio.png" alt="Dvals\*" width="600"></p>
 
 
 ## Identifying introgression with *D*-statistics
