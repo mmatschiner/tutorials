@@ -421,7 +421,7 @@ The second command creates a file called `fbranch.png`, which is shown below.
 
 This exercise is based on analysis from the [Malinsky et al. (2018)](https://doi.org/10.1038/s41559-018-0717-x) manuscript published in Nature Ecol. Evo.. The paper shows that two deep water adapted lineages of cichlids share signatures of selection and very similar haplotypes in two green-sensitive opsin genes (RH2Aβ and RH2B). The genes are located next to each other on scaffold_18. To find out whether these shared signatures are the result of convergent evolution or of adaptive introgression, we used the f_dM statistic. The f_dM is related to Patterson’s D and to the f4-ratio, but is better suited to analyses of sliding genomic windows. The calculation of this statistic is implemented in the program `Dsuite Dinvestigate`.
 
-The data for this exercise are in the [data](data/) folder. It includes the VCF file with variants mapping to the scaffold_18 of the Malawi cichlid reference genome we used at the time - [`scaffold_18.vcf.gz`](data/scaffold_18.vcf.gz). There are also two other files required to run Dinvestigate: the “SETS” file and the “test_trios” file. In this case they are called: [`MalawiSetsFile.txt`](MalawiSetsFile.txt) and [`MalawiTestTriosForInvestigate.txt`]. The “TestTrios” file specifies that we want to investigate the admixture signal between the Diplotaxodon genus and the deep benthic group, compared with the mbuna group. The “SETS” file specifies which individuals belong to these groups. Finally, the command to execute the analysis is:
+The data for this exercise are in the [data](data/) folder. It includes the VCF file with variants mapping to the scaffold_18 of the Malawi cichlid reference genome we used at the time - [`scaffold_18.vcf.gz`](data/scaffold_18.vcf.gz). There are also two other files required to run Dinvestigate: the “SETS” file and the “test_trios” file. In this case they are called: [`MalawiSetsFile.txt`](data/MalawiSetsFile.txt) and [`MalawiTestTriosForInvestigate.txt`](data/MalawiTestTriosForInvestigate.txt). The “TestTrios” file specifies that we want to investigate the admixture signal between the Diplotaxodon genus and the deep benthic group, compared with the mbuna group. The “SETS” file specifies which individuals belong to these groups. Finally, the command to execute the analysis is:
 
 ```bash
 Dsuite Dinvestigate -w 50,25 scaffold_18.vcf.gz MalawiSetsFile.txt MalawiTestTriosForInvestigate.txt
@@ -437,10 +437,9 @@ The results are output by Dsuite into the file `mbuna_deep_Diplotaxodon_localFst
 
 Now execute line 8 of the script to plot the f_dM values. Do you see any signal near the opsin coordinates? We also plot the f_d statistic. As you can see, the top end of the plot is the same as for the f_dM, but the f_d is asymmetrical, extending far further into negative values. Finally, we zoom in at the region of the opsin genes (line 12). As you can see, the results look like a single “mountain” extending over 100kb. But there is more structure than that. Perhaps we need to reduce the window or step size to see that.
 
-To save time, we prepared result files for runs with varying window and step sizes. mbuna_deep_Diplotaxodon_localFstats__2_1.txt
-mbuna_deep_Diplotaxodon_localFstats__10_1.txt
-mbuna_deep_Diplotaxodon_localFstats__50_1.txt
-mbuna_deep_Diplotaxodon_localFstats__50_5.txt
+To save time, we prepared result files for runs with varying window and step sizes: [`mbuna_deep_Diplotaxodon_localFstats__50_5.txt`](data/mbuna_deep_Diplotaxodon_localFstats__50_5.txt),  [`mbuna_deep_Diplotaxodon_localFstats__50_1.txt`](data/mbuna_deep_Diplotaxodon_localFstats__50_5.txt),  [`mbuna_deep_Diplotaxodon_localFstats__10_1.txt`](data/mbuna_deep_Diplotaxodon_localFstats__10_1.txt), and  [`mbuna_deep_Diplotaxodon_localFstats__2_1.txt`](data/mbuna_deep_Diplotaxodon_localFstats__2_1.txt).
+
+
  They can be plotted with the same R script. Have a look at the results.
 
 
