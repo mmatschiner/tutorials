@@ -369,6 +369,9 @@ plot(D_BBAA$f4.ratio, ylab="f4-ratio",xlab="trio number", ylim=c(0,0.2))
 
 </details>
 
+The statistics are markedly different for the no-geneflow scenario. The number of D statistics &gt;0.7 here is 85 (compared with 9 above) and very many have significant p values - even after FDR correction, we have p<0.05 for whopping 671 trios. Finally, the f4-ratios are also elevated, up to almost 15% in some cases.    
+
+<img style="float: left;" src="img/simulated_tree_with_geneflow.png">
 
 
 
