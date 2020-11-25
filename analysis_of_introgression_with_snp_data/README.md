@@ -258,8 +258,8 @@ diff species_sets_no_geneflow_Dmin.txt species_sets_no_geneflow_no_geneflow_tree
 Next, let's look at the results in more detail, for example in [R](https://www.r-project.org). We load the `_BBAA.txt` file and first look at the distribution of D values:  
 
 ```R
-D_BBAA <- read.table("species_sets_no_geneflow_BBAA.txt",as.is=T,header=T)
-plot(D_BBAA$Dstatistic, ylab="D",xlab="trio number")
+D_BBAA_noGF <- read.table("species_sets_no_geneflow_BBAA.txt",as.is=T,header=T)
+plot(D_BBAA_noGF$Dstatistic, ylab="D",xlab="trio number")
 ```
 
 <p align="center"><img src="img/no_geneflow_Dvals.png" alt="DstatNoGF\*" width="600"></p>
@@ -267,7 +267,7 @@ plot(D_BBAA$Dstatistic, ylab="D",xlab="trio number")
 There are some very high D statistics. In fact, the D statistics for 9 trios are &gt;0.7, which is extremely high. So how is this possible in a dataset simulated with no geneflow?
 
 ```R
-D_BBAA[which(D_BBAA$Dstatistic > 0.7),]
+D_BBAA_noGF[which(D_BBAA_noGF$Dstatistic > 0.7),]
      P1  P2  P3 Dstatistic Z.score    p.value    f4.ratio   BBAA ABBA BABA
 171 S18 S19 S00   1.000000 0.00000        NaN 7.42372e-06 179922  1.5    0
 324 S18 S19 S01   1.000000 0.00000        NaN 7.42743e-06 179814  1.5    0
@@ -282,14 +282,14 @@ D_BBAA[which(D_BBAA$Dstatistic > 0.7),]
 These nine cases arise because there is amost no incomplete lineage sorting among these trios almost all sites are `BBAA` - e.g. 179922 sites for the first trio, while the count for `ABBA` is only 1.5 and for `BABA` it is 0 . The D statistic is calculated as D = (ABBA-BABA)/(ABBA+BABA), which for the first trio would be D = (1.5-0)/(1.5+0)=1. So, the lesson here is that the D statistic is very sensitive to random fluctuations when there is a small number of ABBA and BABA sites. One certainly cannot take the D value seriously unless it is supported by a statistical test suggesting that the D is significanly different from 0. In the most extreme cases above, the p-value could not even be calculated, becuase there were so few sites. Those definitely do not represent geneflow. But in one case we see a p value of 0.0018. Well, that looks significant, if one considers for example the traditional 0.05 cutoff. So, again, how is this possible in a dataset simulated with no geneflow?
 
 ```R
-plot(D_BBAA$p.value, ylab="p value",xlab="trio number",ylim=c(0,0.05))
+plot(D_BBAA_noGF$p.value, ylab="p value",xlab="trio number",ylim=c(0,0.05))
 ```
 <p align="center"><img src="img/no_geneflow_Pvals.png" alt="DstatNoGF-Pvals\*" width="600"></p>
 
 In fact, there are many p values that are &lt;0.05. For those who have a good understanding of statistics this will be not be suprising. This is because [p values are uniformly distributed](https://neuroneurotic.net/2018/10/29/p-values-are-uniformly-distributed-when-the-null-hypothesis-is-true/) when the null hypopthesis is true. Therefore, we expect 5% of the (or 1 in 20) p-values, they will be &lt;0.05. If we did a 1140 tests, we can expect 57 of them to be &lt;0.05. Therefore, any time we conduct a large amount of statistical tests, we should apply a multiple testing correction - commonly used is the Benjamini-Hochberg (BH) correction which controls for the [false discovery rate](https://en.wikipedia.org/wiki/False_discovery_rate).
 
 ```R
-plot(p.adjust(D_BBAA$p.value,method="BH"), ylab="p value",xlab="trio number",ylim=c(0,0.05))
+plot(p.adjust(D_BBAA_noGF$p.value,method="BH"), ylab="p value",xlab="trio number",ylim=c(0,0.05))
 ```
 <p align="center"><img src="img/no_geneflow_correctedPvals.png" alt="DstatNoGF-PvalsCorrected\*" width="600"></p>
 
@@ -298,7 +298,7 @@ However, even after applying the BH correction there are three p-values which lo
 Therefore, we should also plot the f4-ratio, which estimates the proportion of genome affected by geneflow. It turns out that this is perhaps the most reliable - all the f4-ratio values are tiny, as they should be for a dataset without geneflow.  
 
 ```R
-plot(D_BBAA$f4.ratio, ylab="f4-ratio",xlab="trio number", ylim=c(0,1))
+plot(D_BBAA_noGF$f4.ratio, ylab="f4-ratio",xlab="trio number", ylim=c(0,1))
 ```
 <p align="center"><img src="img/no_geneflow_f4-ratios.png" alt="DstatF4ratio\*" width="600"></p>
 
@@ -351,6 +351,24 @@ draw.triple.venn(length(D_BBAA$P123),length(D_Dmin$P123),length(D_tree$P123),len
 ```
 
 <p align="center"><img src="img/trippleVenn.png" alt="trippleVenn\*" width="600"></p>
+
+Then we explore the results in the `_BBAA.txt` in R, analogously to how we did it above for the no-geneflow case:
+
+```R
+plot(D_BBAA$Dstatistic, ylab="D",xlab="trio number") # The D statistic
+plot(p.adjust(D_BBAA$p.value,method="BH"), ylab="corected p value",xlab="trio number",ylim=c(0,0.05))
+plot(D_BBAA$f4.ratio, ylab="f4-ratio",xlab="trio number", ylim=c(0,0.2))
+```
+
+<details>
+<summary>Click here to see the resulting plots:</summary>
+
+<p align="center"><img src="img/geneflow_Dvals.png" alt="Dvals\*" width="600"></p>
+<p align="center"><img src="img/geneflow_correctedPvals.png" alt="pvals\*" width="600"></p>
+<p align="center"><img src="img/geneflow_f4-ratios.png" alt="f4\*" width="600"></p>
+
+</details>
+
 
 
 
