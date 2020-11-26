@@ -469,290 +469,45 @@ To save time, we prepared result files for runs with varying window and step siz
 
 
 <a name="Tanganyika"></a>
-## Finding geneflow in a real dataset - Tanganyikan cichlids
+## 3. Finding geneflow in a real dataset - Tanganyikan cichlids
 
+In this execise, we are going to see if we can reproduce the findings reported by [Gante et al. (2016)](https://doi.org/10.1111/mec.13767), with a different dataset. The Gante et al. dataset contained whole genome sequence data from five species from the cichlid genus Neolamprologus. The authors analysed these data and reported conclusions that are summarised by the figure below:
 
-In this part of the tutorial, we are going to calculate *D*-statistics with Dsuite to test for introgression among sets of species from our dataset. We will apply these statistics in particular to determine potential introgression into *Neolamprologus cancellatus*, the species that had been excluded from species-tree analyses in tutorials [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md) and [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md) due to its presumed hybrid nature. As mentioned in tutorial [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md), *Neolamprologus cancellatus* ("neocan") is not accepted as a valid species by some authors who speculate that it is a "natural hybrid between *Telmatochromis vittatus* and another species" ([Konings 2015](http://www.cichlidpress.com/books/details/tc3.html)), based on field observations.
+<p align="center"><img src="img/gante.png"></p>
 
-* Make sure that you have the file [`NC_031969.f5.sub1.vcf.gz`](data/NC_031969.f5.sub1.vcf.gz) in your current analysis directory, either by copying it from the analysis directory for tutorial [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md), or by downloading it with the link. Make sure not to uncompress it yet.
-	
-* To assign samples to species for the calculation of the *D*-statistic, we'll need to write a table with two tab-delimited columns, where the first column contains the sample IDs and the second column contains the corresponding species ID. We are going to use the only haplochromine species in the dataset, *Astatotilapia burtoni* as the outgroup (its outgroup position was confirmed in tutorial [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md)), which needs to be specified for Dsuite with the keyword "Outgroup". Thus, write the following text to a new file named `samples.txt`:
+A dataset containing these species, but also six additional Neolamprologus species (for a total of 11) was used in the tutorials on [Species-Tree Inference with SNP Data](../species_tree_inference_with_snp_data/README.md) and [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md).
 
-		IZA1	Outgroup
-		IZC5	Outgroup
-		AUE7	altfas
-		AXD5	altfas
-		JBD5	telvit
-		JBD6	telvit
-		JUH9	neobri
-		JUI1	neobri
-		LJC9	neocan
-		LJD1	neocan
-		KHA7	neochi
-		KHA9	neochi
-		IVE8	neocra
-		IVF1	neocra
-		JWH1	neogra
-		JWH2	neogra
-		JWG8	neohel
-		JWG9	neohel
-		JWH3	neomar
-		JWH4	neomar
-		JWH5	neooli
-		JWH6	neooli
-		ISA6	neopul
-		ISB3	neopul
-		ISA8	neosav
-		IYA4	neosav
-		KFD2	neowal
-		KFD4	neowal
+**Question 11:** Are the trees you reconstructed in these exercises consistent with the relationships reported by Gante et al.?
 
-	(note that the file with the same name written in tutorial [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md) should not be re-used here as its content differs).
+Here we use data with 10 Neolamprologus species (the clearly hybrid Neolamprologus cancellatus removed), to reassess the evidence for geneflow within this genus with the f4-ratio and f-branch statistics. The genetic data are in [`NC_031969.vcf.gz`](data/TanganyikaCichlids/NC_031969.vcf.gz), the file specifying sample->species relationships is [`NC_031969_sets.txt`](data/TanganyikaCichlids/NC_031969_sets.txt) and the tree topology hypothesis is in [`SNAPP_tree.txt`](data/TanganyikaCichlids/SNAPP_tree.txt). We run the analysis for all possible trios as follows:
 
+```bash
+Dsuite Dtrios -c -t SNAPP_tree.txt NC_031969.vcf.gz NC_031969_sets.txt
+```
 
+This should finish in a couple of minutes. There are 'only' ten species, so 120 trios. Could this be manageable? Have a look at the output file [TanganyikaCichlids/NC_031969_sets__tree.txt](data/TanganyikaCichlids/NC_031969_sets__tree.txt) and see if you can interpret the results. Chances are that is is still too complex to interpret the results for the trios just by looking at them. Perhaps you can try the ‘f-branch’ method:
 
-* As shown at the top of the Dsuite help text, the program can be run with `Dsuite Dtrios [OPTIONS] INPUT_FILE.vcf SETS.txt`. In our case, the input file is [`NC_031969.f5.sub1.vcf.gz`](data/NC_031969.f5.sub1.vcf.gz) and the sets files is the table with sample and species IDs written earlier to [`samples.txt`](res/samples.txt). Thus, start the Dsuite analysis of our dataset with
+```bash
+Dsuite Fbranch SNAPP_tree.txt NC_031969_sets__tree.txt > Tanganyika_Fbranch.txt
+python3 dtools.py Tanganyika_Fbranch.txt SNAPP_tree.txt
+```
 
-		Dsuite Dtrios NC_031969.f5.sub1.vcf.gz samples.txt
-		
-	The program should finish within a few minutes.
+<p align="center"><img src="data/TanganyikaCichlids/fbranch.png"></p>
 
-* Now have a look at the files in the current directory, using the `ls` command. You should see that Dsuite has written a number of files named after the sample-table file:
+**Question 12:** Are the geneflow signals seen here consistent with the Gante et al. figure?
 
-		samples__BBAA.txt
-		samples__Dmin.txt
-		samples__combine.txt
-		samples__combine_stderr.txt
-		
-	1. In a first set of calculations, all possible rearrangements are tested, and the lowest *D*-statistic, called *D*<sub>min</sub> is reported for each trio. *D*<sub>min</sub> is therefore a conservative estimate of the *D*-statistic in a given trio. This output is written to a file with the ending `__Dmin.txt`.
-	2. The trio is arranged so that P1 and P2 are the two species of the trio that share the largest number of derived sites. In other words, the rearrangement is done so that *C*<sub>BBAA</sub> > *C*<sub>ABBA</sub> and *C*<sub>BBAA</sub> > *C*<sub>BABA</sub>. In addition, P1 and P2 are rotated so that the number of derived sites shared between P2 and P3 is larger than that between P1 and P3. In sum this means that *C*<sub>BBAA</sub> > *C*<sub>ABBA</sub> > *C*<sub>BABA</sub>. The idea behind this type of rearrangement is that the two species that share the largest number of derived sites are most likely the true two sister species in the trio, and thus rightfully placed in the positions P1 and P2. This assumption is expected to hold under certain conditions (e.g. clock-like evolution, absence of homoplasies, absence of introgression, and panmictic ancestral populations), but how reliable it is for real datasets is sometimes difficult to say. *D*-statistics based on this type of rearrangement are written to a file with ending `__BBAA.txt`.
-	3. To tell Dsuite directly which species of a trio should be considered sister species (and thus, which should be assigned to P1 and P2), a tree file that contains all species of the dataset can be provided by the user with option `-t` or `--tree`. The output will then be written to an additional file with ending `__tree.txt`. We will use this option later in the tutorial.
+**Question 13:** What happens when we focus only on the five species from Gante et al. and exclude all others?
 
-* So, let's see how the *D*-statistics were calculated based on the first two rules for trio rearrangement. Have a look at file [`samples__Dmin.txt`](res/samples__Dmin.txt), e.g. with the `less` command:
+The files [`NC_031969_setsOnlyGante.txt`](data/TanganyikaCichlids/NC_031969_setsOnlyGante.txt) and [`GanteTree.txt`](data/TanganyikaCichlids/GanteTree.txt) will come in handy.
 
-		less samples__Dmin.txt
-		
-	You should see the first part of the file as shown below:
-	
-		P1      P2      P3      Dstatistic      p-value
-		altfas  neocan  neobri  0.493787        0
-		neobri  neochi  altfas  0.00885755      0.3836
-		neocra  neobri  altfas  0.0372849       0.013765
-		neogra  neobri  altfas  0.0184394       0.258714
-		neohel  neobri  altfas  0.0448571       0.113967
-		neomar  neobri  altfas  0.0679957       0.0195241
-		neooli  neobri  altfas  0.0662179       0.0133793
-		neopul  neobri  altfas  0.0470166       0.10957
-		neosav  neobri  altfas  0.0338796       0.103889
-		neowal  neobri  altfas  0.0172581       0.266909
-		neobri  telvit  altfas  0.0203511       0.199163
-		altfas  neocan  neochi  0.481745        0
-		altfas  neocan  neocra  0.491942        0
-		altfas  neocan  neogra  0.497877        0
-		altfas  neocan  neohel  0.501518        0
-		altfas  neocan  neomar  0.492416        0
-		altfas  neocan  neooli  0.504355        0
-		...
+```bash
+Dsuite Dtrios -c -t SNAPP_tree.txt NC_031969.vcf.gz NC_031969_setsOnlyGante.txt
+Dsuite Fbranch GanteTree.txt NC_031969_setsOnlyGante__tree.txt > Tanganyika_Fbranch_reduced.txt
+python3 dtools.py -n reduced Tanganyika_Fbranch_reduced.txt GanteTree.txt 
+```
+Notice the `-n` option to `dtools.py`, to specify the output file name, making sure that our previous plots are not overwritten. Below is the plot, after a little editing in Inkscape.
 
-	One thing to notice here is that the species in the first three rows are no longer sorted alphabetically, so obviously they have been rearranged. As the header line indicates, the fourth column now shows the *D*-statistic for the trio in this constellation, and the fifth column shows the *p*-value based on jackknifing for the null hypothesis of *D* = 0.
-	
-* Let's pick one species trio and see how it appears in the three different files [`samples__combine.txt`](res/samples__combine.txt), [`samples__Dmin.txt`](res/samples__Dmin.txt), and [`samples__BBAA.txt`](res/samples__BBAA.txt). We'll select the first species trio, including "altfas", "neocan", and "neobri". To see only the line for this trio from the three files, you could use this command:
-
-		cat samples__combine.txt | grep altfas | grep neocan | grep neobri
-		cat samples__Dmin.txt | grep altfas | grep neocan | grep neobri
-		cat samples__BBAA.txt | grep altfas | grep neocan | grep neobri
-
-	This should produce the following three output lines:
-	
-		altfas	neobri	neocan	1378.2	13479.6	4066.95
-		altfas	neocan	neobri	0.493787	0
-		altfas	neocan	neobri	0.493787	0
-
-
-	You'll see that compared to the alphabetical arrangement in [`samples__combine.txt`](res/samples__combine.txt), P1 has remained the same ("altfas") in the other two files, but P2 and P3 have been swapped ("neocan" and "neobri"). This swap also implied that the counts for ABBA, BABA, and BBAA patterns were swapped accordingly, so that after the swap and with P1="altfas", P2="neocan", P3="neobri", the counts were as follows: *C*<sub>ABBA</sub> = 4066.95, *C*<sub>BABA</sub> = 1378.2, and *C*<sub>BBAA</sub> = 13479.6. Thus, "neocan" and "neobri" share 4066.95 derived sites, "altfas" and "neobri" share 1378.2 derived sites, and "altfas" and "neocan" share 13479.6 derived sites. With these counts, *D* = (4066.95 - 1378.2) / (4066.95 + 1378.2) = 0.493787, as correctly reported by Dsuite in both files [`samples__Dmin.txt`](res/samples__Dmin.txt) and [`samples__BBAA.txt`](res/samples__BBAA.txt). **Question 3:** With *C*<sub>ABBA</sub> = 4066.95, *C*<sub>BABA</sub> = 1378.2, and *C*<sub>BBAA</sub> = 13479.6, the rule *C*<sub>BBAA</sub> > *C*<sub>ABBA</sub> > *C*<sub>BABA</sub> is fulfilled for this trio rearrangement, and thus it is not surprising that this particular rearrangement is reported in the output corresponding to this rule, the file ending in `__BBAA.txt`. But the fact that the same rearrangement is also included in the file ending in `__Dmin.txt` implies that the *D*-statistic for this rearrangement is smaller than it would be in all alternative rearrangements. Can you confirm this? [(see answer)](#q3)
-
-* Repeat the same as in the last step, but this time using a species trio for which the rearrangements differ between the files [`samples__Dmin.txt`](res/samples__Dmin.txt) and [`samples__BBAA.txt`](res/samples__BBAA.txt). The trio "neobri", "neocra", and "neogra" is one such example. Use these commands to see the line for this trio in all three files:
-
-		cat samples__combine.txt | grep neobri | grep neocra | grep neogra
-		cat samples__Dmin.txt | grep neobri | grep neocra | grep neogra
-		cat samples__BBAA.txt | grep neobri | grep neocra | grep neogra
-
-	This should produce these output lines:
-	
-		neobri	neocra	neogra	3788.23	3552.38	2992.93
-		neogra	neocra	neobri	0.0321294	0.145298
-		neocra	neobri	neogra	0.0854723	8.58201e-07
-
-	The results in file [`samples__BBAA.txt`](res/samples__BBAA.txt) indicate that when P1="neocra", P2="neobri", and P3="neogra", then *C*<sub>BBAA</sub> = 3788.23, *C*<sub>ABBA</sub> = 3552.38, and *C*<sub>BABA</sub> = 2992.93, and therefore *D* = (3552.38 - 2992.93) / (3552.38 + 2992.93) = 0.0854723.
-	
-	However, the results in file [`samples__Dmin.txt`](res/samples__Dmin) show that this time, another rearrangement (and therefore a rearrangement in which *C*<sub>BBAA</sub> is not larger than the two other counts) produces a lower *D*-statistic: With P1="neogra", P2="neocra", and P3="neobri", then *C*<sub>BBAA</sub> = 2992.93, *C*<sub>ABBA</sub> = 3788.23, and *C*<sub>BABA</sub> = 3552.38, and therefore *D* = (3788.23 - 3552.38) / (3788.23 + 3552.38) = 0.0321294. This illustrates that the *D*<sub>min</sub> value, reporting the lowest possible *D*-statistic for a given trio, sometimes selects an arrangement of the trio in which P1 and P2 actually share less derived sites with each other than both of them share with P3. This is in conflict with the original assumption of the ABBA-BABA test that P1 and P2 are more closely related to each other than to P3. When interpreting the results of Dsuite analyses, it should therefore be kept in mind that the *D*<sub>min</sub> values reported in the file ending in `__Dmin.txt` are in fact conservative estimates of the *D*-statistic. The values reported in the file ending in `__BBAA.txt`, which are based on the rearrangement that ensures *C*<sub>BBAA</sub> > *C*<sub>ABBA</sub> > *C*<sub>BABA</sub>, may often be better measurements of the *D*-statistic, however, the best option may be to also run the analysis with the `--tree` option, providing an input tree that directly tells Dsuite how to rearrange all trios.
-	
-To use the `--tree` option of Dsuite, we will obviously need a tree file. As a basis for that, we can use the time-calibrated species tree generated in tutorial [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md), in file [`snapp.tre`](data/snapp.tre). However, we need to prepare the tree file before we can use it with Dsuite. First, Dsuite requires tree files in Newick format, but the tree file [`snapp.tre`](data/snapp.tre) is written in Nexus format. Second, as the tree generated in tutorial [Divergence-Time Estimation with SNP Data](../divergence_time_estimation_with_snp_data/README.md) did not include *Neolamprologus cancellatus*, we will need to add this species to the tree manually.
-
-* To convert the tree file from Nexus to Newick format, simply open [`snapp.tre`](data/snapp.tre) in FigTree, and select "Export Trees..." from FigTree's "File" menu. In the dialog window, select "Newick" from the drop-down menu next to "Tree file format:", as shown in the next screenshot.<p align="center"><img src="img/figtree1.png" alt="FigTree" width="600"></p> Name the new file `snapp.as_newick.tre`.
-
-	The tree file [`snapp.as_newick.tre`](res/snapp.as_newick.tre) should now have the following content, in which branch lengths are encoded by numbers following colon symbols:
-
-		((altfas:2.594278046475669,((((((neobri:0.4315861683285048,(neooli:0.3619356529967183,neopul:0.3619356529967182):0.06965051533178657):0.12487340944557368,(neogra:0.5002021127811682,neohel:0.5002021127811681):0.05625746499291029):0.046536377715870936,(neocra:0.3843764668581544,neomar:0.3843764668581544):0.21861948863179498):0.13696107245777023,neosav:0.7399570279477196):0.3048349276159825,telvit:1.044791955563702):0.06307730474269935,(neochi:0.1368491602607037,neowal:0.1368491602607037):0.9710201000456977):1.4864087861692676):3.570689300019641,astbur:6.16496734649531);
-
-* To add *Neolamprologus cancellatus* ("neocan") to the tree, we need to make a decision about where to place it. Perhaps the best way to do this would be a separate phylogenetic analysis, but as we will see later, there is no single true position of *Neolamprologus cancellatus* ("neocan") in the species tree anyway. So for now it will be sufficient to use the counts of shared derived sites from file [`samples__BBAA.txt`](res/samples__BBAA.txt) as an indicator for where best to place the species. Thus, we need to find the largest count of derived sites that *neocan* shares with any other species. To do this, we can use the following commands:
-
-		cat samples__combine.txt | grep neocan | sort -n -k 4 -r | head -n 1
-		cat samples__combine.txt | grep neocan | sort -n -k 5 -r | head -n 1
-		cat samples__combine.txt | grep neocan | sort -n -k 6 -r | head -n 1
-
-	This should produce the following lines:
-	
-		altfas	neocan	neooli	14834.4	1408.33	4274.5
-		altfas	neobri	neocan	1378.2	13479.6	4066.95
-		neocan	neochi	neowal	801.883	754.94	12863.7
-
-	The largest number of all of these lines is 14834.4. As this number is found in the fourth column, it specifies the count of BBAA sites, *C*<sub>BBAA</sub>, and therefore the number of derived sites shared by the first two species on this line, "altfas" and "neocan". This means that "neocan" appears to be more closely related to "altfas" than to other species in the dataset.
-	
-* To insert "neocan" into the tree string as the sister species of "altfas", replace "altfas" with "(altfas:1.0,neocan:1.0)", including the parentheses (the branch length of 1.0 is arbitrary but will not be used by Dsuite anyway). This could be done using a text editor, or on the command line with the following command, saving the modified tree string in a new file named `snapp.complete.tre`:
-
-		cat snapp.as_newick.tre | sed "s/altfas/(altfas:1.0,neocan:1.0)/g" > snapp.complete.tre
-
-	File `snapp.complete.tre` should then contain the following tree string:
-	
-		(((altfas:1.0,neocan:1.0):2.594278046475669,((((((neobri:0.4315861683285048,(neooli:0.3619356529967183,neopul:0.3619356529967182):0.06965051533178657):0.12487340944557368,(neogra:0.5002021127811682,neohel:0.5002021127811681):0.05625746499291029):0.046536377715870936,(neocra:0.3843764668581544,neomar:0.3843764668581544):0.21861948863179498):0.13696107245777023,neosav:0.7399570279477196):0.3048349276159825,telvit:1.044791955563702):0.06307730474269935,(neochi:0.1368491602607037,neowal:0.1368491602607037):0.9710201000456977):1.4864087861692676):3.570689300019641,astbur:6.16496734649531);
-
-* Run Dsuite again, this time adding the `-t` (or `--tree`) option to specify the newly prepared tree file [`snapp.complete.tre`](res/snapp.complete.tre):
-
-		Dsuite Dtrios -t snapp.complete.tre NC_031969.f5.sub1.vcf.gz samples.txt
-
-	Dsuite should again finish the analysis within a few minutes. The output should be identical to the previously written output except that a file named `samples__tree.txt` should now also be written. **Question 4:** Do the results differ when trios are rearranged either to maximize the number of derived sites shared between P1 and P2 (thus, the results in file [`samples__BBAA.txt`](res/samples__BBAA.txt)) or according to the provided tree (in file [`samples__tree.txt`](res/samples__tree.txt))?
-
-* To further explore differences among the output files based on different rules for trio rearrangement, find the highest *D*-statistic reported in each of the files [`samples__Dmin.txt`](res/samples__Dmin.txt)), [`samples__BBAA.txt`](res/samples__BBAA.txt)), and [`samples__tree.txt `](res/samples__tree.txt)). One way to do this are the three following commands:
-
-		cat samples__Dmin.txt | tail -n +2 | sort -n -k 4 -r | cut -f 4 | head -n 1
-		cat samples__BBAA.txt | tail -n +2 | sort -n -k 4 -r | cut -f 4 | head -n 1
-		cat samples__tree.txt | tail -n +2 | sort -n -k 4 -r | cut -f 4 | head -n 1
-		
-	You'll see that the highest *D*-statistic reported in file [`samples__Dmin.txt`](res/samples__Dmin.txt)) (0.504355) is smaller than those in the the other two files (0.778765 in both cases). This is not surprising, given that, as explained above, the *D*<sub>min</sub> values are conservative measure of introgression in a given trio.
-
-* Find the trio responsible for these extreme *D*-statistics, using the following commands:
-
-		cat samples__Dmin.txt | tail -n +2 | sort -n -k 4 -r | head -n 1
-		cat samples__BBAA.txt | tail -n +2 | sort -n -k 4 -r | head -n 1
-		cat samples__tree.txt | tail -n +2 | sort -n -k 4 -r | head -n 1
-
-	You'll see that the high *D*-statistic of 0.778765 is reported for the trio in which P1="altfas", P2="neocan", and P3="telvit".
-	
-* Look up the counts of shared sites for this trio from file [`samples__combine.txt`](res/samples__combine.txt), using the following command:
-
-		cat samples__combine.txt | grep altfas | grep neocan | grep telvit
-		
-	You should then see that *C*<sub>BBAA</sub> = 12909.6 (in the fourth column), *C*<sub>BABA</sub> = 893.302 (in the fifth column), and *C*<sub>ABBA</sub> = 7182.28 (in the sixth column). Thus, "altfas" and "neocan" share 12909.6 derived sites, "neocan" and "telvit" share 7182.28 derived sites, but "altfas" and "telvit" share only 893.302 derived sites.
-	
-	The *D*-statistic is therefore
-	
-	*D* = (7182.28 - 893.302) / (7182.28 + 893.302) = 0.778765
-	
-	as reported in files [`samples__BBAA.txt`](res/samples__BBAA.txt)) and [`samples__tree.txt `](res/samples__tree.txt)). In file [`samples__Dmin.txt`](res/samples__Dmin.txt)), however, *D* was calculated for this trio as 
-	
-	*D* = (12909.6 - 7182.28) / (12909.6 + 7182.28) = 0.285055
-	
-	after rearranging the species so that P1="telvit", P2="altfas", and P3="neocan", and thus *C*<sub>BBAA</sub> = 893.302, *C*<sub>ABBA</sub> = 12909.6 and *C*<sub>BABA</sub> = 7182.28. This *D*-statistic is lower than those reported for other trios in file [`samples__Dmin.txt`](res/samples__Dmin.txt)), therefore, the command `cat samples__Dmin.txt | tail -n +2 | sort -n -k 4 -r | head -n 1` reported a different trio that included "neooli" instead of "telvit". Either way, the *p*-values for the *D*-statistics are highly significant for many trios and in particular for those that include *Neolamprologus cancellatus* ("neocan"), indicating introgression involving this species is highly supported. Given that the highest *D*-statistics are reported for the trio in which P1="altfas", P2="neocan", and P3="telvit", we may hypothesize that *Neolamprologus cancellatus* "neocan" has received a large amount of introgression from *Telmatochromis vittatus*, in agreement with the speculation by [Konings (2015)](http://www.cichlidpress.com/books/details/tc3.html) that *Neolamprologus cancellatus* is a "natural hybrid between *Telmatochromis vittatus* and another species".
-
-* To get a better overview of introgression patterns supported by *D*-statistics, we'll plot these in the form of a heatmap in which the species in positions P2 and P3 are sorted on the horizontal and vertical axes, and the color of the corresponding heatmap cell indicates the most significant *D*-statistic found with these two species, across all possible species in P1. To prepare this plot, we will, however, first need to prepare a file that lists the order in which the P2 and P3 species should be listed along the heatmap axes. It makes sense to sort species for this according to the tree file that we used ([`snapp.complete.tre`](res/snapp.complete.tre)); thus, write the following list to a new file named `species_order.txt`:
-
-		altfas
-		neocan
-		neochi
-		neowal
-		telvit
-		neosav
-		neocra
-		neomar
-		neogra
-		neohel
-		neobri
-		neooli
-		neopul
-		
-	(note that even though the outgroup "astbur" is included in the tree file, we here exclude it because it was never placed in the positions of P2 or P3 in the Dsuite analyses).
-
-* To plot the heatmap, use the Ruby script [`plot_d.rb`](src/plot_d.rb), specifying one of Dsuite's output files, file [`species_order.txt`](res/species_order.txt), the maximum *D* value to plot, and the name of an output file as command-line options. Start the script with the [`samples__Dmin.txt`](res/samples__Dmin.txt) file as input and a maximum *D* of 0.7, and name the output `samples__Dmin.svg`:
-
-		ruby plot_d.rb samples__Dmin.txt species_order.txt 0.7 samples__Dmin.svg
-		
-* The heatmap plot in file `samples__Dmin.svg` is written scalable vector graphic (SVG) format. Open this file with a program capable of reading files in SVG format, for example with a browser such as Firefox or with Adobe Illustrator. The heatmap plot should look as shown below:<p align="center"><img src="img/samples__Dmin.png" alt="Heatmap Dmin" width="600"></p> As you can see from the color legend in the bottom right corner, the colors of this heatmap show two things at the same time, the *D*-statistic as well as its *p*-value. So red colors indicate higher *D*-statistics, and generally more saturated colors indicate greater significance. Thus, the strongest signals for introgression are shown with saturated red, as in the bottom right of the color legend. While none of the cells in this plot actually have that color, almost all cells in rows or columns for "neocan" have a red-purple color corresponding to a highly significant *D*-statistic around 0.3.
-
-	In case that you're wondering why the heatmap looks symmetric, that is because no matter whether the maximum *D*-statistic for two species is obtained with the first species in position P2 and the second in position P3 or vice versa, the same value is plotted. The reason for this is that even though different *D*-statistics may result in the two cases, those differences should not be taken as evidence for a directionality of introgression from P3 to P2; it could just as well have come from P2 and into P3.
-		
-* Before further interpreting the patterns of introgression shown in the heatmap, we'll also produce heatmap plots for the other two of Dsuite's output files, [`samples__BBAA.txt`](res/samples__BBAA.txt) and [`samples__tree.txt`](res/samples__tree.txt):
-
-		ruby plot_d.rb samples__BBAA.txt species_order.txt 0.7 samples__BBAA.svg
-		ruby plot_d.rb samples__tree.txt species_order.txt 0.7 samples__tree.svg
-
-	The two heatmaps should look as shown below (`samples__BBAA.svg` at top, `samples__tree.svg` below):<p align="center"><img src="img/samples__BBAA.png" alt="Heatmap BBAA" width="600"></p><p align="center"><img src="img/samples__tree.png" alt="Heatmap tree" width="600"></p> As you can see, both of the above heatmaps are overall a bit more saturated than the first heatmap based on *D*<sub>min</sub>, in agreement with the interpretation of *D*<sub>min</sub> as a conservative estimate of introgression. The strongest difference, however, is in the patterns shown for *Telmatochromis vittatus* ("telvit"). The most saturated red colors in the latter two plots are those for the cells connecting "neocan" and "telvit", which in contrast is only light blue in the first plot based on *D*<sub>min</sub>. These plots therefore support the hypothesis that introgression occurred between *Neolamprologus cancellatus* ("neocan") and *Telmatochromis vittatus* ("telvit"). However, the other red-purple cells in the rows and columns for "neocan" and "telvit" may only be side-effects of this introgression. In the last heatmap from file `samples__tree.svg`, for example, the red-purple cells could be caused by sites that are shared between *Neolamprologus cancellatus* ("neocan") and other species only because these other species are closely related to *Telmatochromis vittatus* ("telvit"), the putative donor of introgression.
-	
-	In addition, there seems to be some support for introgression among the species of the genus *Neolamprologus*, such as between *N. crassus* and *N. brichardi* or between *N. brichardi* and *N. pulcher*.
-
-So far we only calculated *D*-statistics across the entire chromosome 5 (the only chromosome included in the VCF), but we haven't yet tested whether the *D*-statistic is homogeneous or variable throughout the chromosome. This information could be valuable to determine how recent introgression has occurred because younger introgression events are expected to produce more large-scale variation in the *D*-statistic than older introgression events. The information could also help to identify individual introgressed loci.
-
-* To quantify the *D*-statistic in sliding windows across the genome, Dsuite's Dinvestigate command can be used, and we will apply it to the trio with the strongest signals of introgression, composed of the three species *Altolamprologus fasciatus* ("altfas"), *Neolamprologus cancellatus* ("neocan"), and *Telmatochromis vittatus* ("telvit"). Have a look at the available options for this command, simply by typing the following:
-
-		Dsuite Dinvestigate
-
-	You'll see that besides the VCF input file [`NC_031969.f5.sub1.vcf.gz`](data/NC_031969.f5.sub1.vcf.gz) and the samples table [`samples.txt`](res/samples.txt), two more pieces of information are required. One is a file containing only the species names from one or more trios, and the other is a window size (plus the step size by which the window is incremented) that should be used for the sliding window-analyses.
-	
-* Prepare a file specifying the trio "altfas", "neocan", and "telvit", and name this file `test_trios.txt`. This could be done on the command line with the following command:
-
-		echo -e "altfas\tneocan\ttelvit" > test_trios.txt
-		
-* We'll use a window size of 2,500 SNPs, incremented by 500 SNPs per iteration. To start sliding-window analyses with these settings, execute the following command:
-
-		Dsuite Dinvestigate -w 2500,500 NC_031969.f5.sub1.vcf.gz samples.txt test_trios.txt 
-		
-	This analysis should again take only a few minutes. Dsuite should then have written a file named `altfas_neocan_telvit_localFstats__2500_500.txt`.
-	
-* Have a look at file [`altfas_neocan_telvit_localFstats__2500_500.txt`](res/altfas_neocan_telvit_localFstats__2500_500.txt), for example using the `less` command:
-
-		less altfas_neocan_telvit_localFstats__2500_500.txt
-		
-	The rows in this file correspond to individual chromosomal windows, and the  six columns included in the file contain information on the chromosome ID and the start and end positions of each window. This is followed by three numbers on each line, which represent the *D*-statistic calculated for the window in the fourth column, and two further statistics aiming to quantify the proportions of the window affected by introgression. The two statistics are the *f*<sub>d</sub> statistic of [Martin et al. (2015)](https://academic.oup.com/mbe/article/32/1/244/2925550) and the related *f*<sub>dM</sub> statistic introduced by [Malinsky et al. (2015)](https://science.sciencemag.org/content/350/6267/1493).
-	
-* Find out into how many windows chromosome 5 was divided, using the following command:
-
-		cat altfas_neocan_telvit_localFstats__2500_500.txt | tail -n +2 | wc -l
-		
-	This should show that 509 windows were used in Dsuite's Dinvestigate analysis. If this number would be much higher or lower, the information density could be adjusted by specifying a larger or smaller window size with `-w`.
-	
-* To visualize the variation of the *D* and *f*<sub>d</sub> statistics across chromosome 5, we'll generate plots with the R environment. If you're familiar with R, you could use the software R Studio or another GUI program for R, but you could also run R on the command line as shown below. To start R interactively on the command line, simply type `R`. Then, write the following commands to read file [`altfas_neocan_telvit_localFstats__2500_500.txt`](res/altfas_neocan_telvit_localFstats__2500_500.txt) and plot the *D* and *f*<sub>d</sub> statistics against the chromosomal position of the center of the alignment:
-
-		table <- read.table("altfas_neocan_telvit_localFstats__2500_500.txt", header=T)
-		windowCenter=(table$windowStart+table$windowEnd)/2
-		pdf("altfas_neocan_telvit_localFstats__2500_500.pdf", height=7, width=7)
-		plot(windowCenter, table$D, type="l", xlab="Position", ylab="D (gray) / fD (black)", ylim=c(0,1), main="Chromosome 5 (altfas, neocan, telvit)", col="gray")
-		lines(windowCenter, table$f_d)
-		dev.off()
-
-* To exit the interactive R environment and return to the command line, type this command:
-
-		quit(save="no")
-
-	The above commands should have written the plot to a file named [`altfas_neocan_telvit_localFstats__2500_500.pdf`](res/altfas_neocan_telvit_localFstats__2500_500.pdf) in the analysis directory. The plot should show that the *D*-statistic (in gray) is almost in all windows substantially higher than the *f*<sub>d</sub>-statistic (in black), and that the *f*<sub>d</sub>-statistic, which estimates admixture proportion is mostly close 0.5:<p align="center"><img src="img/trio1.png" alt="Dinvestigate" width="600"></p> There also appears to be a dip in both statistics at around 5 Mbp; however, whether this is an artifact resulting from e.g. missing data or misassembly in the reference genome, or whether it shows a biological signal of reduced introgression is difficult to tell without further analyses.
-
-* Repeat the same for a second trio that appeared to show signals of introgression, composed of *Neolamprologus olivaceous* ("neooli"), *N. pulcher* ("neopul), and *N. brichardi* ("neobri"). To do so, use these commands on the command line:
-
-		echo -e "neooli\tneopul\tneobri" > test_trios.txt
-		Dsuite Dinvestigate -w 2500,500 NC_031969.f5.sub1.vcf.gz samples.txt test_trios.txt
-
-* To produce the same type of plot as before now for the trio of "neooli", "neopul", and "neobri", use again the R environment and enter the following commands:
-
-		table <- read.table("neooli_neopul_neobri_localFstats__2500_500.txt", header=T)
-		windowCenter=(table$windowStart+table$windowEnd)/2
-		pdf("neooli_neopul_neobri_localFstats__2500_500.pdf", height=7, width=7)
-		plot(windowCenter, table$D, type="l", xlab="Position", ylab="D (gray) / fD (black)", ylim=c(0,1), main="Chromosome 5 (neooli, neopul, neobri)", col="gray")
-		lines(windowCenter, table$f_d)
-		dev.off()
-		
-	(again, quit the R environment with `quit(save="no")`). This should have produced the plot shown below, saved to file [`neooli_neopul_neobri_localFstats__2500_500.pdf`](res/neooli_neopul_neobri_localFstats__2500_500.pdf):<p align="center"><img src="img/trio2.png" alt="Dinvestigate" width="600"></p>
-
-	As you can see, the *D*-statistic (in black) now shows more variation and even becomes negative in several windows, indicating that in these windows, *neooli* shares more similarity with *neobri* than *neopul*. Overall, both statistics are lower than for the first trio. Notably, the dip at around 5 Mbp that was apparent in both statistics for the first trio is again visible. As it appears improbable that the same region has more introgression in both species trios, this may indicate that the dip is in fact caused by technical artifacts rather than biological processes. To further investigate whether any of the peaks or troughs in this plot result from actual changes in the introgression proportion, it might be necessary to compare the *D* and *f*<sub>d</sub>-statistics to measures of between-species differentiation (*F*<sub>ST</sub>) and divergence (*d*<sub>XY</sub>) (see, e.g. [The Heliconius Genome Consortium 2012](https://www.nature.com/articles/nature11041)). The reliability of these patterns could also be tested by repeating the analysis after mapping to an alternative, if possible more closely related, reference genome. Such in-depth analyses of introgressed loci based on genome scans are covered, for example, in the [Physalia Speciation Genomics workshop](https://www.physalia-courses.org/courses-workshops/course37/curriculum-37/) run by Mark Ravinet and Joana Meier.
-
+<p align="center"><img src="data/TanganyikaCichlids/reduced.png"></p>
 
 <a name="painting"></a>
 ## 4. Ancestry painting
