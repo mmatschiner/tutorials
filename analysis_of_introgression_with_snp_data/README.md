@@ -165,7 +165,7 @@ As you can see by comparison of the tree you just reconstructed (also below) aga
 
 </details>
 
-Now we repeat the same tree-raconstruction procedure for the simulation with gene-flow, starting with file format conversion: 
+Now we repeat the same tree-reconstruction procedure for the simulation with gene-flow, starting with file format conversion: 
 
 ```bash
 # unzip the VCF and process it with AWK to replace each ancestral allele (fourth column) with an A and each derived allele (fifth column) with a T
