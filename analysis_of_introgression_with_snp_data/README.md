@@ -267,7 +267,7 @@ In [`species_sets_no_geneflow_BBAA.txt`](data/species_sets_no_geneflow_BBAA.txt)
 Let's first see how the other outputs differ from the  `_tree.txt` file, which has the correct trio arrangments. :
 
 ```bash
-diff species_sets_no_geneflow_BBAA.txt species_sets_no_geneflow_no_geneflow_tree.txt
+diff species_sets_no_geneflow_BBAA.txt species_sets_no_geneflow_tree.txt
 922c922
 < S08    S10    S09    0.0170473    1.22568    0.110159    0.00133751    6829.88    6764    6537.25
 ---
