@@ -498,6 +498,9 @@ python3 dtools.py Tanganyika_Fbranch.txt SNAPP_tree.txt
 
 **Question 13:** What happens when we focus only on the five species from Gante et al. and exclude all others?
 
+<details>
+<summary>Click here for an answer</summary>
+
 The files [`NC_031969_setsOnlyGante.txt`](data/TanganyikaCichlids/NC_031969_setsOnlyGante.txt) and [`GanteTree.txt`](data/TanganyikaCichlids/GanteTree.txt) will come in handy.
 
 ```bash
@@ -508,6 +511,8 @@ python3 dtools.py -n reduced Tanganyika_Fbranch_reduced.txt GanteTree.txt
 Notice the `-n` option to `dtools.py`, to specify the output file name, making sure that our previous plots are not overwritten. Below is the plot, after a little editing in Inkscape.
 
 <p align="center"><img src="data/TanganyikaCichlids/reduced.png"></p>
+
+</details>
 
 <a name="painting"></a>
 ## 4. Ancestry painting
