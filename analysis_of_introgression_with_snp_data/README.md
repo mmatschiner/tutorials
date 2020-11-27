@@ -451,7 +451,7 @@ Dsuite Dinvestigate -w 50,25 scaffold_18.vcf.gz MalawiSetsFile.txt MalawiTestTri
 
 The `-w 50,25` option specifies that the statistics should be averaged over windows of 50 informative SNPs, moving forward by 25 SNPs at each step. The run should take a little under 10 minutes. We suggest you have a tea/coffee break while you wait for the results ;).
 
-**Question 7:**  What are the overall D and f4-ratio (fG) values over the entire scaffold_18? What does this suggest?
+**Question 7:**  What are the overall D and f_dM values over the entire scaffold_18? What does this suggest?
 
 The results are output by Dsuite into the file `mbuna_deep_Diplotaxodon_localFstats__50_25.txt`. A little R plotting function [`plotInvestigateResults.R`](src/plotInvestigateResults.R) is prepared for you. Use the script to load in the file you just produced (line 3) and plot the D statistic (line 6).  Also execute line 8 of the script to plot the f_dM values. Do you see any signal near the opsin coordinates? We also plot the f_d statistic. As you can see, the top end of the plot is the same as for the f_dM, but the f_d is asymmetrical, extending far further into negative values. 
 
@@ -496,14 +496,15 @@ To save time, we prepared result files for runs with varying window and step siz
 
  </details>
  
+  <details>
  <summary>Click here to see the zoom in with `-w 10,1`</summary>
 
  <p align="center"><img src="data/Dinvestigate_zoom10_1.png" alt="\*" width="600"></p>
 
  </details>
  
- </details>
- 
+ <details>
+
  <summary>Click here to see the zoom in with `-w 2,1`</summary>
 
  <p align="center"><img src="data/Dinvestigate_zoom2_1.png" alt="\*" width="600"></p>
@@ -513,6 +514,13 @@ To save time, we prepared result files for runs with varying window and step siz
 **Question 9:** What combination of window size/step seems to have the best resolution? Why is the smallest window so noisy?
 
 **Question 10:** What happens if you plot individual data points, instead of a continuous line? Are the results clearer?
+
+ <details>
+<summary>Click here to see the zoom in with `-w 10,1` and individual data points</summary>
+
+<p align="center"><img src="data/Dinvestigate_zoom10_1_points.png" alt="\*" width="600"></p>
+
+</details>
 
 
 <a name="Tanganyika"></a>
