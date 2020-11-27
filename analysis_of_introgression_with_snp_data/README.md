@@ -453,15 +453,62 @@ The `-w 50,25` option specifies that the statistics should be averaged over wind
 
 **Question 7:**  What are the overall D and f4-ratio (fG) values over the entire scaffold_18? What does this suggest?
 
-The results are output by Dsuite into the file `mbuna_deep_Diplotaxodon_localFstats__50_25.txt`. A little R plotting function [`plotInvestigateResults.R`](src/plotInvestigateResults.R) is prepared for you. Use the script to load in the file you just produced (line 3) and plot the D statistic (line 6).
+The results are output by Dsuite into the file `mbuna_deep_Diplotaxodon_localFstats__50_25.txt`. A little R plotting function [`plotInvestigateResults.R`](src/plotInvestigateResults.R) is prepared for you. Use the script to load in the file you just produced (line 3) and plot the D statistic (line 6).  Also execute line 8 of the script to plot the f_dM values. Do you see any signal near the opsin coordinates? We also plot the f_d statistic. As you can see, the top end of the plot is the same as for the f_dM, but the f_d is asymmetrical, extending far further into negative values. 
 
-**Question 8:** Do you see any interesting signal in the D statistic? The opsin genes are located between 4.3Mb and 4.4Mb. Do you see anything interesting there?
+**Question 8:** Do you see any interesting signal in the D, f_dM, and f_d statistics? The opsin genes are located between 4.3Mb and 4.4Mb. Do you see anything interesting there?
 
-Now execute line 8 of the script to plot the f_dM values. Do you see any signal near the opsin coordinates? We also plot the f_d statistic. As you can see, the top end of the plot is the same as for the f_dM, but the f_d is asymmetrical, extending far further into negative values. Finally, we zoom in at the region of the opsin genes (line 12). As you can see, the results look like a single “mountain” extending over 100kb. But there is more structure than that. Perhaps we need to reduce the window or step size to see that.
+<details>
+<summary>Click here to see the resulting R plots</summary>
+
+<p align="center"><img src="data/Dinvestigate_bigWindow.png" alt="\*" width="600"></p>
+
+You could also plot the new d_f statistic? Doe that look any better?
+
+</details>
+
+Finally, we zoom in at the region of the opsin genes (line 12). As you can see, the results look like a single “mountain” extending over 100kb.
+
+<details>
+<summary>Click here to see the zoom in with `-w 50,25`</summary>
+
+<p align="center"><img src="data/Dinvestigate_zoom.png" alt="\*" width="600"></p>
+
+</details>
+
+
+But there is more structure than that in the region. Perhaps we need to reduce the window or step size to see a greater level of detai.
 
 To save time, we prepared result files for runs with varying window and step sizes: [`mbuna_deep_Diplotaxodon_localFstats__50_5.txt`](data/mbuna_deep_Diplotaxodon_localFstats__50_5.txt),  [`mbuna_deep_Diplotaxodon_localFstats__50_1.txt`](data/mbuna_deep_Diplotaxodon_localFstats__50_1.txt),  [`mbuna_deep_Diplotaxodon_localFstats__10_1.txt`](data/mbuna_deep_Diplotaxodon_localFstats__10_1.txt), and  [`mbuna_deep_Diplotaxodon_localFstats__2_1.txt`](data/mbuna_deep_Diplotaxodon_localFstats__2_1.txt).
 
  They can be plotted with the same R script. Have a look at the results.
+ 
+ <details>
+ <summary>Click here to see the zoom in with `-w 50,5`</summary>
+
+ <p align="center"><img src="data/Dinvestigate_zoom50_5.png" alt="\*" width="600"></p>
+
+ </details>
+ 
+ <details>
+ <summary>Click here to see the zoom in with `-w 50,1`</summary>
+
+ <p align="center"><img src="data/Dinvestigate_zoom50_1.png" alt="\*" width="600"></p>
+
+ </details>
+ 
+ <summary>Click here to see the zoom in with `-w 10,1`</summary>
+
+ <p align="center"><img src="data/Dinvestigate_zoom10_1.png" alt="\*" width="600"></p>
+
+ </details>
+ 
+ </details>
+ 
+ <summary>Click here to see the zoom in with `-w 2,1`</summary>
+
+ <p align="center"><img src="data/Dinvestigate_zoom2_1.png" alt="\*" width="600"></p>
+
+ </details>
 
 **Question 9:** What combination of window size/step seems to have the best resolution? Why is the smallest window so noisy?
 
