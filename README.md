@@ -2,7 +2,7 @@
 
 A collection of tutorials on phylogenetic and phylogenomic analyses
 
-> [!WARNING]  
+> [!NOTE]  
 > These tutorials were written for a Physalia workshop in 2019 and are no longer updated. Slightly newer versions of these tutorials can be found on [https://github.com/ForBioPhylogenomics](https://github.com/ForBioPhylogenomics); however, also these are no longer updated by me.
 
 ## Preparation
