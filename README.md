@@ -4,7 +4,7 @@ A collection of tutorials on phylogenetic and phylogenomic analyses
 
 > [!NOTE]  
 > These tutorials were written for a Physalia workshop in 2019 and are no longer updated. The content may therefore be rather outdated. Slightly newer versions of these tutorials can be found on [https://github.com/ForBioPhylogenomics](https://github.com/ForBioPhylogenomics); however, also these are no longer updated.
-> The only updated versions of (some of) these tutorials can be found on [https://github.com/mmatschiner/lynx](https://github.com/mmatschiner/lynx); these, however, are written specifically for analyses on the lynx server at LMU Munich, to which only members of the [LMU Systematic Zoology group](https://www.bio.lmu.de/en/research/research-fields/zoology/matschiner-lab/) and students of their courses have access.
+> The only updated versions of (some of) these tutorials can be found on [https://github.com/mmatschiner/lynx](https://github.com/mmatschiner/lynx), but those are written specifically for analyses on the lynx server at LMU Munich, to which only members of the [LMU Systematic Zoology group](https://www.bio.lmu.de/en/research/research-fields/zoology/matschiner-lab/) and students of their courses have access.
  
 ## Preparation
 
